@@ -1,0 +1,22 @@
+{
+  "name": "kage-engine",
+  "version": "1.0.0",
+  "description": "An engine that generates glyph image file from KAGE data",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kurgm/kage-engine.git"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/kurgm/kage-engine/issues"
+  },
+  "homepage": "https://github.com/kurgm/kage-engine#readme"
+}
