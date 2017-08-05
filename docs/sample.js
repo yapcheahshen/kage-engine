@@ -23,4 +23,3 @@ kage.kBuhin.push("u26c29-07", "1:0:0:18:29:187:29$1:0:0:73:10:73:48$1:0:0:132:10
 kage.makeGlyph(polygons, "u6f22");
 
 print(polygons.generateSVG(true));
-
