@@ -1,63 +1,58 @@
 export function divide_curve(kage, x1, y1, sx1, sy1, x2, y2, curve, div_curve, off_curve) {
-	var rate = 0.5;
-	var cut = Math.floor(curve.length * rate);
-	var cut_rate = cut / curve.length;
-	var tx1 = x1 + (sx1 - x1) * cut_rate;
-	var ty1 = y1 + (sy1 - y1) * cut_rate;
-	var tx2 = sx1 + (x2 - sx1) * cut_rate;
-	var ty2 = sy1 + (y2 - sy1) * cut_rate;
-	var tx3 = tx1 + (tx2 - tx1) * cut_rate;
-	var ty3 = ty1 + (ty2 - ty1) * cut_rate;
-
-	div_curve[0] = [];
-	div_curve[1] = [];
-	off_curve[0] = new Array(6);
-	off_curve[1] = new Array(6);
+	const rate = 0.5;
+	const cut = Math.floor(curve.length * rate);
+	const cut_rate = cut / curve.length;
+	const tx1 = x1 + (sx1 - x1) * cut_rate;
+	const ty1 = y1 + (sy1 - y1) * cut_rate;
+	const tx2 = sx1 + (x2 - sx1) * cut_rate;
+	const ty2 = sy1 + (y2 - sy1) * cut_rate;
+	const tx3 = tx1 + (tx2 - tx1) * cut_rate;
+	const ty3 = ty1 + (ty2 - ty1) * cut_rate;
 
 	// must think about 0 : <0
-	var i;
-	for (i = 0; i <= cut; i++) {
+	div_curve[0] = [];
+	for (let i = 0; i <= cut; i++) {
 		div_curve[0].push(curve[i]);
 	}
-	off_curve[0][0] = x1;
-	off_curve[0][1] = y1;
-	off_curve[0][2] = tx1;
-	off_curve[0][3] = ty1;
-	off_curve[0][4] = tx3;
-	off_curve[0][5] = ty3;
-
-	for (i = cut; i < curve.length; i++) {
+	div_curve[1] = [];
+	for (let i = cut; i < curve.length; i++) {
 		div_curve[1].push(curve[i]);
 	}
-	off_curve[1][0] = tx3;
-	off_curve[1][1] = ty3;
-	off_curve[1][2] = tx2;
-	off_curve[1][3] = ty2;
-	off_curve[1][4] = x2;
-	off_curve[1][5] = y2;
+	off_curve[0] = [
+		x1,
+		y1,
+		tx1,
+		ty1,
+		tx3,
+		ty3,
+	];
+	off_curve[1] = [
+		tx3,
+		ty3,
+		tx2,
+		ty2,
+		x2,
+		y2,
+	];
 }
 
 // ------------------------------------------------------------------
 export function find_offcurve(kage, curve, sx, sy, result) {
-	var nx1;
-	var ny1;
-	var nx2;
-	var ny2;
-	var tx;
-	var ty;
-	var minx;
-	var miny;
-	var count;
-	var diff;
-	var tt;
-	var t;
-	var x;
-	var y;
-	// var ix,
+	let tx;
+	let ty;
+	let minx;
+	let miny;
+	let count;
+	let diff;
+	let tt;
+	let t;
+	let x;
+	let y;
+	// var ix;
 	// var iy;
-	var mindiff = 100000;
-	var area = 8;
-	var mesh = 2;
+	let mindiff = 100000;
+	const area = 8;
+	const mesh = 2;
 	// area = 10   mesh = 5 -> 281 calcs
 	// area = 10   mesh = 4 -> 180 calcs
 	// area =  8   mesh = 4 -> 169 calcs
@@ -65,10 +60,10 @@ export function find_offcurve(kage, curve, sx, sy, result) {
 	// area =  8   mesh = 2 ->  97 calcs
 	// area =  7   mesh = 2 ->  80 calcs
 
-	nx1 = curve[0][0];
-	ny1 = curve[0][1];
-	nx2 = curve[curve.length - 1][0];
-	ny2 = curve[curve.length - 1][1];
+	const nx1 = curve[0][0];
+	const ny1 = curve[0][1];
+	const nx2 = curve[curve.length - 1][0];
+	const ny2 = curve[curve.length - 1][1];
 
 	for (tx = sx - area; tx < sx + area; tx += mesh) {
 		for (ty = sy - area; ty < sy + area; ty += mesh) {
@@ -139,17 +134,17 @@ export function find_offcurve(kage, curve, sx, sy, result) {
 
 // ------------------------------------------------------------------
 export function get_candidate(kage, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4) {
-	var x;
-	var y;
-	var ix;
-	var iy;
-	var ir;
-	var ia;
-	var ib;
-	var tt;
-	var t;
-	var deltad;
-	var hosomi = 0.5;
+	let x;
+	let y;
+	let ix;
+	let iy;
+	let ir;
+	let ia;
+	let ib;
+	let tt;
+	let t;
+	let deltad;
+	const hosomi = 0.5;
 
 	curve[0] = [];
 	curve[1] = [];
@@ -201,13 +196,7 @@ export function get_candidate(kage, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt
 			ib = ib * -1;
 		}
 
-		var temp = new Array(2);
-		temp[0] = x - ia;
-		temp[1] = y - ib;
-		curve[0].push(temp);
-		temp = new Array(2);
-		temp[0] = x + ia;
-		temp[1] = y + ib;
-		curve[1].push(temp);
+		curve[0].push([x - ia, y - ib]);
+		curve[1].push([x + ia, y + ib]);
 	}
 }

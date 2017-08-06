@@ -6,12 +6,12 @@ export class Polygons {
 
 	push(polygon) { // void
 		// only a simple check
-		var minx = 200;
-		var maxx = 0;
-		var miny = 200;
-		var maxy = 0;
-		var error = 0;
-		for (var i = 0; i < polygon.array.length; i++) {
+		let minx = 200;
+		let maxx = 0;
+		let miny = 200;
+		let maxy = 0;
+		let error = 0;
+		for (let i = 0; i < polygon.array.length; i++) {
 			if (polygon.array[i].x < minx) {
 				minx = polygon.array[i].x;
 			}
@@ -29,10 +29,9 @@ export class Polygons {
 			}
 		}
 		if (error === 0 && minx != maxx && miny != maxy && polygon.array.length >= 3) {
-			var newArray = [];
-			newArray.push(polygon.array.shift());
+			const newArray = [polygon.array.shift()];
 			while (polygon.array.length != 0) {
-				var temp = polygon.array.shift();
+				const temp = polygon.array.shift();
 				// if(newArray[newArray.length - 1].x != temp.x ||
 				//   newArray[newArray.length - 1].y != temp.y){
 				newArray.push(temp);
@@ -46,11 +45,11 @@ export class Polygons {
 	}
 
 	generateSVG(curve) { // string
-		var buffer = "";
+		let buffer = "";
 		buffer += "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" baseProfile=\"full\" viewBox=\"0 0 200 200\" width=\"200\" height=\"200\">\n";
 		if (curve) {
 			for (let i = 0; i < this.array.length; i++) {
-				var mode = "L";
+				let mode = "L";
 				buffer += "<path d=\"M ";
 				buffer += this.array[i].array[0].x + "," + this.array[i].array[0].y + " ";
 				for (let j = 1; j < this.array[i].array.length; j++) {
@@ -83,7 +82,7 @@ export class Polygons {
 	}
 
 	generateEPS() { // string
-		var buffer = "";
+		let buffer = "";
 		buffer += "%!PS-Adobe-3.0 EPSF-3.0\n";
 		buffer += "%%BoundingBox: 0 -208 1024 816\n";
 		buffer += "%%Pages: 0\n";
@@ -92,8 +91,8 @@ export class Polygons {
 		buffer += "%%CreationDate: " + new Date() + "\n";
 		buffer += "%%EndComments\n";
 		buffer += "%%EndProlog\n";
-		for (var i = 0; i < this.array.length; i++) {
-			for (var j = 0; j < this.array[i].array.length; j++) {
+		for (let i = 0; i < this.array.length; i++) {
+			for (let j = 0; j < this.array[i].array.length; j++) {
 				buffer += (this.array[i].array[j].x * 5) + " " + (1000 - this.array[i].array[j].y * 5 - 200) + " ";
 				if (j === 0) {
 					buffer += "newpath\nmoveto\n";

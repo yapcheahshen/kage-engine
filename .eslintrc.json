@@ -19,7 +19,7 @@
 		"arrow-body-style": "error",
 		"arrow-parens": "error",
 		"arrow-spacing": "error",
-		"block-scoped-var": "off",
+		"block-scoped-var": "error",
 		"block-spacing": "error",
 		"brace-style": [
 			"error",
@@ -29,7 +29,7 @@
 		"camelcase": "off",
 		"capitalized-comments": "off",
 		"class-methods-use-this": "off",
-		"comma-dangle": "error",
+		"comma-dangle": ["error", "always-multiline"],
 		"comma-spacing": [
 			"error",
 			{
@@ -197,7 +197,7 @@
 		"no-useless-constructor": "error",
 		"no-useless-rename": "error",
 		"no-useless-return": "error",
-		"no-var": "off",
+		"no-var": "error",
 		"no-void": "error",
 		"no-warning-comments": "error",
 		"no-whitespace-before-property": "error",
@@ -218,14 +218,14 @@
 		"padding-line-between-statements": "error",
 		"prefer-arrow-callback": "error",
 		"prefer-const": "error",
-		"prefer-destructuring": "off",
+		"prefer-destructuring": ["error", {"object": true, "array": false}],
 		"prefer-numeric-literals": "error",
 		"prefer-promise-reject-errors": "error",
 		"prefer-reflect": "error",
 		"prefer-rest-params": "error",
 		"prefer-spread": "error",
 		"prefer-template": "off",
-		"quote-props": "error",
+		"quote-props": ["error", "consistent-as-needed"],
 		"quotes": [
 			"error",
 			"double"
@@ -247,7 +247,7 @@
 			"last"
 		],
 		"sort-imports": "error",
-		"sort-keys": "error",
+		"sort-keys": "off",
 		"sort-vars": "off",
 		"space-before-blocks": "error",
 		"space-before-function-paren": "off",

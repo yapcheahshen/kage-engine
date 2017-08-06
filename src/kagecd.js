@@ -3,34 +3,34 @@ import {Kage} from "./kage";
 import {Polygon} from "./polygon";
 
 function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, ta2) {
-	var rad;
-	var t;
-	var x;
-	var y;
-	var v;
-	var ix;
-	var iy;
-	var ia;
-	var ib;
-	var ir;
-	var tt;
-	var delta;
-	var deltad;
-	var XX;
-	var XY;
-	var YX;
-	var YY;
-	var poly;
-	var poly2;
-	var hosomi;
-	var kMinWidthT;
-	var kMinWidthT2;
-	var a1;
-	var a2;
-	var opt1;
-	var opt2;
-	var opt3;
-	var opt4;
+	let rad;
+	let t;
+	let x;
+	let y;
+	let v;
+	let ix;
+	let iy;
+	let ia;
+	let ib;
+	let ir;
+	let tt;
+	let delta;
+	let deltad;
+	let XX;
+	let XY;
+	let YX;
+	let YY;
+	let poly;
+	let poly2;
+	let hosomi;
+	let kMinWidthT;
+	let kMinWidthT2;
+	let a1;
+	let a2;
+	let opt1;
+	let opt2;
+	let opt3;
+	let opt4;
 
 	if (kage.kShotai == kage.kMincho) { // mincho
 		a1 = ta1 % 1000;
@@ -140,25 +140,25 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 		if (sx1 == sx2 && sy1 == sy2) { // Spline
 			if (kage.kUseCurve) {
 				// generating fatten curve -- begin
-				var kage2 = new Kage();
+				const kage2 = new Kage();
 				kage2.kMinWidthY = kage.kMinWidthY;
 				kage2.kMinWidthT = kMinWidthT;
 				kage2.kWidth = kage.kWidth;
 				kage2.kKakato = kage.kKakato;
 				kage2.kRate = 10;
 
-				var curve = new Array(2); // L and R
+				const curve = new Array(2); // L and R
 				get_candidate(kage2, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4);
 
-				var dcl12_34 = new Array(2);
-				var dcr12_34 = new Array(2);
-				var dpl12_34 = new Array(2);
-				var dpr12_34 = new Array(2);
+				const dcl12_34 = new Array(2);
+				const dcr12_34 = new Array(2);
+				const dpl12_34 = new Array(2);
+				const dpr12_34 = new Array(2);
 				divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curve[0], dcl12_34, dpl12_34);
 				divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curve[1], dcr12_34, dpr12_34);
 
-				var ncl1 = new Array(7);
-				var ncl2 = new Array(7);
+				const ncl1 = new Array(7);
+				const ncl2 = new Array(7);
 				find_offcurve(kage2, dcl12_34[0], dpl12_34[0][2], dpl12_34[0][3], ncl1);
 				find_offcurve(kage2, dcl12_34[1], dpl12_34[1][2], dpl12_34[1][3], ncl2);
 
@@ -191,11 +191,11 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 					iy = (y1 - 2.0 * sy1 + y2) * 2.0 * t + (-2.0 * y1 + 2.0 * sy1);
 
 					// line SUICHOKU by vector
-					if (ix != 0 && iy != 0) {
+					if (ix !== 0 && iy !== 0) {
 						ir = Math.atan(iy / ix * -1);
 						ia = Math.sin(ir) * (kMinWidthT);
 						ib = Math.cos(ir) * (kMinWidthT);
-					} else if (ix == 0) {
+					} else if (ix === 0) {
 						ia = kMinWidthT;
 						ib = 0;
 					} else {
@@ -241,10 +241,10 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 						}
 						index++;
 					}
-					var newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
-					var newy1 = y1;
-					var newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
-					var newy2 = y1;
+					const newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
+					const newy1 = y1;
+					const newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
+					const newy2 = y1;
 
 					for (let i = 0; i < index; i++) {
 						poly2.shift();
@@ -262,10 +262,10 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 						}
 						index++;
 					}
-					newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
-					newy1 = y1;
-					newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x - 1) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
-					newy2 = y1 + 1;
+					const newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
+					const newy1 = y1;
+					const newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x - 1) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
+					const newy2 = y1 + 1;
 
 					for (let i = 0; i < index; i++) {
 						poly2.shift();
@@ -290,11 +290,11 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 				iy = t * t * (-3 * y1 + 9 * sy1 + -9 * sy2 + 3 * y2) + t * (6 * y1 + -12 * sy1 + 6 * sy2) + -3 * y1 + 3 * sy1;
 
 				// line SUICHOKU by vector
-				if (ix != 0 && iy != 0) {
+				if (ix !== 0 && iy !== 0) {
 					ir = Math.atan(iy / ix * -1);
 					ia = Math.sin(ir) * (kMinWidthT);
 					ib = Math.cos(ir) * (kMinWidthT);
-				} else if (ix == 0) {
+				} else if (ix === 0) {
 					ia = kMinWidthT;
 					ib = 0;
 				} else {
@@ -339,10 +339,10 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 					}
 					index++;
 				}
-				newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
-				newy1 = y1;
-				newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
-				newy2 = y1;
+				const newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
+				const newy1 = y1;
+				const newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
+				const newy2 = y1;
 
 				for (let i = 0; i < index; i++) {
 					poly2.shift();
@@ -361,10 +361,10 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 						}
 						index++;
 					}
-					newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
-					newy1 = y1;
-					newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x - 1) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
-					newy2 = y1 + 1;
+					const newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
+					const newy1 = y1;
+					const newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x - 1) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
+					const newy2 = y1 + 1;
 
 					for (let i = 0; i < index; i++) {
 						poly2.shift();
@@ -407,8 +407,8 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			}
 		}
 
-		var type;
-		var pm = 0;
+		let type;
+		let pm = 0;
 		if (a1 == 0) {
 			if (y1 <= y2) { // from up to bottom
 				type = (Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4);
@@ -476,7 +476,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 				if (pm > 0) {
 					type = 0;
 				}
-				var move = kage.kMinWidthY * type * pm;
+				const move = kage.kMinWidthY * type * pm;
 				if (x1 == sx1) {
 					poly = new Polygon();
 					poly.push(x1 + kMinWidthT, y1 - move);
@@ -582,13 +582,13 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 		}
 
 		if (a2 == 9 || (a1 == 7 && a2 == 0)) { // Math.sinnyu & L2RD Harai ... no need for a2=9
-			var type2 = (Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6);
+			let type2 = (Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6);
 			if (type2 > 0) {
 				type2 = type2 * 8;
 			} else {
 				type2 = type2 * 3;
 			}
-			var pm2 = 0;
+			let pm2 = 0;
 			if (type2 < 0) {
 				pm2 = -1;
 			} else {
@@ -636,7 +636,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			polygons.push(poly);
 		}
 	} else { // gothic
-		if (a1 % 10 == 2) {
+		if (a1 % 10 === 2) {
 			if (x1 == sx1) {
 				if (y1 < sy1) {
 					y1 = y1 - kage.kWidth;
@@ -661,7 +661,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			}
 		}
 
-		if (a1 % 10 == 3) {
+		if (a1 % 10 === 3) {
 			if (x1 == sx1) {
 				if (y1 < sy1) {
 					y1 = y1 - kage.kWidth * kage.kKakato;
@@ -685,7 +685,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 				y1 = y1 - kage.kWidth * Math.sin(rad) * v * kage.kKakato;
 			}
 		}
-		if (a2 % 10 == 2) {
+		if (a2 % 10 === 2) {
 			if (sx2 == x2) {
 				if (sy2 < y2) {
 					y2 = y2 + kage.kWidth;
@@ -710,7 +710,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			}
 		}
 
-		if (a2 % 10 == 3) {
+		if (a2 % 10 === 3) {
 			if (sx2 == x2) {
 				if (sy2 < y2) {
 					y2 = y2 + kage.kWidth * kage.kKakato;
@@ -805,22 +805,22 @@ export function cdDrawCurve(kage, polygons, x1, y1, x2, y2, x3, y3, a1, a2) {
 }
 
 export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
-	var rad;
-	var v;
-	var x1;
-	var y1;
-	var x2;
-	var y2;
-	var a1;
-	var a2;
-	var opt1;
-	var opt2;
-	var XX;
-	var XY;
-	var YX;
-	var YY;
-	var poly;
-	var kMinWidthT;
+	let rad;
+	let v;
+	let x1;
+	let y1;
+	let x2;
+	let y2;
+	let a1;
+	let a2;
+	let opt1;
+	let opt2;
+	let XX;
+	let XY;
+	let YX;
+	let YY;
+	let poly;
+	let kMinWidthT;
 
 	if (kage.kShotai == kage.kMincho) { // mincho
 		x1 = tx1;
@@ -1165,7 +1165,7 @@ export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 
 				if (a2 == 13 && opt2 == 4) { // for new GTH box's left bottom corner MUKI KANKEINASHI
 					poly = new Polygon();
-					var m = 0;
+					let m = 0;
 					if (x1 > x2 && y1 != y2) {
 						m = Math.floor((x1 - x2) / (y2 - y1) * 3);
 					}
@@ -1209,16 +1209,16 @@ export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 				a2 = ta2;
 			}
 
-			if (a1 % 10 == 2) {
+			if (a1 % 10 === 2) {
 				y1 = y1 - kage.kWidth;
 			}
-			if (a2 % 10 == 2) {
+			if (a2 % 10 === 2) {
 				y2 = y2 + kage.kWidth;
 			}
-			if (a1 % 10 == 3) {
+			if (a1 % 10 === 3) {
 				y1 = y1 - kage.kWidth * kage.kKakato;
 			}
-			if (a2 % 10 == 3) {
+			if (a2 % 10 === 3) {
 				y2 = y2 + kage.kWidth * kage.kKakato;
 			}
 
@@ -1246,16 +1246,16 @@ export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 				a1 = ta1;
 				a2 = ta2;
 			}
-			if (a1 % 10 == 2) {
+			if (a1 % 10 === 2) {
 				x1 = x1 - kage.kWidth;
 			}
-			if (a2 % 10 == 2) {
+			if (a2 % 10 === 2) {
 				x2 = x2 + kage.kWidth;
 			}
-			if (a1 % 10 == 3) {
+			if (a1 % 10 === 3) {
 				x1 = x1 - kage.kWidth * kage.kKakato;
 			}
-			if (a2 % 10 == 3) {
+			if (a2 % 10 === 3) {
 				x2 = x2 + kage.kWidth * kage.kKakato;
 			}
 
@@ -1283,19 +1283,19 @@ export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 				a2 = ta2;
 			}
 			rad = Math.atan((y2 - y1) / (x2 - x1));
-			if (a1 % 10 == 2) {
+			if (a1 % 10 === 2) {
 				x1 = x1 - kage.kWidth * Math.cos(rad);
 				y1 = y1 - kage.kWidth * Math.sin(rad);
 			}
-			if (a2 % 10 == 2) {
+			if (a2 % 10 === 2) {
 				x2 = x2 + kage.kWidth * Math.cos(rad);
 				y2 = y2 + kage.kWidth * Math.sin(rad);
 			}
-			if (a1 % 10 == 3) {
+			if (a1 % 10 === 3) {
 				x1 = x1 - kage.kWidth * Math.cos(rad) * kage.kKakato;
 				y1 = y1 - kage.kWidth * Math.sin(rad) * kage.kKakato;
 			}
-			if (a2 % 10 == 3) {
+			if (a2 % 10 === 3) {
 				x2 = x2 + kage.kWidth * Math.cos(rad) * kage.kKakato;
 				y2 = y2 + kage.kWidth * Math.sin(rad) * kage.kKakato;
 			}

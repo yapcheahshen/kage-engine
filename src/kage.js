@@ -6,25 +6,25 @@ import {dfDrawFont} from "./kagedf";
 export class Kage {
 	// method
 	makeGlyph(polygons, buhin) { // void
-		var glyphData = this.kBuhin.search(buhin);
+		const glyphData = this.kBuhin.search(buhin);
 		this.makeGlyph2(polygons, glyphData);
 	}
 
 	makeGlyph2(polygons, data) { // void
 		if (data != "") {
-			var strokesArray = this.adjustKirikuchi(this.adjustUroko2(this.adjustUroko(this.adjustKakato(this.adjustTate(this.adjustMage(this.adjustHane(this.getEachStrokes(data))))))));
-			for (var i = 0; i < strokesArray.length; i++) {
+			const strokesArray = this.adjustKirikuchi(this.adjustUroko2(this.adjustUroko(this.adjustKakato(this.adjustTate(this.adjustMage(this.adjustHane(this.getEachStrokes(data))))))));
+			for (let i = 0; i < strokesArray.length; i++) {
 				dfDrawFont(this, polygons, strokesArray[i][0], strokesArray[i][1], strokesArray[i][2], strokesArray[i][3], strokesArray[i][4], strokesArray[i][5], strokesArray[i][6], strokesArray[i][7], strokesArray[i][8], strokesArray[i][9], strokesArray[i][10]);
 			}
 		}
 	}
 
 	makeGlyph3(data) { // void
-		var result = [];
+		const result = [];
 		if (data != "") {
-			var strokesArray = this.adjustKirikuchi(this.adjustUroko2(this.adjustUroko(this.adjustKakato(this.adjustTate(this.adjustMage(this.adjustHane(this.getEachStrokes(data))))))));
-			for (var i = 0; i < strokesArray.length; i++) {
-				var polygons = new Polygons();
+			const strokesArray = this.adjustKirikuchi(this.adjustUroko2(this.adjustUroko(this.adjustKakato(this.adjustTate(this.adjustMage(this.adjustHane(this.getEachStrokes(data))))))));
+			for (let i = 0; i < strokesArray.length; i++) {
+				const polygons = new Polygons();
 				dfDrawFont(this, polygons, strokesArray[i][0], strokesArray[i][1], strokesArray[i][2], strokesArray[i][3], strokesArray[i][4], strokesArray[i][5], strokesArray[i][6], strokesArray[i][7], strokesArray[i][8], strokesArray[i][9], strokesArray[i][10]);
 				result.push(polygons);
 			}
@@ -33,10 +33,10 @@ export class Kage {
 	}
 
 	getEachStrokes(glyphData) { // strokes array
-		var strokesArray = [];
-		var strokes = glyphData.split("$");
-		for (var i = 0; i < strokes.length; i++) {
-			var columns = strokes[i].split(":");
+		let strokesArray = [];
+		const strokes = glyphData.split("$");
+		for (let i = 0; i < strokes.length; i++) {
+			const columns = strokes[i].split(":");
 			if (Math.floor(columns[0]) !== 99) {
 				strokesArray.push([
 					Math.floor(columns[0]),
@@ -49,10 +49,10 @@ export class Kage {
 					Math.floor(columns[7]),
 					Math.floor(columns[8]),
 					Math.floor(columns[9]),
-					Math.floor(columns[10])
+					Math.floor(columns[10]),
 				]);
 			} else {
-				var buhin = this.kBuhin.search(columns[7]);
+				const buhin = this.kBuhin.search(columns[7]);
 				if (buhin != "") {
 					strokesArray = strokesArray.concat(this.getEachStrokesOfBuhin(buhin, Math.floor(columns[3]), Math.floor(columns[4]), Math.floor(columns[5]), Math.floor(columns[6]), Math.floor(columns[1]), Math.floor(columns[2]), Math.floor(columns[9]), Math.floor(columns[10])));
 				}
@@ -62,9 +62,9 @@ export class Kage {
 	}
 
 	getEachStrokesOfBuhin(buhin, x1, y1, x2, y2, sx, sy, sx2, sy2) {
-		var temp = this.getEachStrokes(buhin);
-		var result = [];
-		var box = this.getBox(buhin);
+		const temp = this.getEachStrokes(buhin);
+		const result = [];
+		const box = this.getBox(buhin);
 		if (sx != 0 || sy != 0) {
 			if (sx > 100) {
 				sx -= 200;
@@ -73,7 +73,7 @@ export class Kage {
 				sy2 = 0;
 			}
 		}
-		for (var i = 0; i < temp.length; i++) {
+		for (let i = 0; i < temp.length; i++) {
 			if (sx != 0 || sy != 0) {
 				temp[i][3] = this.stretch(sx, sx2, temp[i][3], box.minX, box.maxX);
 				temp[i][4] = this.stretch(sy, sy2, temp[i][4], box.minY, box.maxY);
@@ -87,24 +87,25 @@ export class Kage {
 				}
 			}
 			result.push([
-				temp[i][0], temp[i][1], temp[i][2], x1 + temp[i][3] * (x2 - x1) / 200,
+				temp[i][0], temp[i][1], temp[i][2],
+				x1 + temp[i][3] * (x2 - x1) / 200,
 				y1 + temp[i][4] * (y2 - y1) / 200,
 				x1 + temp[i][5] * (x2 - x1) / 200,
 				y1 + temp[i][6] * (y2 - y1) / 200,
 				x1 + temp[i][7] * (x2 - x1) / 200,
 				y1 + temp[i][8] * (y2 - y1) / 200,
 				x1 + temp[i][9] * (x2 - x1) / 200,
-				y1 + temp[i][10] * (y2 - y1) / 200
+				y1 + temp[i][10] * (y2 - y1) / 200,
 			]);
 		}
 		return result;
 	}
 
 	adjustHane(sa) { // strokesArray
-		for (var i = 0; i < sa.length; i++) {
+		for (let i = 0; i < sa.length; i++) {
 			if ((sa[i][0] == 1 || sa[i][0] == 2 || sa[i][0] == 6) && sa[i][2] == 4) {
-				var lpx; // lastPointX
-				var lpy; // lastPointY
+				let lpx; // lastPointX
+				let lpy; // lastPointY
 				if (sa[i][0] == 1) {
 					lpx = sa[i][5];
 					lpy = sa[i][6];
@@ -115,11 +116,11 @@ export class Kage {
 					lpx = sa[i][9];
 					lpy = sa[i][10];
 				}
-				var mn = Infinity; // mostNear
+				let mn = Infinity; // mostNear
 				if (lpx + 18 < 100) {
 					mn = lpx + 18;
 				}
-				for (var j = 0; j < sa.length; j++) {
+				for (let j = 0; j < sa.length; j++) {
 					if (i !== j && sa[j][0] == 1 && sa[j][3] == sa[j][5] && sa[j][3] < lpx && sa[j][4] <= lpy && sa[j][6] >= lpy) {
 						if (lpx - sa[j][3] < 100) {
 							mn = Math.min(mn, lpx - sa[j][3]);
@@ -135,18 +136,18 @@ export class Kage {
 	}
 
 	adjustUroko(strokesArray) { // strokesArray
-		for (var i = 0; i < strokesArray.length; i++) {
+		for (let i = 0; i < strokesArray.length; i++) {
 			if (strokesArray[i][0] == 1 && strokesArray[i][2] == 0) { // no operation for TATE
-				for (var k = 0; k < this.kAdjustUrokoLengthStep; k++) {
-					var tx;
-					var	ty;
-					var	tlen;
+				for (let k = 0; k < this.kAdjustUrokoLengthStep; k++) {
+					let tx;
+					let	ty;
+					let	tlen;
 					if (strokesArray[i][4] == strokesArray[i][6]) { // YOKO
 						tx = strokesArray[i][5] - this.kAdjustUrokoLine[k];
 						ty = strokesArray[i][6] - 0.5;
 						tlen = strokesArray[i][5] - strokesArray[i][3];
 					} else {
-						var rad = Math.atan((strokesArray[i][6] - strokesArray[i][4]) / (strokesArray[i][5] - strokesArray[i][3]));
+						const rad = Math.atan((strokesArray[i][6] - strokesArray[i][4]) / (strokesArray[i][5] - strokesArray[i][3]));
 						tx = strokesArray[i][5] - this.kAdjustUrokoLine[k] * Math.cos(rad) - 0.5 * Math.sin(rad);
 						ty = strokesArray[i][6] - this.kAdjustUrokoLine[k] * Math.sin(rad) - 0.5 * Math.cos(rad);
 						tlen = Math.sqrt((strokesArray[i][6] - strokesArray[i][4]) * (strokesArray[i][6] - strokesArray[i][4]) + (strokesArray[i][5] - strokesArray[i][3]) * (strokesArray[i][5] - strokesArray[i][3]));
@@ -162,15 +163,15 @@ export class Kage {
 	}
 
 	adjustUroko2(strokesArray) { // strokesArray
-		for (var i = 0; i < strokesArray.length; i++) {
+		for (let i = 0; i < strokesArray.length; i++) {
 			if (strokesArray[i][0] == 1 && strokesArray[i][2] == 0 && strokesArray[i][4] == strokesArray[i][6]) {
-				var pressure = 0;
-				for (var j = 0; j < strokesArray.length; j++) {
+				let pressure = 0;
+				for (let j = 0; j < strokesArray.length; j++) {
 					if (i !== j && ((strokesArray[j][0] == 1 && strokesArray[j][4] == strokesArray[j][6] && !(strokesArray[i][3] + 1 > strokesArray[j][5] || strokesArray[i][5] - 1 < strokesArray[j][3]) && Math.abs(strokesArray[i][4] - strokesArray[j][4]) < this.kAdjustUroko2Length) || (strokesArray[j][0] == 3 && strokesArray[j][6] == strokesArray[j][8] && !(strokesArray[i][3] + 1 > strokesArray[j][7] || strokesArray[i][5] - 1 < strokesArray[j][5]) && Math.abs(strokesArray[i][4] - strokesArray[j][6]) < this.kAdjustUroko2Length))) {
 						pressure += Math.pow(this.kAdjustUroko2Length - Math.abs(strokesArray[i][4] - strokesArray[j][6]), 1.1);
 					}
 				}
-				var result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
+				const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
 				if (strokesArray[i][2] < result) {
 					strokesArray[i][2] = strokesArray[i][2] % 100 + Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
 				}
@@ -180,9 +181,9 @@ export class Kage {
 	}
 
 	adjustTate(strokesArray) { // strokesArray
-		for (var i = 0; i < strokesArray.length; i++) {
+		for (let i = 0; i < strokesArray.length; i++) {
 			if ((strokesArray[i][0] == 1 || strokesArray[i][0] == 3 || strokesArray[i][0] == 7) && strokesArray[i][3] == strokesArray[i][5]) {
-				for (var j = 0; j < strokesArray.length; j++) {
+				for (let j = 0; j < strokesArray.length; j++) {
 					if (i != j && (strokesArray[j][0] == 1 || strokesArray[j][0] == 3 || strokesArray[j][0] == 7) && strokesArray[j][3] == strokesArray[j][5] && !(strokesArray[i][4] + 1 > strokesArray[j][6] || strokesArray[i][6] - 1 < strokesArray[j][4]) && Math.abs(strokesArray[i][3] - strokesArray[j][3]) < this.kMinWidthT * this.kAdjustTateStep) {
 						strokesArray[i][1] += (this.kAdjustTateStep - Math.floor(Math.abs(strokesArray[i][3] - strokesArray[j][3]) / this.kMinWidthT)) * 1000;
 						if (strokesArray[i][1] > this.kAdjustTateStep * 1000) {
@@ -196,9 +197,9 @@ export class Kage {
 	}
 
 	adjustMage(strokesArray) { // strokesArray
-		for (var i = 0; i < strokesArray.length; i++) {
+		for (let i = 0; i < strokesArray.length; i++) {
 			if ((strokesArray[i][0] == 3) && strokesArray[i][6] == strokesArray[i][8]) {
-				for (var j = 0; j < strokesArray.length; j++) {
+				for (let j = 0; j < strokesArray.length; j++) {
 					if (i !== j && ((strokesArray[j][0] == 1 && strokesArray[j][4] == strokesArray[j][6] && !(strokesArray[i][5] + 1 > strokesArray[j][5] || strokesArray[i][7] - 1 < strokesArray[j][3]) && Math.abs(strokesArray[i][6] - strokesArray[j][4]) < this.kMinWidthT * this.kAdjustMageStep) || (strokesArray[j][0] == 3 && strokesArray[j][6] == strokesArray[j][8] && !(strokesArray[i][5] + 1 > strokesArray[j][7] || strokesArray[i][7] - 1 < strokesArray[j][5]) && Math.abs(strokesArray[i][6] - strokesArray[j][6]) < this.kMinWidthT * this.kAdjustMageStep))) {
 						strokesArray[i][2] += (this.kAdjustMageStep - Math.floor(Math.abs(strokesArray[i][6] - strokesArray[j][6]) / this.kMinWidthT)) * 1000;
 						if (strokesArray[i][2] > this.kAdjustMageStep * 1000) {
@@ -212,9 +213,9 @@ export class Kage {
 	}
 
 	adjustKirikuchi(strokesArray) { // strokesArray
-		for (var i = 0; i < strokesArray.length; i++) {
+		for (let i = 0; i < strokesArray.length; i++) {
 			if (strokesArray[i][0] == 2 && strokesArray[i][1] == 32 && strokesArray[i][3] > strokesArray[i][5] && strokesArray[i][4] < strokesArray[i][6]) {
-				for (var j = 0; j < strokesArray.length; j++) { // no need to skip when i == j
+				for (let j = 0; j < strokesArray.length; j++) { // no need to skip when i == j
 					if (strokesArray[j][0] == 1 && strokesArray[j][3] < strokesArray[i][3] && strokesArray[j][5] > strokesArray[i][3] && strokesArray[j][4] == strokesArray[i][4] && strokesArray[j][4] == strokesArray[j][6]) {
 						strokesArray[i][1] = 132;
 						j = strokesArray.length;
@@ -226,9 +227,9 @@ export class Kage {
 	}
 
 	adjustKakato(strokesArray) { // strokesArray
-		for (var i = 0; i < strokesArray.length; i++) {
+		for (let i = 0; i < strokesArray.length; i++) {
 			if (strokesArray[i][0] == 1 && (strokesArray[i][2] == 13 || strokesArray[i][2] == 23)) {
-				for (var k = 0; k < this.kAdjustKakatoStep; k++) {
+				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
 					if (isCrossBoxWithOthers(strokesArray, i, strokesArray[i][5] - this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k], strokesArray[i][5] + this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1]) | strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline | strokesArray[i][6] - strokesArray[i][4] < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
 						strokesArray[i][2] += (3 - k) * 100;
@@ -241,25 +242,22 @@ export class Kage {
 	}
 
 	getBox(glyph) { // minX, minY, maxX, maxY
-		var a = {};
-		a.minX = 200;
-		a.minY = 200;
-		a.maxX = 0;
-		a.maxY = 0;
+		const a = {
+			minX: 200,
+			minY: 200,
+			maxX: 0,
+			maxY: 0,
+		};
 
-		var strokes = this.getEachStrokes(glyph);
-		for (var i = 0; i < strokes.length; i++) {
+		const strokes = this.getEachStrokes(glyph);
+		for (let i = 0; i < strokes.length; i++) {
 			if (strokes[i][0] == 0) {
 				continue;
 			}
-			a.minX = Math.min(a.minX, strokes[i][3]);
-			a.maxX = Math.max(a.maxX, strokes[i][3]);
-			a.minY = Math.min(a.minY, strokes[i][4]);
-			a.maxY = Math.max(a.maxY, strokes[i][4]);
-			a.minX = Math.min(a.minX, strokes[i][5]);
-			a.maxX = Math.max(a.maxX, strokes[i][5]);
-			a.minY = Math.min(a.minY, strokes[i][6]);
-			a.maxY = Math.max(a.maxY, strokes[i][6]);
+			a.minX = Math.min(a.minX, strokes[i][3], strokes[i][5]);
+			a.maxX = Math.max(a.maxX, strokes[i][3], strokes[i][5]);
+			a.minY = Math.min(a.minY, strokes[i][4], strokes[i][6]);
+			a.maxY = Math.max(a.maxY, strokes[i][4], strokes[i][6]);
 			if (strokes[i][0] == 1) {
 				continue;
 			}
@@ -288,10 +286,10 @@ export class Kage {
 	}
 
 	stretch(dp, sp, p, min, max) { // interger
-		var p1;
-		var p2;
-		var p3;
-		var p4;
+		let p1;
+		let p2;
+		let p3;
+		let p4;
 		if (p < sp + 100) {
 			p1 = min;
 			p3 = min;

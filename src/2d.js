@@ -8,14 +8,14 @@ class point {
 }
 
 function getCrossPoint(x11, y11, x12, y12, x21, y21, x22, y22) { // point
-	var a1 = y12 - y11;
-	var b1 = x11 - x12;
-	var c1 = -1 * a1 * x11 - b1 * y11;
-	var a2 = y22 - y21;
-	var b2 = x21 - x22;
-	var c2 = -1 * a2 * x21 - b2 * y21;
+	const a1 = y12 - y11;
+	const b1 = x11 - x12;
+	const c1 = -1 * a1 * x11 - b1 * y11;
+	const a2 = y22 - y21;
+	const b2 = x21 - x22;
+	const c2 = -1 * a2 * x21 - b2 * y21;
 
-	var temp = b1 * a2 - b2 * a1;
+	const temp = b1 * a2 - b2 * a1;
 	if (temp === 0) { // parallel
 		return false;
 	}
@@ -23,7 +23,7 @@ function getCrossPoint(x11, y11, x12, y12, x21, y21, x22, y22) { // point
 }
 
 function isCross(x11, y11, x12, y12, x21, y21, x22, y22) { // boolean
-	var temp = getCrossPoint(x11, y11, x12, y12, x21, y21, x22, y22);
+	const temp = getCrossPoint(x11, y11, x12, y12, x21, y21, x22, y22);
 	if (!temp) {
 		return false;
 	}
@@ -53,7 +53,7 @@ function isCrossBox(x1, y1, x2, y2, bx1, by1, bx2, by2) { // boolean
 }
 
 export function isCrossBoxWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // boolean
-	for (var j = 0; j < strokesArray.length; j++) {
+	for (let j = 0; j < strokesArray.length; j++) {
 		if (i == j) {
 			continue;
 		}
@@ -85,7 +85,7 @@ export function isCrossBoxWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // b
 }
 
 export function isCrossWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // boolean
-	for (var j = 0; j < strokesArray.length; j++) {
+	for (let j = 0; j < strokesArray.length; j++) {
 		if (i == j) {
 			continue;
 		}

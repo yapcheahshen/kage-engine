@@ -1,16 +1,16 @@
 import {cdDrawBezier, cdDrawCurve, cdDrawLine} from "./kagecd";
 
 export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x4, y4) {
-	var tx1;
-	var tx2;
-	var tx3;
-	var tx4;
-	var ty1;
-	var ty2;
-	var ty3;
-	var ty4;
-	var v;
-	var rad;
+	let tx1;
+	let tx2;
+	let tx3;
+	let tx4;
+	let ty1;
+	let ty2;
+	let ty3;
+	let ty4;
+	let v;
+	let rad;
 
 	if (kage.kShotai == kage.kMincho) {
 		switch (a1 % 100) { // ... no need to divide
@@ -201,8 +201,8 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 			cdDrawCurve(kage, polygons, x1, y1, x2, y2, x3, y3, a2, 1);
 			cdDrawLine(kage, polygons, x3, y3, x4, y4, 6, a3);
 			break;
-		case 4:
-			var rate = 6;
+		case 4: {
+			let rate = 6;
 			if ((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2) < 14400) { // smaller than 120 x 120
 				rate = Math.sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2)) / 120 * 6;
 			}
@@ -325,6 +325,7 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 				cdDrawLine(kage, polygons, tx2, ty2, x3, y3, 6, a3); // bolder by force
 			}
 			break;
+		}
 		case 6:
 			if (a3 % 100 === 4) {
 				if (x3 == x4) {
