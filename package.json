@@ -2,12 +2,12 @@
   "name": "kage-engine",
   "version": "1.0.0",
   "description": "An engine that generates glyph image file from KAGE data",
-  "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "build": "browserify src/index.js -o lib/kage.js -t [ babelify ]",
+    "build:node": "babel src --out-dir lib",
+    "build:browser": "browserify src/index.js -o dist/kage.js -t [ babelify ]",
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/kurgm/kage-engine#readme",
   "devDependencies": {
+    "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^7.3.0",
