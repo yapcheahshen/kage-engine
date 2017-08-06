@@ -1,4 +1,4 @@
-function Polygons() {
+export function Polygons() {
 	// method
 	function clear() { // void
 		this.array = new Array();

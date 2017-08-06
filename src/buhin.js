@@ -1,4 +1,4 @@
-function Buhin(number) {
+export function Buhin(number) {
 	// method
 	function set(name, data) { // void
 		this.hash[name] = data;
