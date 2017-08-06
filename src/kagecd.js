@@ -234,7 +234,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 
 				// suiheisen ni setsuzoku
 				if (a1 == 132) {
-					var index = 0;
+					let index = 0;
 					while (true) {
 						if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
 							break;
@@ -246,7 +246,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 					var newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
 					var newy2 = y1;
 
-					for (var i = 0; i < index; i++) {
+					for (let i = 0; i < index; i++) {
 						poly2.shift();
 					}
 					poly2.set(0, newx1, newy1);
@@ -255,7 +255,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 
 				// suiheisen ni setsuzoku 2
 				if (a1 == 22 && y1 > y2) {
-					var index = 0;
+					let index = 0;
 					while (true) {
 						if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
 							break;
@@ -267,7 +267,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 					newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x - 1) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
 					newy2 = y1 + 1;
 
-					for (var i = 0; i < index; i++) {
+					for (let i = 0; i < index; i++) {
 						poly2.shift();
 					}
 					poly2.set(0, newx1, newy1);
@@ -332,7 +332,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 
 			// suiheisen ni setsuzoku
 			if (a1 == 132) {
-				var index = 0;
+				let index = 0;
 				while (true) {
 					if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
 						break;
@@ -344,7 +344,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 				newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
 				newy2 = y1;
 
-				for (var i = 0; i < index; i++) {
+				for (let i = 0; i < index; i++) {
 					poly2.shift();
 				}
 				poly2.set(0, newx1, newy1);
@@ -354,7 +354,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			// suiheisen ni setsuzoku 2
 			if (a1 == 22) {
 				if (x1 > sx1) {
-					var index = 0;
+					let index = 0;
 					while (true) {
 						if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
 							break;
@@ -366,7 +366,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 					newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x - 1) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
 					newy2 = y1 + 1;
 
-					for (var i = 0; i < index; i++) {
+					for (let i = 0; i < index; i++) {
 						poly2.shift();
 					}
 					poly2.set(0, newx1, newy1);
@@ -582,29 +582,29 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 		}
 
 		if (a2 == 9 || (a1 == 7 && a2 == 0)) { // Math.sinnyu & L2RD Harai ... no need for a2=9
-			var type = (Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6);
-			if (type > 0) {
-				type = type * 8;
+			var type2 = (Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6);
+			if (type2 > 0) {
+				type2 = type2 * 8;
 			} else {
-				type = type * 3;
+				type2 = type2 * 3;
 			}
-			var pm = 0;
-			if (type < 0) {
-				pm = -1;
+			var pm2 = 0;
+			if (type2 < 0) {
+				pm2 = -1;
 			} else {
-				pm = 1;
+				pm2 = 1;
 			}
 			if (sy2 == y2) {
 				poly = new Polygon();
 				poly.push(x2, y2 + kMinWidthT * kage.kL2RDfatten);
 				poly.push(x2, y2 - kMinWidthT * kage.kL2RDfatten);
-				poly.push(x2 + kMinWidthT * kage.kL2RDfatten * Math.abs(type), y2 + kMinWidthT * kage.kL2RDfatten * pm);
+				poly.push(x2 + kMinWidthT * kage.kL2RDfatten * Math.abs(type2), y2 + kMinWidthT * kage.kL2RDfatten * pm2);
 				polygons.push(poly);
 			} else {
 				poly = new Polygon();
 				poly.push(x2 + kMinWidthT * kage.kL2RDfatten * YX, y2 + kMinWidthT * kage.kL2RDfatten * YY);
 				poly.push(x2 - kMinWidthT * kage.kL2RDfatten * YX, y2 - kMinWidthT * kage.kL2RDfatten * YY);
-				poly.push(x2 + kMinWidthT * kage.kL2RDfatten * Math.abs(type) * XX + kMinWidthT * kage.kL2RDfatten * pm * YX, y2 + kMinWidthT * kage.kL2RDfatten * Math.abs(type) * XY + kMinWidthT * kage.kL2RDfatten * pm * YY);
+				poly.push(x2 + kMinWidthT * kage.kL2RDfatten * Math.abs(type2) * XX + kMinWidthT * kage.kL2RDfatten * pm2 * YX, y2 + kMinWidthT * kage.kL2RDfatten * Math.abs(type2) * XY + kMinWidthT * kage.kL2RDfatten * pm2 * YY);
 				polygons.push(poly);
 			}
 		}
@@ -749,7 +749,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 				//SESSEN NO KATAMUKI NO KEISAN(BIBUN)
 				ix = (x1 - 2.0 * sx1 + x2) * 2.0 * t + (-2.0 * x1 + 2.0 * sx1);
 				iy = (y1 - 2.0 * sy1 + y2) * 2.0 * t + (-2.0 * y1 + 2.0 * sy1);
-			} else {}
+			}// else {}
 			//SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
 			if (kage.kShotai == kage.kMincho) { //always false ?
 				if (ix != 0 && iy != 0) {

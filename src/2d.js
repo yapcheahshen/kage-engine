@@ -65,12 +65,14 @@ export function isCrossBoxWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // b
 				if (isCrossBox(strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10], bx1, by1, bx2, by2)) {
 					return true;
 				}
+				// FALLTHROUGH
 			case 2:
 			case 12:
 			case 3:
 				if (isCrossBox(strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8], bx1, by1, bx2, by2)) {
 					return true;
 				}
+				// FALLTHROUGH
 			default:
 				if (isCrossBox(strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6], bx1, by1, bx2, by2)) {
 					return true;
@@ -95,12 +97,14 @@ export function isCrossWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // bool
 				if (isCross(strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10], bx1, by1, bx2, by2)) {
 					return true;
 				}
+				// FALLTHROUGH
 			case 2:
 			case 12:
 			case 3:
 				if (isCross(strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8], bx1, by1, bx2, by2)) {
 					return true;
 				}
+				// FALLTHROUGH
 			default:
 				if (isCross(strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6], bx1, by1, bx2, by2)) {
 					return true;

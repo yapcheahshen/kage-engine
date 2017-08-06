@@ -52,9 +52,9 @@ export function find_offcurve(kage, curve, sx, sy, result) {
 	var tt,
 		t,
 		x,
-		y,
-		ix,
-		iy;
+		y;
+		// ix,
+		// iy;
 	var mindiff = 100000;
 	var area = 8;
 	var mesh = 2;
@@ -82,8 +82,8 @@ export function find_offcurve(kage, curve, sx, sy, result) {
 				y = ((1.0 - t) * (1.0 - t) * ny1 + 2.0 * t * (1.0 - t) * ty + t * t * ny2);
 
 				//KATAMUKI of vector by BIBUN
-				ix = (nx1 - 2.0 * tx + nx2) * 2.0 * t + (-2.0 * nx1 + 2.0 * tx);
-				iy = (ny1 - 2.0 * ty + ny2) * 2.0 * t + (-2.0 * ny1 + 2.0 * ty);
+				// ix = (nx1 - 2.0 * tx + nx2) * 2.0 * t + (-2.0 * nx1 + 2.0 * tx);
+				// iy = (ny1 - 2.0 * ty + ny2) * 2.0 * t + (-2.0 * ny1 + 2.0 * ty);
 
 				diff += (curve[count][0] - x) * (curve[count][0] - x) + (curve[count][1] - y) * (curve[count][1] - y);
 				if (diff > mindiff) {
@@ -111,8 +111,8 @@ export function find_offcurve(kage, curve, sx, sy, result) {
 				y = ((1.0 - t) * (1.0 - t) * ny1 + 2.0 * t * (1.0 - t) * ty + t * t * ny2);
 
 				//KATAMUKI of vector by BIBUN
-				ix = (nx1 - 2.0 * tx + nx2) * 2.0 * t + (-2.0 * nx1 + 2.0 * tx);
-				iy = (ny1 - 2.0 * ty + ny2) * 2.0 * t + (-2.0 * ny1 + 2.0 * ty);
+				// ix = (nx1 - 2.0 * tx + nx2) * 2.0 * t + (-2.0 * nx1 + 2.0 * tx);
+				// iy = (ny1 - 2.0 * ty + ny2) * 2.0 * t + (-2.0 * ny1 + 2.0 * ty);
 
 				diff += (curve[count][0] - x) * (curve[count][0] - x) + (curve[count][1] - y) * (curve[count][1] - y);
 				if (diff > mindiff) {
