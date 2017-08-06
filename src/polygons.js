@@ -1,11 +1,10 @@
-export function Polygons() {
+export class Polygons {
 	// method
-	function clear() { // void
-		this.array = new Array();
+	clear() { // void
+		this.array = [];
 	}
-	Polygons.prototype.clear = clear;
 
-	function push(polygon) { // void
+	push(polygon) { // void
 		// only a simple check
 		var minx = 200;
 		var maxx = 0;
@@ -29,15 +28,15 @@ export function Polygons() {
 				error++;
 			}
 		}
-		if (error == 0 && minx != maxx && miny != maxy && polygon.array.length >= 3) {
-			var newArray = new Array();
+		if (error === 0 && minx != maxx && miny != maxy && polygon.array.length >= 3) {
+			var newArray = [];
 			newArray.push(polygon.array.shift());
 			while (polygon.array.length != 0) {
 				var temp = polygon.array.shift();
-				//if(newArray[newArray.length - 1].x != temp.x ||
+				// if(newArray[newArray.length - 1].x != temp.x ||
 				//   newArray[newArray.length - 1].y != temp.y){
 				newArray.push(temp);
-				//}
+				// }
 			}
 			if (newArray.length >= 3) {
 				polygon.array = newArray;
@@ -45,9 +44,8 @@ export function Polygons() {
 			}
 		}
 	}
-	Polygons.prototype.push = push;
 
-	function generateSVG(curve) { // string
+	generateSVG(curve) { // string
 		var buffer = "";
 		buffer += "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" baseProfile=\"full\" viewBox=\"0 0 200 200\" width=\"200\" height=\"200\">\n";
 		if (curve) {
@@ -59,9 +57,9 @@ export function Polygons() {
 					if (this.array[i].array[j].off == 1) {
 						buffer += "Q ";
 						mode = "Q";
-					} else if (mode == "Q" && this.array[i].array[j - 1].off != 1) {
+					} else if (mode === "Q" && this.array[i].array[j - 1].off != 1) {
 						buffer += "L ";
-					} else if (mode == "L" && j == 1) {
+					} else if (mode === "L" && j === 1) {
 						buffer += "L ";
 					}
 					buffer += this.array[i].array[j].x + "," + this.array[i].array[j].y + " ";
@@ -83,9 +81,8 @@ export function Polygons() {
 		}
 		return buffer;
 	}
-	Polygons.prototype.generateSVG = generateSVG;
 
-	function generateEPS() { // string
+	generateEPS() { // string
 		var buffer = "";
 		buffer += "%!PS-Adobe-3.0 EPSF-3.0\n";
 		buffer += "%%BoundingBox: 0 -208 1024 816\n";
@@ -95,11 +92,10 @@ export function Polygons() {
 		buffer += "%%CreationDate: " + new Date() + "\n";
 		buffer += "%%EndComments\n";
 		buffer += "%%EndProlog\n";
-
 		for (var i = 0; i < this.array.length; i++) {
 			for (var j = 0; j < this.array[i].array.length; j++) {
 				buffer += (this.array[i].array[j].x * 5) + " " + (1000 - this.array[i].array[j].y * 5 - 200) + " ";
-				if (j == 0) {
+				if (j === 0) {
 					buffer += "newpath\nmoveto\n";
 				} else {
 					buffer += "lineto\n";
@@ -110,10 +106,9 @@ export function Polygons() {
 		buffer += "%%EOF\n";
 		return buffer;
 	}
-	Polygons.prototype.generateEPS = generateEPS;
 
+	constructor() {
 	// property
-	this.array = new Array();
-
-	return this;
+		this.array = [];
+	}
 }

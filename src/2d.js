@@ -1,8 +1,10 @@
 // Reference : http://www.cam.hi-ho.ne.jp/strong_warriors/teacher/chapter0{4,5}.html
 
-function point(x, y) {
-	this.x = x;
-	this.y = y;
+class point {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+	}
 }
 
 function getCrossPoint(x11, y11, x12, y12, x21, y21, x22, y22) { // point
@@ -14,7 +16,7 @@ function getCrossPoint(x11, y11, x12, y12, x21, y21, x22, y22) { // point
 	var c2 = -1 * a2 * x21 - b2 * y21;
 
 	var temp = b1 * a2 - b2 * a1;
-	if (temp == 0) { // parallel
+	if (temp === 0) { // parallel
 		return false;
 	}
 	return new point((c1 * b2 - c2 * b1) / temp, (a1 * c2 - a2 * c1) / temp);
@@ -56,27 +58,27 @@ export function isCrossBoxWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // b
 			continue;
 		}
 		switch (strokesArray[j][0]) {
-			case 0:
-			case 8:
-			case 9:
-				break;
-			case 6:
-			case 7:
-				if (isCrossBox(strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10], bx1, by1, bx2, by2)) {
-					return true;
-				}
-				// FALLTHROUGH
-			case 2:
-			case 12:
-			case 3:
-				if (isCrossBox(strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8], bx1, by1, bx2, by2)) {
-					return true;
-				}
-				// FALLTHROUGH
-			default:
-				if (isCrossBox(strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6], bx1, by1, bx2, by2)) {
-					return true;
-				}
+		case 0:
+		case 8:
+		case 9:
+			break;
+		case 6:
+		case 7:
+			if (isCrossBox(strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10], bx1, by1, bx2, by2)) {
+				return true;
+			}
+			// FALLTHROUGH
+		case 2:
+		case 12:
+		case 3:
+			if (isCrossBox(strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8], bx1, by1, bx2, by2)) {
+				return true;
+			}
+			// FALLTHROUGH
+		default:
+			if (isCrossBox(strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6], bx1, by1, bx2, by2)) {
+				return true;
+			}
 		}
 	}
 	return false;
@@ -88,27 +90,27 @@ export function isCrossWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // bool
 			continue;
 		}
 		switch (strokesArray[j][0]) {
-			case 0:
-			case 8:
-			case 9:
-				break;
-			case 6:
-			case 7:
-				if (isCross(strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10], bx1, by1, bx2, by2)) {
-					return true;
-				}
-				// FALLTHROUGH
-			case 2:
-			case 12:
-			case 3:
-				if (isCross(strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8], bx1, by1, bx2, by2)) {
-					return true;
-				}
-				// FALLTHROUGH
-			default:
-				if (isCross(strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6], bx1, by1, bx2, by2)) {
-					return true;
-				}
+		case 0:
+		case 8:
+		case 9:
+			break;
+		case 6:
+		case 7:
+			if (isCross(strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10], bx1, by1, bx2, by2)) {
+				return true;
+			}
+			// FALLTHROUGH
+		case 2:
+		case 12:
+		case 3:
+			if (isCross(strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8], bx1, by1, bx2, by2)) {
+				return true;
+			}
+			// FALLTHROUGH
+		default:
+			if (isCross(strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6], bx1, by1, bx2, by2)) {
+				return true;
+			}
 		}
 	}
 	return false;
