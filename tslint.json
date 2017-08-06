@@ -5,7 +5,9 @@
     ],
     "jsRules": {},
     "rules": {
-      "indent": [true, "tabs"]
+      "indent": [true, "tabs"],
+      "variable-name": false,
+      "no-switch-case-fall-through": true
     },
     "rulesDirectory": []
 }
