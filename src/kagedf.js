@@ -19,10 +19,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 < x2 ? 1 : -1;
-					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
-					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y2 - y1, x2 - x1);
+					tx1 = x2 - kage.kMage * Math.cos(rad);
+					ty1 = y2 - kage.kMage * Math.sin(rad);
 				}
 				cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2, 1);
 				cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, x2 - kage.kMage * (((kage.kAdjustTateStep + 4) - Math.floor(a2 / 1000)) / (kage.kAdjustTateStep + 4)), y2, 1 + (a2 - a2 % 1000), a3 + 10);
@@ -43,10 +42,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x3 - kage.kMage;
 					ty1 = y3;
 				} else {
-					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					const v = x2 < x3 ? 1 : -1;
-					tx1 = x3 - kage.kMage * Math.cos(rad) * v;
-					ty1 = y3 - kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y3 - y2, x3 - x2);
+					tx1 = x3 - kage.kMage * Math.cos(rad);
+					ty1 = y3 - kage.kMage * Math.sin(rad);
 				}
 				cdDrawCurve(kage, polygons, x1, y1, x2, y2, tx1, ty1, a2, 1);
 				cdDrawCurve(kage, polygons, tx1, ty1, x3, y3, x3 - kage.kMage, y3, 1, a3 + 10);
@@ -70,10 +68,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 < x2 ? 1 : -1;
-					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
-					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y2 - y1, x2 - x1);
+					tx1 = x2 - kage.kMage * Math.cos(rad);
+					ty1 = y2 - kage.kMage * Math.sin(rad);
 				}
 				let tx2;
 				let ty2;
@@ -86,10 +83,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx2 = x2 + kage.kMage * v;
 					ty2 = y2;
 				} else {
-					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					const v = x2 < x3 ? 1 : -1;
-					tx2 = x2 + kage.kMage * Math.cos(rad) * v;
-					ty2 = y2 + kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y3 - y2, x3 - x2);
+					tx2 = x2 + kage.kMage * Math.cos(rad);
+					ty2 = y2 + kage.kMage * Math.sin(rad);
 				}
 				const tx3 = x3;
 				const ty3 = y3;
@@ -111,10 +107,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 < x2 ? 1 : -1;
-					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
-					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y2 - y1, x2 - x1);
+					tx1 = x2 - kage.kMage * Math.cos(rad);
+					ty1 = y2 - kage.kMage * Math.sin(rad);
 				}
 				let tx2;
 				let ty2;
@@ -127,10 +122,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx2 = x2 + kage.kMage * v;
 					ty2 = y2;
 				} else {
-					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					const v = x2 < x3 ? 1 : -1;
-					tx2 = x2 + kage.kMage * Math.cos(rad) * v;
-					ty2 = y2 + kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y3 - y2, x3 - x2);
+					tx2 = x2 + kage.kMage * Math.cos(rad);
+					ty2 = y2 + kage.kMage * Math.sin(rad);
 				}
 				cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2, 1);
 				cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1 + (a2 - a2 % 1000) * 10, 1 + (a3 - a3 % 1000));
@@ -160,10 +154,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x2 - kage.kMage * v * rate;
 					ty1 = y2;
 				} else {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 < x2 ? 1 : -1;
-					tx1 = x2 - kage.kMage * Math.cos(rad) * v * rate;
-					ty1 = y2 - kage.kMage * Math.sin(rad) * v * rate;
+					const rad = Math.atan2(y2 - y1, x2 - x1);
+					tx1 = x2 - kage.kMage * Math.cos(rad) * rate;
+					ty1 = y2 - kage.kMage * Math.sin(rad) * rate;
 				}
 				let tx2;
 				let ty2;
@@ -176,10 +169,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx2 = x2 + kage.kMage * v * rate;
 					ty2 = y2;
 				} else {
-					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					const v = x2 < x3 ? 1 : -1;
-					tx2 = x2 + kage.kMage * Math.cos(rad) * v * rate;
-					ty2 = y2 + kage.kMage * Math.sin(rad) * v * rate;
+					const rad = Math.atan2(y3 - y2, x3 - x2);
+					tx2 = x2 + kage.kMage * Math.cos(rad) * rate;
+					ty2 = y2 + kage.kMage * Math.sin(rad) * rate;
 				}
 				const tx3 = x3;
 				const ty3 = y3;
@@ -201,10 +193,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x2 - kage.kMage * v * rate;
 					ty1 = y2;
 				} else {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 < x2 ? 1 : -1;
-					tx1 = x2 - kage.kMage * Math.cos(rad) * v * rate;
-					ty1 = y2 - kage.kMage * Math.sin(rad) * v * rate;
+					const rad = Math.atan2(y2 - y1, x2 - x1);
+					tx1 = x2 - kage.kMage * Math.cos(rad) * rate;
+					ty1 = y2 - kage.kMage * Math.sin(rad) * rate;
 				}
 				let tx2;
 				let ty2;
@@ -217,10 +208,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx2 = x2 + kage.kMage * v * rate;
 					ty2 = y2;
 				} else {
-					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					const v = x2 < x3 ? 1 : -1;
-					tx2 = x2 + kage.kMage * Math.cos(rad) * v * rate;
-					ty2 = y2 + kage.kMage * Math.sin(rad) * v * rate;
+					const rad = Math.atan2(y3 - y2, x3 - x2);
+					tx2 = x2 + kage.kMage * Math.cos(rad) * rate;
+					ty2 = y2 + kage.kMage * Math.sin(rad) * rate;
 				}
 				cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2, 1);
 				cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1);
@@ -239,10 +229,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x4 - kage.kMage;
 					ty1 = y4;
 				} else {
-					const rad = Math.atan((y4 - y3) / (x4 - x3));
-					const v = x3 < x4 ? 1 : -1;
-					tx1 = x4 - kage.kMage * Math.cos(rad) * v;
-					ty1 = y4 - kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y4 - y3, x4 - x3);
+					tx1 = x4 - kage.kMage * Math.cos(rad);
+					ty1 = y4 - kage.kMage * Math.sin(rad);
 				}
 				cdDrawBezier(kage, polygons, x1, y1, x2, y2, x3, y3, tx1, ty1, a2, 1);
 				cdDrawCurve(kage, polygons, tx1, ty1, x4, y4, x4 - kage.kMage, y4, 1, a3 + 10);
@@ -282,10 +271,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 < x2 ? 1 : -1;
-					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
-					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y2 - y1, x2 - x1);
+					tx1 = x2 - kage.kMage * Math.cos(rad);
+					ty1 = y2 - kage.kMage * Math.sin(rad);
 				}
 				cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2, 1);
 				cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, x2 - kage.kMage * 2, y2 - kage.kMage * 0.5, 1, 0);
@@ -306,10 +294,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x3 - kage.kMage;
 					ty1 = y3;
 				} else {
-					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					const v = x2 < x3 ? 1 : -1;
-					tx1 = x3 - kage.kMage * Math.cos(rad) * v;
-					ty1 = y3 - kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y3 - y2, x3 - x2);
+					tx1 = x3 - kage.kMage * Math.cos(rad);
+					ty1 = y3 - kage.kMage * Math.sin(rad);
 				}
 				cdDrawCurve(kage, polygons, x1, y1, x2, y2, tx1, ty1, a2, 1);
 				cdDrawCurve(kage, polygons, tx1, ty1, x3, y3, x3 - kage.kMage * 2, y3 - kage.kMage * 0.5, 1, 0);
@@ -338,10 +325,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 < x2 ? 1 : -1;
-					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
-					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y2 - y1, x2 - x1);
+					tx1 = x2 - kage.kMage * Math.cos(rad);
+					ty1 = y2 - kage.kMage * Math.sin(rad);
 				}
 				let tx2;
 				let ty2;
@@ -354,10 +340,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx2 = x2 + kage.kMage * v;
 					ty2 = y2;
 				} else {
-					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					const v = x2 < x3 ? 1 : -1;
-					tx2 = x2 + kage.kMage * Math.cos(rad) * v;
-					ty2 = y2 + kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y3 - y2, x3 - x2);
+					tx2 = x2 + kage.kMage * Math.cos(rad);
+					ty2 = y2 + kage.kMage * Math.sin(rad);
 				}
 				const tx3 = x3 - kage.kMage;
 				const ty3 = y3;
@@ -380,10 +365,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 < x2 ? 1 : -1;
-					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
-					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y2 - y1, x2 - x1);
+					tx1 = x2 - kage.kMage * Math.cos(rad);
+					ty1 = y2 - kage.kMage * Math.sin(rad);
 				}
 				let tx2;
 				let ty2;
@@ -396,10 +380,9 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					tx2 = x2 + kage.kMage * v;
 					ty2 = y2;
 				} else {
-					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					const v = x2 < x3 ? 1 : -1;
-					tx2 = x2 + kage.kMage * Math.cos(rad) * v;
-					ty2 = y2 + kage.kMage * Math.sin(rad) * v;
+					const rad = Math.atan2(y3 - y2, x3 - x2);
+					tx2 = x2 + kage.kMage * Math.cos(rad);
+					ty2 = y2 + kage.kMage * Math.sin(rad);
 				}
 
 				cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2, 1);
