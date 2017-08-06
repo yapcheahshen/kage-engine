@@ -158,7 +158,7 @@
 		"no-new-require": "error",
 		"no-new-wrappers": "error",
 		"no-octal-escape": "error",
-		"no-param-reassign": "off",
+		"no-param-reassign": "warn",
 		"no-path-concat": "error",
 		"no-plusplus": "off",
 		"no-process-env": "error",
