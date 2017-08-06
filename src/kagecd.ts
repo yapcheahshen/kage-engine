@@ -102,9 +102,9 @@ function cdDrawCurveU(
 		// ---------------------------------------------------------------
 
 		if (sx1 === sx2 && sy1 === sy2) { // Spline
-			const poly = new Polygon();
-			const poly2 = new Polygon();
 			if (kage.kUseCurve) {
+				const poly = new Polygon();
+				const poly2 = new Polygon();
 				// generating fatten curve -- begin
 				const kage2 = new Kage();
 				kage2.kMinWidthY = kage.kMinWidthY;
@@ -138,6 +138,8 @@ function cdDrawCurveU(
 				polygons.push(poly);
 				// generating fatten curve -- end
 			} else {
+				const poly = new Polygon();
+				const poly2 = new Polygon();
 				for (let tt = 0; tt <= 1000; tt += kage.kRate) {
 					const t = tt / 1000;
 
@@ -256,8 +258,10 @@ function cdDrawCurveU(
 				const x = (1 - t) ** 3 * x1 + 3 * t * (1 - t) ** 2 * sx1 + 3 * t ** 2 * (1 - t) * sx2 + t ** 3 * x2;
 				const y = (1 - t) ** 3 * y1 + 3 * t * (1 - t) ** 2 * sy1 + 3 * t ** 2 * (1 - t) * sy2 + t ** 3 * y2;
 				// KATAMUKI of vector by BIBUN
-				const ix = t ** 2 * (-3 * x1 + 9 * sx1 + -9 * sx2 + 3 * x2) + t * (6 * x1 + -12 * sx1 + 6 * sx2) + -3 * x1 + 3 * sx1;
-				const iy = t ** 2 * (-3 * y1 + 9 * sy1 + -9 * sy2 + 3 * y2) + t * (6 * y1 + -12 * sy1 + 6 * sy2) + -3 * y1 + 3 * sy1;
+				const ix = t ** 2 * (-3 * x1 + 9 * sx1 + -9 * sx2 + 3 * x2)
+					+ t * (6 * x1 + -12 * sx1 + 6 * sx2) + -3 * x1 + 3 * sx1;
+				const iy = t ** 2 * (-3 * y1 + 9 * sy1 + -9 * sy2 + 3 * y2)
+					+ t * (6 * y1 + -12 * sy1 + 6 * sy2) + -3 * y1 + 3 * sy1;
 
 				// line SUICHOKU by vector
 				let ia;

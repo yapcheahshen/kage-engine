@@ -122,21 +122,21 @@ export class Kage {
 								this.adjustMage(
 									this.adjustHane(
 										this.getEachStrokes(data))))))));
-			for (let i = 0; i < strokesArray.length; i++) {
+			strokesArray.forEach((stroke) => {
 				dfDrawFont(
 					this, polygons,
-					strokesArray[i][0],
-					strokesArray[i][1], strokesArray[i][2],
-					strokesArray[i][3], strokesArray[i][4],
-					strokesArray[i][5], strokesArray[i][6],
-					strokesArray[i][7], strokesArray[i][8],
-					strokesArray[i][9], strokesArray[i][10]);
-			}
+					stroke[0],
+					stroke[1], stroke[2],
+					stroke[3], stroke[4],
+					stroke[5], stroke[6],
+					stroke[7], stroke[8],
+					stroke[9], stroke[10]);
+			});
 		}
 	}
 
 	public makeGlyph3(data: string) {
-		const result = [];
+		const result: Polygons[] = [];
 		if (data !== "") {
 			const strokesArray = this.adjustKirikuchi(
 				this.adjustUroko2(
@@ -146,18 +146,18 @@ export class Kage {
 								this.adjustMage(
 									this.adjustHane(
 										this.getEachStrokes(data))))))));
-			for (let i = 0; i < strokesArray.length; i++) {
+			strokesArray.forEach((stroke) => {
 				const polygons = new Polygons();
 				dfDrawFont(
 					this, polygons,
-					strokesArray[i][0],
-					strokesArray[i][1], strokesArray[i][2],
-					strokesArray[i][3], strokesArray[i][4],
-					strokesArray[i][5], strokesArray[i][6],
-					strokesArray[i][7], strokesArray[i][8],
-					strokesArray[i][9], strokesArray[i][10]);
+					stroke[0],
+					stroke[1], stroke[2],
+					stroke[3], stroke[4],
+					stroke[5], stroke[6],
+					stroke[7], stroke[8],
+					stroke[9], stroke[10]);
 				result.push(polygons);
-			}
+			});
 		}
 		return result;
 	}
@@ -165,8 +165,8 @@ export class Kage {
 	public getEachStrokes(glyphData: string) {
 		let strokesArray: number[][] = [];
 		const strokes = glyphData.split("$");
-		for (let i = 0; i < strokes.length; i++) {
-			const columns = strokes[i].split(":");
+		strokes.forEach((stroke) => {
+			const columns = stroke.split(":");
 			if (Math.floor(+columns[0]) !== 99) {
 				strokesArray.push([
 					Math.floor(+columns[0]),
@@ -192,7 +192,7 @@ export class Kage {
 						Math.floor(+columns[9]), Math.floor(+columns[10])));
 				}
 			}
-		}
+		});
 		return strokesArray;
 	}
 
@@ -203,7 +203,7 @@ export class Kage {
 		sx: number, sy: number,
 		sx2: number, sy2: number) {
 		const temp = this.getEachStrokes(buhin);
-		const result = [];
+		const result: number[][] = [];
 		const box = this.getBox(buhin);
 		if (sx !== 0 || sy !== 0) {
 			if (sx > 100) {
@@ -213,31 +213,31 @@ export class Kage {
 				sy2 = 0;
 			}
 		}
-		for (let i = 0; i < temp.length; i++) {
+		temp.forEach((stroke) => {
 			if (sx !== 0 || sy !== 0) {
-				temp[i][3] = this.stretch(sx, sx2, temp[i][3], box.minX, box.maxX);
-				temp[i][4] = this.stretch(sy, sy2, temp[i][4], box.minY, box.maxY);
-				temp[i][5] = this.stretch(sx, sx2, temp[i][5], box.minX, box.maxX);
-				temp[i][6] = this.stretch(sy, sy2, temp[i][6], box.minY, box.maxY);
-				if (temp[i][0] !== 99) {
-					temp[i][7] = this.stretch(sx, sx2, temp[i][7], box.minX, box.maxX);
-					temp[i][8] = this.stretch(sy, sy2, temp[i][8], box.minY, box.maxY);
-					temp[i][9] = this.stretch(sx, sx2, temp[i][9], box.minX, box.maxX);
-					temp[i][10] = this.stretch(sy, sy2, temp[i][10], box.minY, box.maxY);
+				stroke[3] = this.stretch(sx, sx2, stroke[3], box.minX, box.maxX);
+				stroke[4] = this.stretch(sy, sy2, stroke[4], box.minY, box.maxY);
+				stroke[5] = this.stretch(sx, sx2, stroke[5], box.minX, box.maxX);
+				stroke[6] = this.stretch(sy, sy2, stroke[6], box.minY, box.maxY);
+				if (stroke[0] !== 99) {
+					stroke[7] = this.stretch(sx, sx2, stroke[7], box.minX, box.maxX);
+					stroke[8] = this.stretch(sy, sy2, stroke[8], box.minY, box.maxY);
+					stroke[9] = this.stretch(sx, sx2, stroke[9], box.minX, box.maxX);
+					stroke[10] = this.stretch(sy, sy2, stroke[10], box.minY, box.maxY);
 				}
 			}
 			result.push([
-				temp[i][0], temp[i][1], temp[i][2],
-				x1 + temp[i][3] * (x2 - x1) / 200,
-				y1 + temp[i][4] * (y2 - y1) / 200,
-				x1 + temp[i][5] * (x2 - x1) / 200,
-				y1 + temp[i][6] * (y2 - y1) / 200,
-				x1 + temp[i][7] * (x2 - x1) / 200,
-				y1 + temp[i][8] * (y2 - y1) / 200,
-				x1 + temp[i][9] * (x2 - x1) / 200,
-				y1 + temp[i][10] * (y2 - y1) / 200,
+				stroke[0], stroke[1], stroke[2],
+				x1 + stroke[3] * (x2 - x1) / 200,
+				y1 + stroke[4] * (y2 - y1) / 200,
+				x1 + stroke[5] * (x2 - x1) / 200,
+				y1 + stroke[6] * (y2 - y1) / 200,
+				x1 + stroke[7] * (x2 - x1) / 200,
+				y1 + stroke[8] * (y2 - y1) / 200,
+				x1 + stroke[9] * (x2 - x1) / 200,
+				y1 + stroke[10] * (y2 - y1) / 200,
 			]);
-		}
+		});
 		return result;
 	}
 
@@ -248,38 +248,32 @@ export class Kage {
 		let maxY = 0;
 
 		const strokes = this.getEachStrokes(glyph);
-		for (let i = 0; i < strokes.length; i++) {
-			if (strokes[i][0] === 0) {
-				continue;
+		strokes.forEach((stroke) => {
+			if (stroke[0] === 0) {
+				return;
 			}
-			minX = Math.min(minX, strokes[i][3], strokes[i][5]);
-			maxX = Math.max(maxX, strokes[i][3], strokes[i][5]);
-			minY = Math.min(minY, strokes[i][4], strokes[i][6]);
-			maxY = Math.max(maxY, strokes[i][4], strokes[i][6]);
-			if (strokes[i][0] === 1) {
-				continue;
+			minX = Math.min(minX, stroke[3], stroke[5]);
+			maxX = Math.max(maxX, stroke[3], stroke[5]);
+			minY = Math.min(minY, stroke[4], stroke[6]);
+			maxY = Math.max(maxY, stroke[4], stroke[6]);
+			if (stroke[0] === 1) {
+				return;
 			}
-			if (strokes[i][0] === 99) {
-				continue;
+			if (stroke[0] === 99) {
+				return;
 			}
-			minX = Math.min(minX, strokes[i][7]);
-			maxX = Math.max(maxX, strokes[i][7]);
-			minY = Math.min(minY, strokes[i][8]);
-			maxY = Math.max(maxY, strokes[i][8]);
-			if (strokes[i][0] === 2) {
-				continue;
+			minX = Math.min(minX, stroke[7]);
+			maxX = Math.max(maxX, stroke[7]);
+			minY = Math.min(minY, stroke[8]);
+			maxY = Math.max(maxY, stroke[8]);
+			if (stroke[0] === 2 || stroke[0] === 3 || stroke[0] === 4) {
+				return;
 			}
-			if (strokes[i][0] === 3) {
-				continue;
-			}
-			if (strokes[i][0] === 4) {
-				continue;
-			}
-			minX = Math.min(minX, strokes[i][9]);
-			maxX = Math.max(maxX, strokes[i][9]);
-			minY = Math.min(minY, strokes[i][10]);
-			maxY = Math.max(maxY, strokes[i][10]);
-		}
+			minX = Math.min(minX, stroke[9]);
+			maxX = Math.max(maxX, stroke[9]);
+			minY = Math.min(minY, stroke[10]);
+			maxY = Math.max(maxY, stroke[10]);
+		});
 		return {
 			minX,
 			maxX,
@@ -361,7 +355,7 @@ export class Kage {
 					if (tlen < this.kAdjustUrokoLength[k]
 						|| isCrossWithOthers(strokesArray, i, tx, ty, strokesArray[i][5], strokesArray[i][6])) {
 						strokesArray[i][2] += (this.kAdjustUrokoLengthStep - k) * 100;
-						k = Infinity;
+						break;
 					}
 				}
 			}
@@ -452,23 +446,19 @@ export class Kage {
 	}
 
 	private adjustKirikuchi(strokesArray: number[][]) {
-		for (let i = 0; i < strokesArray.length; i++) {
-			if (strokesArray[i][0] === 2
-				&& strokesArray[i][1] === 32
-				&& strokesArray[i][3] > strokesArray[i][5]
-				&& strokesArray[i][4] < strokesArray[i][6]) {
-				for (let j = 0; j < strokesArray.length; j++) { // no need to skip when i == j
-					if (strokesArray[j][0] === 1
-						&& strokesArray[j][3] < strokesArray[i][3]
-						&& strokesArray[j][5] > strokesArray[i][3]
-						&& strokesArray[j][4] === strokesArray[i][4]
-						&& strokesArray[j][4] === strokesArray[j][6]) {
-						strokesArray[i][1] = 132;
-						j = strokesArray.length;
+		strokesArray.forEach((stroke) => {
+			if (stroke[0] === 2 && stroke[1] === 32
+				&& stroke[3] > stroke[5] && stroke[4] < stroke[6]) {
+				for (const stroke2 of strokesArray) { // no need to skip when i == j
+					if (stroke2[0] === 1
+						&& stroke2[3] < stroke[3] && stroke2[5] > stroke[3]
+						&& stroke2[4] === stroke[4] && stroke2[4] === stroke[6]) {
+						stroke[1] = 132;
+						break;
 					}
 				}
 			}
-		}
+		});
 		return strokesArray;
 	}
 
@@ -487,7 +477,7 @@ export class Kage {
 						|| strokesArray[i][6] - strokesArray[i][4] < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
 						strokesArray[i][2] += (3 - k) * 100;
-						k = Infinity;
+						break;
 					}
 				}
 			}
