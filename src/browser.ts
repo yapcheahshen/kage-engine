@@ -1,6 +1,10 @@
 import {Kage as _Kage, Polygons as _Polygons} from "./";
 
-declare var Kage: typeof _Kage;
-declare var Polygons: typeof _Polygons;
-Kage = _Kage;
-Polygons = _Polygons;
+// tslint:disable-next-line:interface-name
+declare interface Window {
+	Kage: typeof _Kage;
+	Polygons: typeof _Polygons;
+}
+declare var window: Window;
+window.Kage = _Kage;
+window.Polygons = _Polygons;

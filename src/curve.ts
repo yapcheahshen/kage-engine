@@ -42,7 +42,7 @@ export function find_offcurve(
 
 	let minx: number;
 	let miny: number;
-	let mindiff = 100000;
+	let mindiff = Infinity;
 	const area = 8;
 	const mesh = 2;
 	// area = 10   mesh = 5 -> 281 calcs
@@ -54,7 +54,6 @@ export function find_offcurve(
 
 	for (let tx = sx - area; tx < sx + area; tx += mesh) {
 		for (let ty = sy - area; ty < sy + area; ty += mesh) {
-			let count = 0;
 			let diff = 0;
 			for (let tt = 0; tt < curve.length; tt++) {
 				const t = tt / curve.length;
@@ -67,11 +66,10 @@ export function find_offcurve(
 				// const ix = (nx1 - 2 * tx + nx2) * 2 * t + (-2 * nx1 + 2 * tx);
 				// const iy = (ny1 - 2 * ty + ny2) * 2 * t + (-2 * ny1 + 2 * ty);
 
-				diff += (curve[count][0] - x) ** 2 + (curve[count][1] - y) ** 2;
+				diff += (curve[tt][0] - x) ** 2 + (curve[tt][1] - y) ** 2;
 				if (diff > mindiff) {
-					tt = curve.length;
+					break;
 				}
-				count++;
 			}
 			if (diff < mindiff) {
 				minx = tx;
@@ -81,9 +79,8 @@ export function find_offcurve(
 		}
 	}
 
-	for (let tx = minx - mesh + 1; tx <= minx + mesh - 1; tx += 0.5) {
-		for (let ty = miny - mesh + 1; ty <= miny + mesh - 1; ty += 0.5) {
-			let count = 0;
+	for (let tx = minx! - mesh + 1; tx <= minx + mesh - 1; tx += 0.5) {
+		for (let ty = miny! - mesh + 1; ty <= miny + mesh - 1; ty += 0.5) {
 			let diff = 0;
 			for (let tt = 0; tt < curve.length; tt++) {
 				const t = tt / curve.length;
@@ -96,11 +93,10 @@ export function find_offcurve(
 				// const ix = (nx1 - 2 * tx + nx2) * 2 * t + (-2 * nx1 + 2 * tx);
 				// const iy = (ny1 - 2 * ty + ny2) * 2 * t + (-2 * ny1 + 2 * ty);
 
-				diff += (curve[count][0] - x) ** 2 + (curve[count][1] - y) ** 2;
+				diff += (curve[tt][0] - x) ** 2 + (curve[tt][1] - y) ** 2;
 				if (diff > mindiff) {
-					tt = curve.length;
+					break;
 				}
-				count++;
 			}
 			if (diff < mindiff) {
 				minx = tx;

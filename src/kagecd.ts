@@ -5,8 +5,9 @@ import { Polygons } from "./polygons";
 
 function cdDrawCurveU(
 	kage: Kage, polygons: Polygons,
-	x1: number, y1: number, sx1: number, sy1: number, sx2: number,
-	sy2: number, x2: number, y2: number, ta1: number, ta2: number) {
+	x1: number, y1: number, sx1: number, sy1: number,
+	sx2: number, sy2: number, x2: number, y2: number,
+	ta1: number, ta2: number) {
 
 	if (kage.kShotai === kage.kMincho) { // mincho
 		const a1 = ta1 % 1000;
@@ -37,7 +38,7 @@ function cdDrawCurveU(
 				delta = kage.kMinWidthY;
 				break;
 			default:
-				break;
+				return;
 		}
 
 		if (x1 === sx1) {
@@ -384,17 +385,15 @@ function cdDrawCurveU(
 			}
 		}
 
-		let type;
-		let pm = 0;
 		if (a1 === 0) {
 			if (y1 <= y2) { // from up to bottom
-				type = (Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4);
+				let type = (Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4);
 				if (type > 0) {
 					type *= 2;
 				} else {
 					type *= 16;
 				}
-				pm = type < 0 ? -1 : 1;
+				const pm = type < 0 ? -1 : 1;
 				if (x1 === sx1) {
 					const poly = new Polygon();
 					poly.push(x1 - kMinWidthT, y1 + 1);
@@ -416,38 +415,7 @@ function cdDrawCurveU(
 					// }
 					polygons.push(poly);
 				}
-			} else { // bottom to up
-				if (x1 === sx1) {
-					const poly = new Polygon();
-					poly.push(x1 - kMinWidthT, y1);
-					poly.push(x1 + kMinWidthT, y1);
-					poly.push(x1 + kMinWidthT, y1 - kage.kMinWidthY);
-					polygons.push(poly);
-				} else {
-					const poly = new Polygon();
-					poly.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
-					poly.push(x1 + kMinWidthT * XX, y1 + kMinWidthT * XY);
-					poly.push(x1 + kMinWidthT * XX - kage.kMinWidthY * YX, y1 + kMinWidthT * XY - kage.kMinWidthY * YY);
-					// if(x1 < x2){
-					//  poly.reverse();
-					// }
-					polygons.push(poly);
-				}
-			}
-		}
-
-		if (a1 === 22) { // box's up-right corner, any time same degree
-			const poly = new Polygon();
-			poly.push(x1 - kMinWidthT, y1 - kage.kMinWidthY);
-			poly.push(x1, y1 - kage.kMinWidthY - kage.kWidth);
-			poly.push(x1 + kMinWidthT + kage.kWidth, y1 + kage.kMinWidthY);
-			poly.push(x1 + kMinWidthT, y1 + kMinWidthT - 1);
-			poly.push(x1 - kMinWidthT, y1 + kMinWidthT + 4);
-			polygons.push(poly);
-		}
-
-		if (a1 === 0) { // beginning of the stroke
-			if (y1 <= y2) { // from up to bottom
+				// beginning of the stroke
 				if (pm > 0) {
 					type = 0;
 				}
@@ -472,7 +440,24 @@ function cdDrawCurveU(
 					// }
 					polygons.push(poly);
 				}
-			} else { // from bottom to up
+			} else { // bottom to up
+				if (x1 === sx1) {
+					const poly = new Polygon();
+					poly.push(x1 - kMinWidthT, y1);
+					poly.push(x1 + kMinWidthT, y1);
+					poly.push(x1 + kMinWidthT, y1 - kage.kMinWidthY);
+					polygons.push(poly);
+				} else {
+					const poly = new Polygon();
+					poly.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
+					poly.push(x1 + kMinWidthT * XX, y1 + kMinWidthT * XY);
+					poly.push(x1 + kMinWidthT * XX - kage.kMinWidthY * YX, y1 + kMinWidthT * XY - kage.kMinWidthY * YY);
+					// if(x1 < x2){
+					//  poly.reverse();
+					// }
+					polygons.push(poly);
+				}
+				// beginning of the stroke
 				if (x1 === sx1) {
 					const poly = new Polygon();
 					poly.push(x1 - kMinWidthT, y1);
@@ -494,6 +479,16 @@ function cdDrawCurveU(
 					polygons.push(poly);
 				}
 			}
+		}
+
+		if (a1 === 22) { // box's up-right corner, any time same degree
+			const poly = new Polygon();
+			poly.push(x1 - kMinWidthT, y1 - kage.kMinWidthY);
+			poly.push(x1, y1 - kage.kMinWidthY - kage.kWidth);
+			poly.push(x1 + kMinWidthT + kage.kWidth, y1 + kage.kMinWidthY);
+			poly.push(x1 + kMinWidthT, y1 + kMinWidthT - 1);
+			poly.push(x1 - kMinWidthT, y1 + kMinWidthT + 4);
+			polygons.push(poly);
 		}
 
 		// process for tail
@@ -623,8 +618,8 @@ function cdDrawCurveU(
 			polygons.push(poly);
 		}
 	} else { // gothic
-		const a1 = undefined;
-		const a2 = undefined;
+		const a1 = ta1 % 1000;
+		const a2 = ta2 % 100;
 		if (a1 % 10 === 2) {
 			if (x1 === sx1) {
 				if (y1 < sy1) {
@@ -722,7 +717,16 @@ function cdDrawCurveU(
 				// SESSEN NO KATAMUKI NO KEISAN(BIBUN)
 				ix = (x1 - 2 * sx1 + x2) * 2 * t + (-2 * x1 + 2 * sx1);
 				iy = (y1 - 2 * sy1 + y2) * 2 * t + (-2 * y1 + 2 * sy1);
-			}// else {}
+			} else {
+				// calculate a dot
+				x = (1 - t) ** 3 * x1 + 3 * t * (1 - t) ** 2 * sx1 + 3 * t ** 2 * (1 - t) * sx2 + t ** 3 * x2;
+				y = (1 - t) ** 3 * y1 + 3 * t * (1 - t) ** 2 * sy1 + 3 * t ** 2 * (1 - t) * sy2 + t ** 3 * y2;
+				// KATAMUKI of vector by BIBUN
+				ix = t ** 2 * (-3 * x1 + 9 * sx1 + -9 * sx2 + 3 * x2)
+					+ t * (6 * x1 + -12 * sx1 + 6 * sx2) + -3 * x1 + 3 * sx1;
+				iy = t ** 2 * (-3 * y1 + 9 * sy1 + -9 * sy2 + 3 * y2)
+					+ t * (6 * y1 + -12 * sy1 + 6 * sy2) + -3 * y1 + 3 * sy1;
+			}
 			// SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
 			let ia;
 			let ib;
