@@ -109,7 +109,7 @@ export function find_offcurve(kage, curve, sx, sy) {
 export function get_candidate(kage, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4) {
 	const curve = [[], []];
 
-	for (let tt = 0; tt <= 1000; tt = tt + kage.kRate) {
+	for (let tt = 0; tt <= 1000; tt += kage.kRate) {
 		const t = tt / 1000;
 
 		// calculate a dot
@@ -135,29 +135,27 @@ export function get_candidate(kage, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4
 		}
 
 		const hosomi = 0.5;
-		let deltad;
-		if (a1 == 7 && a2 == 0) { // L2RD: fatten
-			deltad = Math.pow(t, hosomi) * kage.kL2RDfatten;
-		} else if (a1 == 7) {
-			deltad = Math.pow(t, hosomi);
-		} else if (a2 == 7) {
-			deltad = Math.pow(1.0 - t, hosomi);
-		} else if (opt3 > 0) {
-			deltad = (((kage.kMinWidthT - opt4 / 2) - opt3 / 2) / (kage.kMinWidthT - opt4 / 2)) + opt3 / 2 / (kage.kMinWidthT - opt4) * t;
-		} else {
-			deltad = 1;
-		}
+		let deltad
+		= (a1 == 7 && a2 == 0) // L2RD: fatten
+			? Math.pow(t, hosomi) * kage.kL2RDfatten
+			: (a1 == 7)
+				? Math.pow(t, hosomi)
+				: (a2 == 7)
+					? Math.pow(1.0 - t, hosomi)
+					: (opt3 > 0)
+						? (((kage.kMinWidthT - opt4 / 2) - opt3 / 2) / (kage.kMinWidthT - opt4 / 2)) + opt3 / 2 / (kage.kMinWidthT - opt4) * t
+						: 1;
 
 		if (deltad < 0.15) {
 			deltad = 0.15;
 		}
-		ia = ia * deltad;
-		ib = ib * deltad;
+		ia *= deltad;
+		ib *= deltad;
 
 		// reverse if vector is going 2nd/3rd quadrants
 		if (ix <= 0) {
-			ia = ia * -1;
-			ib = ib * -1;
+			ia *= -1;
+			ib *= -1;
 		}
 
 		curve[0].push([x - ia, y - ib]);

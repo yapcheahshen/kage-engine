@@ -11,31 +11,16 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 				let tx1;
 				let ty1;
 				if (x1 == x2) {
-					let v;
-					if (y1 < y2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y1 < y2 ? 1 : -1;
 					tx1 = x2;
 					ty1 = y2 - kage.kMage * v;
 				} else if (y1 == y2) { // ... no need
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
 					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
 					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
 				}
@@ -59,12 +44,7 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					ty1 = y3;
 				} else {
 					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx1 = x3 - kage.kMage * Math.cos(rad) * v;
 					ty1 = y3 - kage.kMage * Math.sin(rad) * v;
 				}
@@ -82,62 +62,32 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 				let tx1;
 				let ty1;
 				if (x1 == x2) {
-					let v;
-					if (y1 < y2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y1 < y2 ? 1 : -1;
 					tx1 = x2;
 					ty1 = y2 - kage.kMage * v;
 				} else if (y1 == y2) {
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
 					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
 					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
 				}
 				let tx2;
 				let ty2;
 				if (x2 == x3) {
-					let v;
-					if (y2 < y3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y2 < y3 ? 1 : -1;
 					tx2 = x2;
 					ty2 = y2 + kage.kMage * v;
 				} else if (y2 == y3) {
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * v;
 					ty2 = y2;
 				} else {
 					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * Math.cos(rad) * v;
 					ty2 = y2 + kage.kMage * Math.sin(rad) * v;
 				}
@@ -153,62 +103,32 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 				let tx1;
 				let ty1;
 				if (x1 == x2) {
-					let v;
-					if (y1 < y2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y1 < y2 ? 1 : -1;
 					tx1 = x2;
 					ty1 = y2 - kage.kMage * v;
 				} else if (y1 == y2) {
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
 					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
 					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
 				}
 				let tx2;
 				let ty2;
 				if (x2 == x3) {
-					let v;
-					if (y2 < y3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y2 < y3 ? 1 : -1;
 					tx2 = x2;
 					ty2 = y2 + kage.kMage * v;
 				} else if (y2 == y3) {
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * v;
 					ty2 = y2;
 				} else {
 					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * Math.cos(rad) * v;
 					ty2 = y2 + kage.kMage * Math.sin(rad) * v;
 				}
@@ -232,62 +152,32 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 				let tx1;
 				let ty1;
 				if (x1 == x2) {
-					let v;
-					if (y1 < y2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y1 < y2 ? 1 : -1;
 					tx1 = x2;
 					ty1 = y2 - kage.kMage * v * rate;
 				} else if (y1 == y2) {
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * v * rate;
 					ty1 = y2;
 				} else {
 					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * Math.cos(rad) * v * rate;
 					ty1 = y2 - kage.kMage * Math.sin(rad) * v * rate;
 				}
 				let tx2;
 				let ty2;
 				if (x2 == x3) {
-					let v;
-					if (y2 < y3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y2 < y3 ? 1 : -1;
 					tx2 = x2;
 					ty2 = y2 + kage.kMage * v * rate;
 				} else if (y2 == y3) {
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * v * rate;
 					ty2 = y2;
 				} else {
 					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * Math.cos(rad) * v * rate;
 					ty2 = y2 + kage.kMage * Math.sin(rad) * v * rate;
 				}
@@ -303,62 +193,32 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 				let tx1;
 				let ty1;
 				if (x1 == x2) {
-					let v;
-					if (y1 < y2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y1 < y2 ? 1 : -1;
 					tx1 = x2;
 					ty1 = y2 - kage.kMage * v * rate;
 				} else if (y1 == y2) {
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * v * rate;
 					ty1 = y2;
 				} else {
 					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * Math.cos(rad) * v * rate;
 					ty1 = y2 - kage.kMage * Math.sin(rad) * v * rate;
 				}
 				let tx2;
 				let ty2;
 				if (x2 == x3) {
-					let v;
-					if (y2 < y3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y2 < y3 ? 1 : -1;
 					tx2 = x2;
 					ty2 = y2 + kage.kMage * v * rate;
 				} else if (y2 == y3) {
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * v * rate;
 					ty2 = y2;
 				} else {
 					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * Math.cos(rad) * v * rate;
 					ty2 = y2 + kage.kMage * Math.sin(rad) * v * rate;
 				}
@@ -380,12 +240,7 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					ty1 = y4;
 				} else {
 					const rad = Math.atan((y4 - y3) / (x4 - x3));
-					let v;
-					if (x3 < x4) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x3 < x4 ? 1 : -1;
 					tx1 = x4 - kage.kMage * Math.cos(rad) * v;
 					ty1 = y4 - kage.kMage * Math.sin(rad) * v;
 				}
@@ -419,31 +274,16 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 				let tx1;
 				let ty1;
 				if (x1 == x2) {
-					let v;
-					if (y1 < y2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y1 < y2 ? 1 : -1;
 					tx1 = x2;
 					ty1 = y2 - kage.kMage * v;
 				} else if (y1 == y2) {
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
 					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
 					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
 				}
@@ -467,12 +307,7 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 					ty1 = y3;
 				} else {
 					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx1 = x3 - kage.kMage * Math.cos(rad) * v;
 					ty1 = y3 - kage.kMage * Math.sin(rad) * v;
 				}
@@ -495,62 +330,32 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 				let tx1;
 				let ty1;
 				if (x1 == x2) {
-					let v;
-					if (y1 < y2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y1 < y2 ? 1 : -1;
 					tx1 = x2;
 					ty1 = y2 - kage.kMage * v;
 				} else if (y1 == y2) {
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
 					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
 					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
 				}
 				let tx2;
 				let ty2;
 				if (x2 == x3) {
-					let v;
-					if (y2 < y3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y2 < y3 ? 1 : -1;
 					tx2 = x2;
 					ty2 = y2 + kage.kMage * v;
 				} else if (y2 == y3) {
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * v;
 					ty2 = y2;
 				} else {
 					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * Math.cos(rad) * v;
 					ty2 = y2 + kage.kMage * Math.sin(rad) * v;
 				}
@@ -567,62 +372,32 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 				let tx1;
 				let ty1;
 				if (x1 == x2) {
-					let v;
-					if (y1 < y2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y1 < y2 ? 1 : -1;
 					tx1 = x2;
 					ty1 = y2 - kage.kMage * v;
 				} else if (y1 == y2) {
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * v;
 					ty1 = y2;
 				} else {
 					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					let v;
-					if (x1 < x2) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x1 < x2 ? 1 : -1;
 					tx1 = x2 - kage.kMage * Math.cos(rad) * v;
 					ty1 = y2 - kage.kMage * Math.sin(rad) * v;
 				}
 				let tx2;
 				let ty2;
 				if (x2 == x3) {
-					let v;
-					if (y2 < y3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = y2 < y3 ? 1 : -1;
 					tx2 = x2;
 					ty2 = y2 + kage.kMage * v;
 				} else if (y2 == y3) {
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * v;
 					ty2 = y2;
 				} else {
 					const rad = Math.atan((y3 - y2) / (x3 - x2));
-					let v;
-					if (x2 < x3) {
-						v = 1;
-					} else {
-						v = -1;
-					}
+					const v = x2 < x3 ? 1 : -1;
 					tx2 = x2 + kage.kMage * Math.cos(rad) * v;
 					ty2 = y2 + kage.kMage * Math.sin(rad) * v;
 				}
