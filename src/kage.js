@@ -242,32 +242,30 @@ export class Kage {
 	}
 
 	getBox(glyph) { // minX, minY, maxX, maxY
-		const a = {
-			minX: 200,
-			minY: 200,
-			maxX: 0,
-			maxY: 0,
-		};
+		let minX = 200;
+		let minY = 200;
+		let maxX = 0;
+		let maxY = 0;
 
 		const strokes = this.getEachStrokes(glyph);
 		for (let i = 0; i < strokes.length; i++) {
 			if (strokes[i][0] == 0) {
 				continue;
 			}
-			a.minX = Math.min(a.minX, strokes[i][3], strokes[i][5]);
-			a.maxX = Math.max(a.maxX, strokes[i][3], strokes[i][5]);
-			a.minY = Math.min(a.minY, strokes[i][4], strokes[i][6]);
-			a.maxY = Math.max(a.maxY, strokes[i][4], strokes[i][6]);
+			minX = Math.min(minX, strokes[i][3], strokes[i][5]);
+			maxX = Math.max(maxX, strokes[i][3], strokes[i][5]);
+			minY = Math.min(minY, strokes[i][4], strokes[i][6]);
+			maxY = Math.max(maxY, strokes[i][4], strokes[i][6]);
 			if (strokes[i][0] == 1) {
 				continue;
 			}
 			if (strokes[i][0] == 99) {
 				continue;
 			}
-			a.minX = Math.min(a.minX, strokes[i][7]);
-			a.maxX = Math.max(a.maxX, strokes[i][7]);
-			a.minY = Math.min(a.minY, strokes[i][8]);
-			a.maxY = Math.max(a.maxY, strokes[i][8]);
+			minX = Math.min(minX, strokes[i][7]);
+			maxX = Math.max(maxX, strokes[i][7]);
+			minY = Math.min(minY, strokes[i][8]);
+			maxY = Math.max(maxY, strokes[i][8]);
 			if (strokes[i][0] == 2) {
 				continue;
 			}
@@ -277,12 +275,17 @@ export class Kage {
 			if (strokes[i][0] == 4) {
 				continue;
 			}
-			a.minX = Math.min(a.minX, strokes[i][9]);
-			a.maxX = Math.max(a.maxX, strokes[i][9]);
-			a.minY = Math.min(a.minY, strokes[i][10]);
-			a.maxY = Math.max(a.maxY, strokes[i][10]);
+			minX = Math.min(minX, strokes[i][9]);
+			maxX = Math.max(maxX, strokes[i][9]);
+			minY = Math.min(minY, strokes[i][10]);
+			maxY = Math.max(maxY, strokes[i][10]);
 		}
-		return a;
+		return {
+			minX,
+			maxX,
+			minY,
+			maxY,
+		};
 	}
 
 	stretch(dp, sp, p, min, max) { // interger

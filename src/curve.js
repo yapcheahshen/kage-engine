@@ -29,18 +29,8 @@ export function divide_curve(kage, x1, y1, sx1, sy1, x2, y2, curve) {
 
 // ------------------------------------------------------------------
 export function find_offcurve(kage, curve, sx, sy) {
-	let tx;
-	let ty;
 	let minx;
 	let miny;
-	let count;
-	let diff;
-	let tt;
-	let t;
-	let x;
-	let y;
-	// var ix;
-	// var iy;
 	let mindiff = 100000;
 	const area = 8;
 	const mesh = 2;
@@ -51,25 +41,23 @@ export function find_offcurve(kage, curve, sx, sy) {
 	// area =  8   mesh = 2 ->  97 calcs
 	// area =  7   mesh = 2 ->  80 calcs
 
-	const nx1 = curve[0][0];
-	const ny1 = curve[0][1];
-	const nx2 = curve[curve.length - 1][0];
-	const ny2 = curve[curve.length - 1][1];
+	const [nx1, ny1] = curve[0];
+	const [nx2, ny2] = curve[curve.length - 1];
 
-	for (tx = sx - area; tx < sx + area; tx += mesh) {
-		for (ty = sy - area; ty < sy + area; ty += mesh) {
-			count = 0;
-			diff = 0;
-			for (tt = 0; tt < curve.length; tt++) {
-				t = tt / curve.length;
+	for (let tx = sx - area; tx < sx + area; tx += mesh) {
+		for (let ty = sy - area; ty < sy + area; ty += mesh) {
+			let count = 0;
+			let diff = 0;
+			for (let tt = 0; tt < curve.length; tt++) {
+				const t = tt / curve.length;
 
 				// calculate a dot
-				x = ((1.0 - t) * (1.0 - t) * nx1 + 2.0 * t * (1.0 - t) * tx + t * t * nx2);
-				y = ((1.0 - t) * (1.0 - t) * ny1 + 2.0 * t * (1.0 - t) * ty + t * t * ny2);
+				const x = ((1.0 - t) * (1.0 - t) * nx1 + 2.0 * t * (1.0 - t) * tx + t * t * nx2);
+				const y = ((1.0 - t) * (1.0 - t) * ny1 + 2.0 * t * (1.0 - t) * ty + t * t * ny2);
 
 				// KATAMUKI of vector by BIBUN
-				// ix = (nx1 - 2.0 * tx + nx2) * 2.0 * t + (-2.0 * nx1 + 2.0 * tx);
-				// iy = (ny1 - 2.0 * ty + ny2) * 2.0 * t + (-2.0 * ny1 + 2.0 * ty);
+				// const ix = (nx1 - 2.0 * tx + nx2) * 2.0 * t + (-2.0 * nx1 + 2.0 * tx);
+				// const iy = (ny1 - 2.0 * ty + ny2) * 2.0 * t + (-2.0 * ny1 + 2.0 * ty);
 
 				diff += (curve[count][0] - x) * (curve[count][0] - x) + (curve[count][1] - y) * (curve[count][1] - y);
 				if (diff > mindiff) {
@@ -85,20 +73,20 @@ export function find_offcurve(kage, curve, sx, sy) {
 		}
 	}
 
-	for (tx = minx - mesh + 1; tx <= minx + mesh - 1; tx += 0.5) {
-		for (ty = miny - mesh + 1; ty <= miny + mesh - 1; ty += 0.5) {
-			count = 0;
-			diff = 0;
-			for (tt = 0; tt < curve.length; tt++) {
-				t = tt / curve.length;
+	for (let tx = minx - mesh + 1; tx <= minx + mesh - 1; tx += 0.5) {
+		for (let ty = miny - mesh + 1; ty <= miny + mesh - 1; ty += 0.5) {
+			let count = 0;
+			let diff = 0;
+			for (let tt = 0; tt < curve.length; tt++) {
+				const t = tt / curve.length;
 
 				// calculate a dot
-				x = ((1.0 - t) * (1.0 - t) * nx1 + 2.0 * t * (1.0 - t) * tx + t * t * nx2);
-				y = ((1.0 - t) * (1.0 - t) * ny1 + 2.0 * t * (1.0 - t) * ty + t * t * ny2);
+				const x = ((1.0 - t) * (1.0 - t) * nx1 + 2.0 * t * (1.0 - t) * tx + t * t * nx2);
+				const y = ((1.0 - t) * (1.0 - t) * ny1 + 2.0 * t * (1.0 - t) * ty + t * t * ny2);
 
 				// KATAMUKI of vector by BIBUN
-				// ix = (nx1 - 2.0 * tx + nx2) * 2.0 * t + (-2.0 * nx1 + 2.0 * tx);
-				// iy = (ny1 - 2.0 * ty + ny2) * 2.0 * t + (-2.0 * ny1 + 2.0 * ty);
+				// const ix = (nx1 - 2.0 * tx + nx2) * 2.0 * t + (-2.0 * nx1 + 2.0 * tx);
+				// const iy = (ny1 - 2.0 * ty + ny2) * 2.0 * t + (-2.0 * ny1 + 2.0 * ty);
 
 				diff += (curve[count][0] - x) * (curve[count][0] - x) + (curve[count][1] - y) * (curve[count][1] - y);
 				if (diff > mindiff) {
@@ -119,33 +107,23 @@ export function find_offcurve(kage, curve, sx, sy) {
 
 // ------------------------------------------------------------------
 export function get_candidate(kage, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4) {
-	let x;
-	let y;
-	let ix;
-	let iy;
-	let ir;
-	let ia;
-	let ib;
-	let tt;
-	let t;
-	let deltad;
-	const hosomi = 0.5;
-
 	const curve = [[], []];
 
-	for (tt = 0; tt <= 1000; tt = tt + kage.kRate) {
-		t = tt / 1000;
+	for (let tt = 0; tt <= 1000; tt = tt + kage.kRate) {
+		const t = tt / 1000;
 
 		// calculate a dot
-		x = ((1.0 - t) * (1.0 - t) * x1 + 2.0 * t * (1.0 - t) * sx1 + t * t * x2);
-		y = ((1.0 - t) * (1.0 - t) * y1 + 2.0 * t * (1.0 - t) * sy1 + t * t * y2);
+		const x = ((1.0 - t) * (1.0 - t) * x1 + 2.0 * t * (1.0 - t) * sx1 + t * t * x2);
+		const y = ((1.0 - t) * (1.0 - t) * y1 + 2.0 * t * (1.0 - t) * sy1 + t * t * y2);
 
 		// KATAMUKI of vector by BIBUN
-		ix = (x1 - 2.0 * sx1 + x2) * 2.0 * t + (-2.0 * x1 + 2.0 * sx1);
-		iy = (y1 - 2.0 * sy1 + y2) * 2.0 * t + (-2.0 * y1 + 2.0 * sy1);
+		const ix = (x1 - 2.0 * sx1 + x2) * 2.0 * t + (-2.0 * x1 + 2.0 * sx1);
+		const iy = (y1 - 2.0 * sy1 + y2) * 2.0 * t + (-2.0 * y1 + 2.0 * sy1);
 		// line SUICHOKU by vector
+		let ia;
+		let ib;
 		if (ix !== 0 && iy !== 0) {
-			ir = Math.atan(iy / ix * -1);
+			const ir = Math.atan(iy / ix * -1);
 			ia = Math.sin(ir) * (kage.kMinWidthT);
 			ib = Math.cos(ir) * (kage.kMinWidthT);
 		} else if (ix === 0) {
@@ -156,6 +134,8 @@ export function get_candidate(kage, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4
 			ib = kage.kMinWidthT;
 		}
 
+		const hosomi = 0.5;
+		let deltad;
 		if (a1 == 7 && a2 == 0) { // L2RD: fatten
 			deltad = Math.pow(t, hosomi) * kage.kL2RDfatten;
 		} else if (a1 == 7) {
