@@ -147,20 +147,13 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 				kage2.kKakato = kage.kKakato;
 				kage2.kRate = 10;
 
-				const curve = new Array(2); // L and R
-				get_candidate(kage2, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4);
+				const curve = get_candidate(kage2, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4); // L and R
 
-				const dcl12_34 = new Array(2);
-				const dcr12_34 = new Array(2);
-				const dpl12_34 = new Array(2);
-				const dpr12_34 = new Array(2);
-				divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curve[0], dcl12_34, dpl12_34);
-				divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curve[1], dcr12_34, dpr12_34);
+				const {div_curve: dcl12_34, off_curve: dpl12_34} = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curve[0]);
+				const {div_curve: dcr12_34, off_curve: dpr12_34} = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curve[1]);
 
-				const ncl1 = new Array(7);
-				const ncl2 = new Array(7);
-				find_offcurve(kage2, dcl12_34[0], dpl12_34[0][2], dpl12_34[0][3], ncl1);
-				find_offcurve(kage2, dcl12_34[1], dpl12_34[1][2], dpl12_34[1][3], ncl2);
+				const ncl1 = find_offcurve(kage2, dcl12_34[0], dpl12_34[0][2], dpl12_34[0][3]);
+				const ncl2 = find_offcurve(kage2, dcl12_34[1], dpl12_34[1][2], dpl12_34[1][3]);
 
 				poly.push(ncl1[0], ncl1[1]);
 				poly.push(ncl1[2], ncl1[3], 1);

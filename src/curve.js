@@ -1,4 +1,4 @@
-export function divide_curve(kage, x1, y1, sx1, sy1, x2, y2, curve, div_curve, off_curve) {
+export function divide_curve(kage, x1, y1, sx1, sy1, x2, y2, curve) {
 	const rate = 0.5;
 	const cut = Math.floor(curve.length * rate);
 	const cut_rate = cut / curve.length;
@@ -10,34 +10,25 @@ export function divide_curve(kage, x1, y1, sx1, sy1, x2, y2, curve, div_curve, o
 	const ty3 = ty1 + (ty2 - ty1) * cut_rate;
 
 	// must think about 0 : <0
-	div_curve[0] = [];
+	const div_curve = [[], []];
 	for (let i = 0; i <= cut; i++) {
 		div_curve[0].push(curve[i]);
 	}
-	div_curve[1] = [];
 	for (let i = cut; i < curve.length; i++) {
 		div_curve[1].push(curve[i]);
 	}
-	off_curve[0] = [
-		x1,
-		y1,
-		tx1,
-		ty1,
-		tx3,
-		ty3,
+	const off_curve = [
+		[x1, y1, tx1, ty1, tx3, ty3],
+		[tx3, ty3, tx2, ty2, x2, y2],
 	];
-	off_curve[1] = [
-		tx3,
-		ty3,
-		tx2,
-		ty2,
-		x2,
-		y2,
-	];
+	return {
+		div_curve,
+		off_curve,
+	};
 }
 
 // ------------------------------------------------------------------
-export function find_offcurve(kage, curve, sx, sy, result) {
+export function find_offcurve(kage, curve, sx, sy) {
 	let tx;
 	let ty;
 	let minx;
@@ -123,17 +114,11 @@ export function find_offcurve(kage, curve, sx, sy, result) {
 		}
 	}
 
-	result[0] = nx1;
-	result[1] = ny1;
-	result[2] = minx;
-	result[3] = miny;
-	result[4] = nx2;
-	result[5] = ny2;
-	result[6] = mindiff;
+	return [nx1, ny1, minx, miny, nx2, ny2, mindiff];
 }
 
 // ------------------------------------------------------------------
-export function get_candidate(kage, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4) {
+export function get_candidate(kage, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4) {
 	let x;
 	let y;
 	let ix;
@@ -146,8 +131,7 @@ export function get_candidate(kage, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt
 	let deltad;
 	const hosomi = 0.5;
 
-	curve[0] = [];
-	curve[1] = [];
+	const curve = [[], []];
 
 	for (tt = 0; tt <= 1000; tt = tt + kage.kRate) {
 		t = tt / 1000;
@@ -199,4 +183,5 @@ export function get_candidate(kage, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt
 		curve[0].push([x - ia, y - ib]);
 		curve[1].push([x + ia, y + ib]);
 	}
+	return curve;
 }
