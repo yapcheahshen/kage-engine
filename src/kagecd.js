@@ -1,3 +1,7 @@
+import {divide_curve, find_offcurve, get_candidate} from "./curve";
+import {Kage} from "./kage";
+import {Polygon} from "./polygon";
+
 function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, ta2) {
 	var rad,
 		t;
@@ -241,10 +245,10 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 						}
 						index++;
 					}
-					newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
-					newy1 = y1;
-					newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
-					newy2 = y1;
+					var newx1 = poly2.array[index + 1].x + (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1) / (poly2.array[index + 1].y - poly2.array[index].y);
+					var newy1 = y1;
+					var newx2 = poly.array[0].x + (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1) / (poly.array[1].y - poly.array[0].y);
+					var newy2 = y1;
 
 					for (var i = 0; i < index; i++) {
 						poly2.shift();
@@ -808,15 +812,15 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 	}
 }
 
-function cdDrawBezier(kage, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2) {
+export function cdDrawBezier(kage, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2) {
 	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2);
 }
 
-function cdDrawCurve(kage, polygons, x1, y1, x2, y2, x3, y3, a1, a2) {
+export function cdDrawCurve(kage, polygons, x1, y1, x2, y2, x3, y3, a1, a2) {
 	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2);
 }
 
-function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
+export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 	var rad;
 	var v,
 		x1,

@@ -50,7 +50,7 @@ function isCrossBox(x1, y1, x2, y2, bx1, by1, bx2, by2) { // boolean
 	return false;
 }
 
-function isCrossBoxWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // boolean
+export function isCrossBoxWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // boolean
 	for (var j = 0; j < strokesArray.length; j++) {
 		if (i == j) {
 			continue;
@@ -80,7 +80,7 @@ function isCrossBoxWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // boolean
 	return false;
 }
 
-function isCrossWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // boolean
+export function isCrossWithOthers(strokesArray, i, bx1, by1, bx2, by2) { // boolean
 	for (var j = 0; j < strokesArray.length; j++) {
 		if (i == j) {
 			continue;

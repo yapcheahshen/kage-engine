@@ -1,4 +1,4 @@
-function divide_curve(kage, x1, y1, sx1, sy1, x2, y2, curve, div_curve, off_curve) {
+export function divide_curve(kage, x1, y1, sx1, sy1, x2, y2, curve, div_curve, off_curve) {
 	var rate = 0.5;
 	var cut = Math.floor(curve.length * rate);
 	var cut_rate = cut / curve.length;
@@ -38,7 +38,7 @@ function divide_curve(kage, x1, y1, sx1, sy1, x2, y2, curve, div_curve, off_curv
 }
 
 // ------------------------------------------------------------------
-function find_offcurve(kage, curve, sx, sy, result) {
+export function find_offcurve(kage, curve, sx, sy, result) {
 	var nx1,
 		ny1,
 		nx2,
@@ -138,7 +138,7 @@ function find_offcurve(kage, curve, sx, sy, result) {
 }
 
 // ------------------------------------------------------------------
-function get_candidate(kage, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4) {
+export function get_candidate(kage, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4) {
 	var x,
 		y,
 		ix,
@@ -201,7 +201,7 @@ function get_candidate(kage, curve, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4
 			ib = ib * -1;
 		}
 
-		temp = new Array(2);
+		var temp = new Array(2);
 		temp[0] = x - ia;
 		temp[1] = y - ib;
 		curve[0].push(temp);

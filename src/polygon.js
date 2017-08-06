@@ -1,4 +1,4 @@
-function Polygon(number) {
+export function Polygon(number) {
 	// resolution : 0.1
 
 	// method
