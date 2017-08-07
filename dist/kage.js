@@ -329,6 +329,7 @@ var Kage = (function () {
         this.kGothic = KShotai.kGothic;
         // properties
         this.kShotai = KShotai.kMincho;
+        this.kRate = 100;
         if (size === 1) {
             this.kMinWidthY = 1.2;
             this.kMinWidthT = 3.6;
@@ -2507,7 +2508,6 @@ var Polygons = (function () {
             }
             if (isNaN(x) || isNaN(y)) {
                 error++;
-                throw new Error("error~~~");
             }
         });
         if (error === 0 && minx !== maxx && miny !== maxy && polygon.array.length >= 3) {

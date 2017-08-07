@@ -29,12 +29,15 @@
 				ctx.closePath();
 				ctx.fill();
 			}
+
+			document.getElementById("svg").innerHTML = polygons.generateSVG(false);
 		});
 	</script>
 </head>
 
 <body>
 	<canvas style="border: 1px #ccc solid;" id="canvas" width="200" height="200"></canvas>
+	<div id="svg"></div>
 </body>
 
 </html>
