@@ -22,7 +22,7 @@ export class Kage {
 	public kKakato: number;
 	public kL2RDfatten: number;
 	public kMage: number;
-	public kUseCurve: number;
+	public kUseCurve: boolean;
 
 	/** for KAKATO adjustment 000,100,200,300,400 */
 	public kAdjustKakatoL: number[];
@@ -61,19 +61,19 @@ export class Kage {
 			this.kKakato = 1.8;
 			this.kL2RDfatten = 1.1;
 			this.kMage = 6;
-			this.kUseCurve = 0;
+			this.kUseCurve = false;
 
-			this.kAdjustKakatoL = ([8, 5, 3, 1, 0]); // for KAKATO adjustment 000,100,200,300,400
-			this.kAdjustKakatoR = ([4, 3, 2, 1]); // for KAKATO adjustment 000,100,200,300
+			this.kAdjustKakatoL = [8, 5, 3, 1, 0]; // for KAKATO adjustment 000,100,200,300,400
+			this.kAdjustKakatoR = [4, 3, 2, 1]; // for KAKATO adjustment 000,100,200,300
 			this.kAdjustKakatoRangeX = 12; // check area width
-			this.kAdjustKakatoRangeY = ([1, 11, 14, 18]); // 3 steps of checking
+			this.kAdjustKakatoRangeY = [1, 11, 14, 18]; // 3 steps of checking
 			this.kAdjustKakatoStep = 3; // number of steps
 
-			this.kAdjustUrokoX = ([14, 12, 9, 7]); // for UROKO adjustment 000,100,200,300
-			this.kAdjustUrokoY = ([7, 6, 5, 4]); // for UROKO adjustment 000,100,200,300
-			this.kAdjustUrokoLength = ([13, 21, 30]); // length for checking
+			this.kAdjustUrokoX = [14, 12, 9, 7]; // for UROKO adjustment 000,100,200,300
+			this.kAdjustUrokoY = [7, 6, 5, 4]; // for UROKO adjustment 000,100,200,300
+			this.kAdjustUrokoLength = [13, 21, 30]; // length for checking
 			this.kAdjustUrokoLengthStep = 3; // number of steps
-			this.kAdjustUrokoLine = ([13, 15, 18]); // check for crossing. corresponds to length
+			this.kAdjustUrokoLine = [13, 15, 18]; // check for crossing. corresponds to length
 		} else {
 			this.kMinWidthY = 2;
 			this.kMinWidthT = 6;
@@ -81,19 +81,19 @@ export class Kage {
 			this.kKakato = 3;
 			this.kL2RDfatten = 1.1;
 			this.kMage = 10;
-			this.kUseCurve = 0;
+			this.kUseCurve = false;
 
-			this.kAdjustKakatoL = ([14, 9, 5, 2, 0]); // for KAKATO adjustment 000,100,200,300,400
-			this.kAdjustKakatoR = ([8, 6, 4, 2]); // for KAKATO adjustment 000,100,200,300
+			this.kAdjustKakatoL = [14, 9, 5, 2, 0]; // for KAKATO adjustment 000,100,200,300,400
+			this.kAdjustKakatoR = [8, 6, 4, 2]; // for KAKATO adjustment 000,100,200,300
 			this.kAdjustKakatoRangeX = 20; // check area width
-			this.kAdjustKakatoRangeY = ([1, 19, 24, 30]); // 3 steps of checking
+			this.kAdjustKakatoRangeY = [1, 19, 24, 30]; // 3 steps of checking
 			this.kAdjustKakatoStep = 3; // number of steps
 
-			this.kAdjustUrokoX = ([24, 20, 16, 12]); // for UROKO adjustment 000,100,200,300
-			this.kAdjustUrokoY = ([12, 11, 9, 8]); // for UROKO adjustment 000,100,200,300
-			this.kAdjustUrokoLength = ([22, 36, 50]); // length for checking
+			this.kAdjustUrokoX = [24, 20, 16, 12]; // for UROKO adjustment 000,100,200,300
+			this.kAdjustUrokoY = [12, 11, 9, 8]; // for UROKO adjustment 000,100,200,300
+			this.kAdjustUrokoLength = [22, 36, 50]; // length for checking
 			this.kAdjustUrokoLengthStep = 3; // number of steps
-			this.kAdjustUrokoLine = ([22, 26, 30]); // check for crossing. corresponds to length
+			this.kAdjustUrokoLine = [22, 26, 30]; // check for crossing. corresponds to length
 
 			this.kAdjustUroko2Step = 3;
 			this.kAdjustUroko2Length = 40;
@@ -462,7 +462,7 @@ export class Kage {
 		return strokesArray;
 	}
 
-	private adjustKakato(strokesArray: number[][]) { // strokesArray
+	private adjustKakato(strokesArray: number[][]) {
 		for (let i = 0; i < strokesArray.length; i++) {
 			if (strokesArray[i][0] === 1
 				&& (strokesArray[i][2] === 13 || strokesArray[i][2] === 23)) {

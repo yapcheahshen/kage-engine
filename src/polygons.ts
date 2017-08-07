@@ -51,10 +51,10 @@ export class Polygons {
 				for (let j = 0; j < array.length; j++) {
 					if (j === 0) {
 						buffer += "M ";
-					} else if (array[j].off === 1) {
+					} else if (array[j].off) {
 						buffer += "Q ";
 						mode = "Q";
-					} else if (mode === "Q" && array[j - 1].off !== 1) {
+					} else if (mode === "Q" && !array[j - 1].off) {
 						buffer += "L ";
 					} else if (mode === "L" && j === 1) {
 						buffer += "L ";
