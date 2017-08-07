@@ -1,4 +1,5 @@
 import { Kage } from "./kage";
+import { normalize } from "./util";
 
 export function divide_curve(
 	_kage: Kage,
@@ -127,20 +128,6 @@ export function get_candidate(
 		// KATAMUKI of vector by BIBUN
 		const ix = (x1 - 2 * sx1 + x2) * 2 * t + (-2 * x1 + 2 * sx1);
 		const iy = (y1 - 2 * sy1 + y2) * 2 * t + (-2 * y1 + 2 * sy1);
-		// line SUICHOKU by vector
-		let ia;
-		let ib;
-		if (ix !== 0 && iy !== 0) {
-			const ir = Math.atan(iy / ix * -1);
-			ia = Math.sin(ir) * (kage.kMinWidthT);
-			ib = Math.cos(ir) * (kage.kMinWidthT);
-		} else if (ix === 0) {
-			ia = kage.kMinWidthT;
-			ib = 0;
-		} else {
-			ia = 0;
-			ib = kage.kMinWidthT;
-		}
 
 		const hosomi = 0.5;
 		let deltad
@@ -160,14 +147,11 @@ export function get_candidate(
 		if (deltad < 0.15) {
 			deltad = 0.15;
 		}
-		ia *= deltad;
-		ib *= deltad;
 
-		// reverse if vector is going 2nd/3rd quadrants
-		if (ix <= 0) {
-			ia *= -1;
-			ib *= -1;
-		}
+		// line SUICHOKU by vector
+		const [ia, ib] = (ix === 0)
+			? [-kage.kMinWidthT * deltad, 0] // ?????
+			: normalize([-iy, ix], kage.kMinWidthT * deltad);
 
 		curve[0].push([x - ia, y - ib]);
 		curve[1].push([x + ia, y + ib]);

@@ -2,7 +2,7 @@ import { divide_curve, find_offcurve, get_candidate } from "./curve";
 import { Kage } from "./kage";
 import { Polygon } from "./polygon";
 import { Polygons } from "./polygons";
-import { hypot } from "./util";
+import { hypot, normalize } from "./util";
 
 function cdDrawCurveU(
 	kage: Kage, polygons: Polygons,
@@ -42,23 +42,11 @@ function cdDrawCurveU(
 				return;
 		}
 
-		if (x1 === sx1) {
-			if (y1 < sy1) {
-				y1 -= delta;
-			} else {
-				y1 += delta;
-			}
-		} else if (y1 === sy1) {
-			if (x1 < sx1) {
-				x1 -= delta;
-			} else {
-				x1 += delta;
-			}
-		} else {
-			const rad = Math.atan2(sy1 - y1, sx1 - x1);
-			x1 -= delta * Math.cos(rad);
-			y1 -= delta * Math.sin(rad);
-		}
+		const [dx1, dy1] = (x1 === sx1 && y1 === sy1)
+			? [0, delta] // ?????
+			: normalize([x1 - sx1, y1 - sy1], delta);
+		x1 += dx1;
+		y1 += dy1;
 
 		switch (a2 % 100) {
 			case 0:
@@ -78,23 +66,11 @@ function cdDrawCurveU(
 				break;
 		}
 
-		if (sx2 === x2) {
-			if (sy2 < y2) {
-				y2 += delta;
-			} else {
-				y2 -= delta;
-			}
-		} else if (sy2 === y2) {
-			if (sx2 < x2) {
-				x2 += delta;
-			} else {
-				x2 -= delta;
-			}
-		} else {
-			const rad = Math.atan2(y2 - sy2, x2 - sx2);
-			x2 += delta * Math.cos(rad);
-			y2 += delta * Math.sin(rad);
-		}
+		const [dx2, dy2] = (sx2 === x2 && sy2 === y2)
+			? [0, -delta] // ?????
+			: normalize([x2 - sx2, y2 - sy2], delta);
+		x2 += dx2;
+		y2 += dy2;
 
 		let hosomi = 0.5;
 		if (hypot(x2 - x1, y2 - y1) < 50) {
@@ -153,21 +129,6 @@ function cdDrawCurveU(
 					const ix = (x1 - 2 * sx1 + x2) * 2 * t + (-2 * x1 + 2 * sx1);
 					const iy = (y1 - 2 * sy1 + y2) * 2 * t + (-2 * y1 + 2 * sy1);
 
-					// line SUICHOKU by vector
-					let ia;
-					let ib;
-					if (ix !== 0 && iy !== 0) {
-						const ir = Math.atan(iy / ix * -1);
-						ia = Math.sin(ir) * (kMinWidthT);
-						ib = Math.cos(ir) * (kMinWidthT);
-					} else if (ix === 0) {
-						ia = kMinWidthT;
-						ib = 0;
-					} else {
-						ia = 0;
-						ib = kMinWidthT;
-					}
-
 					let deltad
 						= a1 === 7 && a2 === 0 // L2RD: fatten
 							? Math.pow(t, hosomi) * kage.kL2RDfatten
@@ -182,14 +143,11 @@ function cdDrawCurveU(
 					if (deltad < 0.15) {
 						deltad = 0.15;
 					}
-					ia *= deltad;
-					ib *= deltad;
 
-					// reverse if vector is going 2nd/3rd quadrants
-					if (ix <= 0) {
-						ia *= -1;
-						ib *= -1;
-					}
+					// line SUICHOKU by vector
+					const [ia, ib] = (ix === 0)
+						? [-kMinWidthT * deltad, 0] // ?????
+						: normalize([-iy, ix], kMinWidthT * deltad);
 
 					// copy to polygon structure
 					poly.push(x - ia, y - ib);
@@ -265,21 +223,6 @@ function cdDrawCurveU(
 				const iy = t ** 2 * (-3 * y1 + 9 * sy1 + -9 * sy2 + 3 * y2)
 					+ t * (6 * y1 + -12 * sy1 + 6 * sy2) + -3 * y1 + 3 * sy1;
 
-				// line SUICHOKU by vector
-				let ia;
-				let ib;
-				if (ix !== 0 && iy !== 0) {
-					const ir = Math.atan(iy / ix * -1);
-					ia = Math.sin(ir) * (kMinWidthT);
-					ib = Math.cos(ir) * (kMinWidthT);
-				} else if (ix === 0) {
-					ia = kMinWidthT;
-					ib = 0;
-				} else {
-					ia = 0;
-					ib = kMinWidthT;
-				}
-
 				let deltad
 					= a1 === 7 && a2 === 0 // L2RD: fatten
 						? Math.pow(t, hosomi) * kage.kL2RDfatten
@@ -292,14 +235,11 @@ function cdDrawCurveU(
 				if (deltad < 0.15) {
 					deltad = 0.15;
 				}
-				ia *= deltad;
-				ib *= deltad;
 
-				// reverse if vector is going 2nd/3rd quadrants
-				if (ix <= 0) {
-					ia *= -1;
-					ib *= -1;
-				}
+				// line SUICHOKU by vector
+				const [ia, ib] = (ix === 0)
+					? [-kMinWidthT * deltad, 0] // ?????
+					: normalize([-iy, ix], kMinWidthT * deltad);
 
 				// copy to polygon structure
 				poly.push(x - ia, y - ib);
@@ -622,82 +562,35 @@ function cdDrawCurveU(
 		const a1 = ta1 % 1000;
 		const a2 = ta2 % 100;
 		if (a1 % 10 === 2) {
-			if (x1 === sx1) {
-				if (y1 < sy1) {
-					y1 -= kage.kWidth;
-				} else {
-					y1 += kage.kWidth;
-				}
-			} else if (y1 === sy1) {
-				if (x1 < sx1) {
-					x1 -= kage.kWidth;
-				} else {
-					x1 += kage.kWidth;
-				}
-			} else {
-				const rad = Math.atan2(sy1 - y1, sx1 - x1);
-				x1 -= kage.kWidth * Math.cos(rad);
-				y1 -= kage.kWidth * Math.sin(rad);
-			}
+			const [dx1, dy1] = (x1 === sx1 && y1 === sy1)
+				? [0, kage.kWidth] // ?????
+				: normalize([x1 - sx1, y1 - sy1], kage.kWidth);
+			x1 += dx1;
+			y1 += dy1;
 		}
 
 		if (a1 % 10 === 3) {
-			if (x1 === sx1) {
-				if (y1 < sy1) {
-					y1 -= kage.kWidth * kage.kKakato;
-				} else {
-					y1 += kage.kWidth * kage.kKakato;
-				}
-			} else if (y1 === sy1) {
-				if (x1 < sx1) {
-					x1 -= kage.kWidth * kage.kKakato;
-				} else {
-					x1 += kage.kWidth * kage.kKakato;
-				}
-			} else {
-				const rad = Math.atan2(sy1 - y1, sx1 - x1);
-				x1 -= kage.kWidth * Math.cos(rad) * kage.kKakato;
-				y1 -= kage.kWidth * Math.sin(rad) * kage.kKakato;
-			}
+			const [dx1, dy1] = (x1 === sx1 && y1 === sy1)
+				? [0, kage.kWidth * kage.kKakato] // ?????
+				: normalize([x1 - sx1, y1 - sy1], kage.kWidth * kage.kKakato);
+			x1 += dx1;
+			y1 += dy1;
 		}
+
 		if (a2 % 10 === 2) {
-			if (sx2 === x2) {
-				if (sy2 < y2) {
-					y2 += kage.kWidth;
-				} else {
-					y2 -= kage.kWidth;
-				}
-			} else if (sy2 === y2) {
-				if (sx2 < x2) {
-					x2 += kage.kWidth;
-				} else {
-					x2 -= kage.kWidth;
-				}
-			} else {
-				const rad = Math.atan2(y2 - sy2, x2 - sx2);
-				x2 += kage.kWidth * Math.cos(rad);
-				y2 += kage.kWidth * Math.sin(rad);
-			}
+			const [dx2, dy2] = (sx2 === x2 && sy2 === y2)
+				? [0, -kage.kWidth] // ?????
+				: normalize([x2 - sx2, y2 - sy2], kage.kWidth);
+			x2 += dx2;
+			y2 += dy2;
 		}
 
 		if (a2 % 10 === 3) {
-			if (sx2 === x2) {
-				if (sy2 < y2) {
-					y2 += kage.kWidth * kage.kKakato;
-				} else {
-					y2 -= kage.kWidth * kage.kKakato;
-				}
-			} else if (sy2 === y2) {
-				if (sx2 < x2) {
-					x2 += kage.kWidth * kage.kKakato;
-				} else {
-					x2 -= kage.kWidth * kage.kKakato;
-				}
-			} else {
-				const rad = Math.atan2(y2 - sy2, x2 - sx2);
-				x2 += kage.kWidth * Math.cos(rad) * kage.kKakato;
-				y2 += kage.kWidth * Math.sin(rad) * kage.kKakato;
-			}
+			const [dx2, dy2] = (sx2 === x2 && sy2 === y2)
+				? [0, -kage.kWidth * kage.kKakato] // ?????
+				: normalize([x2 - sx2, y2 - sy2], kage.kWidth * kage.kKakato);
+			x2 += dx2;
+			y2 += dy2;
 		}
 
 		const poly = new Polygon();
@@ -729,41 +622,13 @@ function cdDrawCurveU(
 					+ t * (6 * y1 + -12 * sy1 + 6 * sy2) + -3 * y1 + 3 * sy1;
 			}
 			// SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
-			let ia;
-			let ib;
-			if (kage.kShotai === kage.kMincho) { // always false ?
-				if (ix !== 0 && iy !== 0) {
-					const ir = Math.atan(iy / ix * -1.0);
-					ia = Math.sin(ir) * kage.kMinWidthT;
-					ib = Math.cos(ir) * kage.kMinWidthT;
-				} else if (ix === 0) {
-					ia = kage.kMinWidthT;
-					ib = 0;
-				} else {
-					ia = 0;
-					ib = kage.kMinWidthT;
-				}
-				ia *= Math.sqrt(1 - t);
-				ib *= Math.sqrt(1 - t);
-			} else {
-				if (ix !== 0 && iy !== 0) {
-					const ir = Math.atan(iy / ix * -1.0);
-					ia = Math.sin(ir) * kage.kWidth;
-					ib = Math.cos(ir) * kage.kWidth;
-				} else if (ix === 0) {
-					ia = kage.kWidth;
-					ib = 0;
-				} else {
-					ia = 0;
-					ib = kage.kWidth;
-				}
-			}
-
-			// reverse if vector is going 2nd/3rd quadrants
-			if (ix <= 0) {
-				ia *= -1;
-				ib *= -1;
-			}
+			const [ia, ib] = (kage.kShotai === kage.kMincho) // always false ?
+				? (ix === 0)
+					? [-kage.kMinWidthT * Math.sqrt(1 - t), 0] // ?????
+					: normalize([-iy, ix], kage.kMinWidthT * Math.sqrt(1 - t))
+				: (ix === 0)
+					? [-kage.kWidth, 0] // ?????
+					: normalize([-iy, ix], kage.kWidth);
 
 			// save to polygon
 			poly.push(x - ia, y - ib);
@@ -999,8 +864,8 @@ export function cdDrawLine(
 				}
 			}
 		} else { // for others, use x-axis
-			const rad = Math.atan((y2 - y1) / (x2 - x1));
 			if ((Math.abs(y2 - y1) < Math.abs(x2 - x1)) && (a1 !== 6) && (a2 !== 6) && !(x1 > x2)) { // ASAI KAUDO
+				const rad = Math.atan((y2 - y1) / (x2 - x1));
 				// always same
 				const poly = new Polygon(4);
 				poly.set(0, x1 + Math.sin(rad) * kage.kMinWidthY, y1 - Math.cos(rad) * kage.kMinWidthY);
@@ -1020,6 +885,7 @@ export function cdDrawLine(
 					polygons.push(poly2);
 				}
 			} else { // KAKUDO GA FUKAI or KAGI NO YOKO BOU
+				const rad = Math.atan((y2 - y1) / (x2 - x1));
 				const v = x1 > x2 ? -1 : 1;
 				const poly0 = new Polygon(4);
 				switch (a1) {
@@ -1045,6 +911,7 @@ export function cdDrawLine(
 							y1 + Math.cos(rad) * kMinWidthT * v - (kMinWidthT + kage.kMinWidthY) * Math.sin(rad) * v);
 						break;
 					case 22:
+						// TODO: why " + 1" ???
 						poly0.set(0, x1 + (kMinWidthT * v + 1) / Math.sin(rad), y1 + 1);
 						poly0.set(3, x1 - (kMinWidthT * v) / Math.sin(rad), y1);
 						break;
@@ -1318,30 +1185,31 @@ export function cdDrawLine(
 				a1 = ta1;
 				a2 = ta2;
 			}
-			const rad = Math.atan((y2 - y1) / (x2 - x1));
+			// x2 > x1, y2 !== y1
+			const [dx, dy] = normalize([x2 - x1, y2 - y1], kage.kWidth);
 			if (a1 % 10 === 2) {
-				x1 -= kage.kWidth * Math.cos(rad);
-				y1 -= kage.kWidth * Math.sin(rad);
+				x1 -= dx;
+				y1 -= dy;
 			}
 			if (a2 % 10 === 2) {
-				x2 += kage.kWidth * Math.cos(rad);
-				y2 += kage.kWidth * Math.sin(rad);
+				x2 += dx;
+				y2 += dy;
 			}
 			if (a1 % 10 === 3) {
-				x1 -= kage.kWidth * Math.cos(rad) * kage.kKakato;
-				y1 -= kage.kWidth * Math.sin(rad) * kage.kKakato;
+				x1 -= dx * kage.kKakato;
+				y1 -= dy * kage.kKakato;
 			}
 			if (a2 % 10 === 3) {
-				x2 += kage.kWidth * Math.cos(rad) * kage.kKakato;
-				y2 += kage.kWidth * Math.sin(rad) * kage.kKakato;
+				x2 += dx * kage.kKakato;
+				y2 += dy * kage.kKakato;
 			}
 
 			// SUICHOKU NO ICHI ZURASHI HA Math.sin TO Math.cos NO IREKAE + x-axis MAINASU KA
 			const poly = new Polygon();
-			poly.push(x1 + Math.sin(rad) * kage.kWidth, y1 - Math.cos(rad) * kage.kWidth);
-			poly.push(x2 + Math.sin(rad) * kage.kWidth, y2 - Math.cos(rad) * kage.kWidth);
-			poly.push(x2 - Math.sin(rad) * kage.kWidth, y2 + Math.cos(rad) * kage.kWidth);
-			poly.push(x1 - Math.sin(rad) * kage.kWidth, y1 + Math.cos(rad) * kage.kWidth);
+			poly.push(x1 + dy, y1 - dx);
+			poly.push(x2 + dy, y2 - dx);
+			poly.push(x2 - dy, y2 + dx);
+			poly.push(x1 - dy, y1 + dx);
 
 			polygons.push(poly);
 		}
