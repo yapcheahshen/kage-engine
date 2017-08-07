@@ -456,7 +456,7 @@ export class Kage {
 				for (const stroke2 of strokesArray) { // no need to skip when i == j
 					if (stroke2[0] === 1
 						&& stroke2[3] < stroke[3] && stroke2[5] > stroke[3]
-						&& stroke2[4] === stroke[4] && stroke2[4] === stroke[6]) {
+						&& stroke2[4] === stroke[4] && stroke2[4] === stroke2[6]) {
 						stroke[1] = 132;
 						break;
 					}
