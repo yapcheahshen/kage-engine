@@ -2,7 +2,7 @@ import { divide_curve, find_offcurve, get_candidate } from "./curve";
 import { Kage } from "./kage";
 import { Polygon } from "./polygon";
 import { Polygons } from "./polygons";
-import { hypot, normalize } from "./util";
+import { cubicBezier, cubicBezierDeriv, hypot, normalize, quadraticBezier, quadraticBezierDeriv } from "./util";
 
 function cdDrawCurveU(
 	kage: Kage, polygons: Polygons,
@@ -122,12 +122,12 @@ function cdDrawCurveU(
 					const t = tt / 1000;
 
 					// calculate a dot
-					const x = ((1 - t) ** 2 * x1 + 2 * t * (1 - t) * sx1 + t ** 2 * x2);
-					const y = ((1 - t) ** 2 * y1 + 2 * t * (1 - t) * sy1 + t ** 2 * y2);
+					const x = quadraticBezier(x1, sx1, x2, t);
+					const y = quadraticBezier(y1, sy1, y2, t);
 
 					// KATAMUKI of vector by BIBUN
-					const ix = (x1 - 2 * sx1 + x2) * 2 * t + (-2 * x1 + 2 * sx1);
-					const iy = (y1 - 2 * sy1 + y2) * 2 * t + (-2 * y1 + 2 * sy1);
+					const ix = quadraticBezierDeriv(x1, sx1, x2, t);
+					const iy = quadraticBezierDeriv(y1, sy1, y2, t);
 
 					let deltad
 						= a1 === 7 && a2 === 0 // L2RD: fatten
@@ -215,13 +215,11 @@ function cdDrawCurveU(
 				const t = tt / 1000;
 
 				// calculate a dot
-				const x = (1 - t) ** 3 * x1 + 3 * t * (1 - t) ** 2 * sx1 + 3 * t ** 2 * (1 - t) * sx2 + t ** 3 * x2;
-				const y = (1 - t) ** 3 * y1 + 3 * t * (1 - t) ** 2 * sy1 + 3 * t ** 2 * (1 - t) * sy2 + t ** 3 * y2;
+				const x = cubicBezier(x1, sx1, sx2, x2, t);
+				const y = cubicBezier(y1, sy1, sy2, y2, t);
 				// KATAMUKI of vector by BIBUN
-				const ix = t ** 2 * (-3 * x1 + 9 * sx1 + -9 * sx2 + 3 * x2)
-					+ t * (6 * x1 + -12 * sx1 + 6 * sx2) + -3 * x1 + 3 * sx1;
-				const iy = t ** 2 * (-3 * y1 + 9 * sy1 + -9 * sy2 + 3 * y2)
-					+ t * (6 * y1 + -12 * sy1 + 6 * sy2) + -3 * y1 + 3 * sy1;
+				const ix = cubicBezierDeriv(x1, sx1, sx2, x2, t);
+				const iy = cubicBezierDeriv(y1, sy1, sy2, y2, t);
 
 				let deltad
 					= a1 === 7 && a2 === 0 // L2RD: fatten
@@ -605,21 +603,19 @@ function cdDrawCurveU(
 
 			if (sx1 === sx2 && sy1 === sy2) {
 				// calculating each point
-				x = ((1 - t) ** 2 * x1 + 2 * t * (1 - t) * sx1 + t ** 2 * x2);
-				y = ((1 - t) ** 2 * y1 + 2 * t * (1 - t) * sy1 + t ** 2 * y2);
+				x = quadraticBezier(x1, sx1, x2, t);
+				y = quadraticBezier(y1, sy1, y2, t);
 
 				// SESSEN NO KATAMUKI NO KEISAN(BIBUN)
-				ix = (x1 - 2 * sx1 + x2) * 2 * t + (-2 * x1 + 2 * sx1);
-				iy = (y1 - 2 * sy1 + y2) * 2 * t + (-2 * y1 + 2 * sy1);
+				ix = quadraticBezierDeriv(x1, sx1, x2, t);
+				iy = quadraticBezierDeriv(y1, sy1, y2, t);
 			} else {
 				// calculate a dot
-				x = (1 - t) ** 3 * x1 + 3 * t * (1 - t) ** 2 * sx1 + 3 * t ** 2 * (1 - t) * sx2 + t ** 3 * x2;
-				y = (1 - t) ** 3 * y1 + 3 * t * (1 - t) ** 2 * sy1 + 3 * t ** 2 * (1 - t) * sy2 + t ** 3 * y2;
+				x = cubicBezier(x1, sx1, sx2, x2, t);
+				y = cubicBezier(y1, sy1, sy2, y2, t);
 				// KATAMUKI of vector by BIBUN
-				ix = t ** 2 * (-3 * x1 + 9 * sx1 + -9 * sx2 + 3 * x2)
-					+ t * (6 * x1 + -12 * sx1 + 6 * sx2) + -3 * x1 + 3 * sx1;
-				iy = t ** 2 * (-3 * y1 + 9 * sy1 + -9 * sy2 + 3 * y2)
-					+ t * (6 * y1 + -12 * sy1 + 6 * sy2) + -3 * y1 + 3 * sy1;
+				ix = cubicBezierDeriv(x1, sx1, sx2, x2, t);
+				iy = cubicBezierDeriv(y1, sy1, sy2, y2, t);
 			}
 			// SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
 			const [ia, ib] = (kage.kShotai === kage.kMincho) // always false ?

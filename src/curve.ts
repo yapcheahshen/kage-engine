@@ -1,5 +1,5 @@
 import { Kage } from "./kage";
-import { normalize } from "./util";
+import { normalize, quadraticBezier, quadraticBezierDeriv } from "./util";
 
 export function divide_curve(
 	_kage: Kage,
@@ -60,12 +60,12 @@ export function find_offcurve(
 				const t = tt / curve.length;
 
 				// calculate a dot
-				const x = ((1 - t) ** 2 * nx1 + 2 * t * (1 - t) * tx + t ** 2 * nx2);
-				const y = ((1 - t) ** 2 * ny1 + 2 * t * (1 - t) * ty + t ** 2 * ny2);
+				const x = quadraticBezier(nx1, tx, nx2, t);
+				const y = quadraticBezier(ny1, ty, ny2, t);
 
 				// KATAMUKI of vector by BIBUN
-				// const ix = (nx1 - 2 * tx + nx2) * 2 * t + (-2 * nx1 + 2 * tx);
-				// const iy = (ny1 - 2 * ty + ny2) * 2 * t + (-2 * ny1 + 2 * ty);
+				// const ix = quadraticBezierDeriv(nx1, tx, nx2, t);
+				// const iy = quadraticBezierDeriv(ny1, ty, ny2, t);
 
 				diff += (curve[tt][0] - x) ** 2 + (curve[tt][1] - y) ** 2;
 				if (diff > mindiff) {
@@ -87,12 +87,12 @@ export function find_offcurve(
 				const t = tt / curve.length;
 
 				// calculate a dot
-				const x = ((1 - t) ** 2 * nx1 + 2 * t * (1 - t) * tx + t ** 2 * nx2);
-				const y = ((1 - t) ** 2 * ny1 + 2 * t * (1 - t) * ty + t ** 2 * ny2);
+				const x = quadraticBezier(nx1, tx, nx2, t);
+				const y = quadraticBezier(ny1, ty, ny2, t);
 
 				// KATAMUKI of vector by BIBUN
-				// const ix = (nx1 - 2 * tx + nx2) * 2 * t + (-2 * nx1 + 2 * tx);
-				// const iy = (ny1 - 2 * ty + ny2) * 2 * t + (-2 * ny1 + 2 * ty);
+				// const ix = quadraticBezierDeriv(nx1, tx, nx2, t);
+				// const iy = quadraticBezierDeriv(ny1, ty, ny2, t);
 
 				diff += (curve[tt][0] - x) ** 2 + (curve[tt][1] - y) ** 2;
 				if (diff > mindiff) {
@@ -122,12 +122,12 @@ export function get_candidate(
 		const t = tt / 1000;
 
 		// calculate a dot
-		const x = ((1 - t) ** 2 * x1 + 2 * t * (1 - t) * sx1 + t ** 2 * x2);
-		const y = ((1 - t) ** 2 * y1 + 2 * t * (1 - t) * sy1 + t ** 2 * y2);
+		const x = quadraticBezier(x1, sx1, x2, t);
+		const y = quadraticBezier(y1, sy1, y2, t);
 
 		// KATAMUKI of vector by BIBUN
-		const ix = (x1 - 2 * sx1 + x2) * 2 * t + (-2 * x1 + 2 * sx1);
-		const iy = (y1 - 2 * sy1 + y2) * 2 * t + (-2 * y1 + 2 * sy1);
+		const ix = quadraticBezierDeriv(x1, sx1, x2, t);
+		const iy = quadraticBezierDeriv(y1, sy1, y2, t);
 
 		const hosomi = 0.5;
 		let deltad
