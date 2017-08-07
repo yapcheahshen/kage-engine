@@ -11,7 +11,7 @@
     "build:browser": "browserify lib/browser.js -o dist/kage.js",
     "clean": "rm lib/* dist/*",
     "lint": "tslint -p .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/index.js"
   },
   "repository": {
     "type": "git",
