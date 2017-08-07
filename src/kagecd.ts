@@ -91,13 +91,15 @@ function cdDrawCurveU(
 				kage2.kKakato = kage.kKakato;
 				kage2.kRate = 10;
 
-				const curve = get_candidate(kage2, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4); // L and R
+				const [curveL, curveR] = get_candidate(kage2, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4); // L and R
 
-				const { div_curve: dcl12_34, off_curve: dpl12_34 } = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curve[0]);
-				const { div_curve: dcr12_34, off_curve: dpr12_34 } = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curve[1]);
+				const {off: [offL1, offL2], index: indexL} = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curveL);
+				const curveL1 = curveL.slice(0, indexL + 1);
+				const curveL2 = curveL.slice(indexL);
+				const {off: [offR1, offR2], index: indexR} = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curveR);
 
-				const ncl1 = find_offcurve(kage2, dcl12_34[0], dpl12_34[0][2], dpl12_34[0][3]);
-				const ncl2 = find_offcurve(kage2, dcl12_34[1], dpl12_34[1][2], dpl12_34[1][3]);
+				const ncl1 = find_offcurve(kage2, curveL1, offL1[2], offL1[3]);
+				const ncl2 = find_offcurve(kage2, curveL2, offL2[2], offL2[3]);
 
 				poly.push(ncl1[0], ncl1[1]);
 				poly.push(ncl1[2], ncl1[3], true);
@@ -105,11 +107,11 @@ function cdDrawCurveU(
 				poly.push(ncl2[2], ncl2[3], true);
 				poly.push(ncl2[4], ncl2[5]);
 
-				poly2.push(dcr12_34[0][0][0], dcr12_34[0][0][1]);
-				poly2.push(dpr12_34[0][2] - (ncl1[2] - dpl12_34[0][2]), dpl12_34[0][3] - (ncl1[3] - dpl12_34[0][3]), true);
-				poly2.push(dcr12_34[0][dcr12_34[0].length - 1][0], dcr12_34[0][dcr12_34[0].length - 1][1]);
-				poly2.push(dpr12_34[1][2] - (ncl2[2] - dpl12_34[1][2]), dpl12_34[1][3] - (ncl2[3] - dpl12_34[1][3]), true);
-				poly2.push(dcr12_34[1][dcr12_34[1].length - 1][0], dcr12_34[1][dcr12_34[1].length - 1][1]);
+				poly2.push(curveR[0][0], curveR[0][1]);
+				poly2.push(offR1[2] - (ncl1[2] - offL1[2]), offL1[3] - (ncl1[3] - offL1[3]), true);
+				poly2.push(curveR[indexR][0], curveR[indexR][1]);
+				poly2.push(offR2[2] - (ncl2[2] - offL2[2]), offL2[3] - (ncl2[3] - offL2[3]), true);
+				poly2.push(curveR[curveR.length - 1][0], curveR[curveR.length - 1][1]);
 
 				poly2.reverse();
 				poly.concat(poly2);

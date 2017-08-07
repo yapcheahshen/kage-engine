@@ -5,7 +5,7 @@ export function divide_curve(
 	_kage: Kage,
 	x1: number, y1: number,
 	sx1: number, sy1: number,
-	x2: number, y2: number, curve: Array<[number, number]>) {
+	x2: number, y2: number, curve: Array<[number, number]>): { index: number, off: [number[], number[]] } {
 	const rate = 0.5;
 	const cut = Math.floor(curve.length * rate);
 	const cut_rate = cut / curve.length;
@@ -17,20 +17,9 @@ export function divide_curve(
 	const ty3 = ty1 + (ty2 - ty1) * cut_rate;
 
 	// must think about 0 : <0
-	const div_curve: [Array<[number, number]>, Array<[number, number]>] = [[], []];
-	for (let i = 0; i <= cut; i++) {
-		div_curve[0].push(curve[i]);
-	}
-	for (let i = cut; i < curve.length; i++) {
-		div_curve[1].push(curve[i]);
-	}
-	const off_curve = [
-		[x1, y1, tx1, ty1, tx3, ty3],
-		[tx3, ty3, tx2, ty2, x2, y2],
-	];
 	return {
-		div_curve,
-		off_curve,
+		index: cut,
+		off: [[x1, y1, tx1, ty1, tx3, ty3], [tx3, ty3, tx2, ty2, x2, y2]],
 	};
 }
 
@@ -41,71 +30,88 @@ export function find_offcurve(
 	const [nx1, ny1] = curve[0];
 	const [nx2, ny2] = curve[curve.length - 1];
 
-	let minx: number;
-	let miny: number;
-	let mindiff = Infinity;
 	const area = 8;
 	const mesh = 2;
-	// area = 10   mesh = 5 -> 281 calcs
-	// area = 10   mesh = 4 -> 180 calcs
-	// area =  8   mesh = 4 -> 169 calcs
-	// area =  7.5 mesh = 3 -> 100 calcs
-	// area =  8   mesh = 2 ->  97 calcs
-	// area =  7   mesh = 2 ->  80 calcs
 
+	let mindiffx = Infinity;
+	let minx: number;
 	for (let tx = sx - area; tx < sx + area; tx += mesh) {
-		for (let ty = sy - area; ty < sy + area; ty += mesh) {
-			let diff = 0;
-			for (let tt = 0; tt < curve.length; tt++) {
-				const t = tt / curve.length;
+		let diff = 0;
+		for (let tt = 0; tt < curve.length; tt++) {
+			const t = tt / curve.length;
 
-				// calculate a dot
-				const x = quadraticBezier(nx1, tx, nx2, t);
-				const y = quadraticBezier(ny1, ty, ny2, t);
+			// calculate a dot
+			const x = quadraticBezier(nx1, tx, nx2, t);
 
-				// KATAMUKI of vector by BIBUN
-				// const ix = quadraticBezierDeriv(nx1, tx, nx2, t);
-				// const iy = quadraticBezierDeriv(ny1, ty, ny2, t);
-
-				diff += (curve[tt][0] - x) ** 2 + (curve[tt][1] - y) ** 2;
-				if (diff > mindiff) {
-					break;
-				}
-			}
-			if (diff < mindiff) {
-				minx = tx;
-				miny = ty;
-				mindiff = diff;
+			diff += (curve[tt][0] - x) ** 2;
+			if (diff > mindiffx) {
+				break;
 			}
 		}
+		if (diff < mindiffx) {
+			minx = tx;
+			mindiffx = diff;
+		}
 	}
-
 	for (let tx = minx! - mesh + 1; tx <= minx + mesh - 1; tx += 0.5) {
-		for (let ty = miny! - mesh + 1; ty <= miny + mesh - 1; ty += 0.5) {
 			let diff = 0;
 			for (let tt = 0; tt < curve.length; tt++) {
 				const t = tt / curve.length;
 
 				// calculate a dot
 				const x = quadraticBezier(nx1, tx, nx2, t);
-				const y = quadraticBezier(ny1, ty, ny2, t);
 
-				// KATAMUKI of vector by BIBUN
-				// const ix = quadraticBezierDeriv(nx1, tx, nx2, t);
-				// const iy = quadraticBezierDeriv(ny1, ty, ny2, t);
-
-				diff += (curve[tt][0] - x) ** 2 + (curve[tt][1] - y) ** 2;
-				if (diff > mindiff) {
+				diff += (curve[tt][0] - x) ** 2;
+				if (diff > mindiffx) {
 					break;
 				}
 			}
-			if (diff < mindiff) {
+			if (diff < mindiffx) {
 				minx = tx;
-				miny = ty;
-				mindiff = diff;
+				mindiffx = diff;
+			}
+	}
+
+	let mindiffy = Infinity;
+	let miny: number;
+	for (let ty = sy - area; ty < sy + area; ty += mesh) {
+		let diff = 0;
+		for (let tt = 0; tt < curve.length; tt++) {
+			const t = tt / curve.length;
+
+			// calculate a dot
+			const y = quadraticBezier(ny1, ty, ny2, t);
+
+			diff += (curve[tt][1] - y) ** 2;
+			if (diff > mindiffy) {
+				break;
 			}
 		}
+		if (diff < mindiffy) {
+			miny = ty;
+			mindiffy = diff;
+		}
 	}
+	for (let ty = miny! - mesh + 1; ty <= miny + mesh - 1; ty += 0.5) {
+		let diff = 0;
+		for (let tt = 0; tt < curve.length; tt++) {
+			const t = tt / curve.length;
+
+			// calculate a dot
+			const y = quadraticBezier(ny1, ty, ny2, t);
+
+			diff += (curve[tt][1] - y) ** 2;
+			if (diff > mindiffy) {
+				break;
+			}
+		}
+		if (diff < mindiffy) {
+			miny = ty;
+			mindiffy = diff;
+		}
+	}
+
+	const mindiff = mindiffx + mindiffy;
 
 	return [nx1, ny1, minx, miny, nx2, ny2, mindiff];
 }
@@ -138,10 +144,7 @@ export function get_candidate(
 					: (a2 === 7)
 						? (1 - t) ** hosomi
 						: (opt3 > 0)
-							? (
-								((kage.kMinWidthT - opt4 / 2) - opt3 / 2) / (kage.kMinWidthT - opt4 / 2)
-								+ opt3 / 2 / (kage.kMinWidthT - opt4) * t
-							)
+							? 1 - opt3 / 2 / (kage.kMinWidthT - opt4 / 2) + opt3 / 2 / (kage.kMinWidthT - opt4) * t
 							: 1;
 
 		if (deltad < 0.15) {
