@@ -132,11 +132,11 @@ export function get_candidate(
 		const hosomi = 0.5;
 		let deltad
 			= (a1 === 7 && a2 === 0) // L2RD: fatten
-				? Math.pow(t, hosomi) * kage.kL2RDfatten
+				? t ** hosomi * kage.kL2RDfatten
 				: (a1 === 7)
-					? Math.pow(t, hosomi)
+					? t ** hosomi
 					: (a2 === 7)
-						? Math.pow(1 - t, hosomi)
+						? (1 - t) ** hosomi
 						: (opt3 > 0)
 							? (
 								((kage.kMinWidthT - opt4 / 2) - opt3 / 2) / (kage.kMinWidthT - opt4 / 2)

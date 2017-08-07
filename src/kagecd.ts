@@ -131,11 +131,11 @@ function cdDrawCurveU(
 
 					let deltad
 						= a1 === 7 && a2 === 0 // L2RD: fatten
-							? Math.pow(t, hosomi) * kage.kL2RDfatten
+							? t ** hosomi * kage.kL2RDfatten
 							: a1 === 7
-								? Math.pow(t, hosomi)
+								? t ** hosomi
 								: a2 === 7
-									? Math.pow(1 - t, hosomi)
+									? (1 - t) ** hosomi
 									: opt3 > 0 || opt4 > 0
 										? ((kage.kMinWidthT - opt3 / 2) - (opt4 - opt3) / 2 * t) / kage.kMinWidthT
 										: 1;
@@ -223,11 +223,11 @@ function cdDrawCurveU(
 
 				let deltad
 					= a1 === 7 && a2 === 0 // L2RD: fatten
-						? Math.pow(t, hosomi) * kage.kL2RDfatten
+						? t ** hosomi * kage.kL2RDfatten
 						: a1 === 7
-							? Math.pow(Math.pow(t, hosomi), 0.7) // make fatten
+							? (t ** hosomi) ** 0.7 // make fatten
 							: a2 === 7
-								? Math.pow(1 - t, hosomi)
+								? (1 - t) ** hosomi
 								: 1;
 
 				if (deltad < 0.15) {
@@ -548,10 +548,10 @@ function cdDrawCurveU(
 			poly.push(x2, y2);
 			poly.push(x2, y2 - kMinWidthT);
 			poly.push(
-				x2 - kage.kWidth * 4 * Math.min(1 - opt2 / 10, Math.pow(kMinWidthT / kage.kMinWidthT, 3)),
+				x2 - kage.kWidth * 4 * Math.min(1 - opt2 / 10, (kMinWidthT / kage.kMinWidthT) ** 3),
 				y2 - kMinWidthT);
 			poly.push(
-				x2 - kage.kWidth * 4 * Math.min(1 - opt2 / 10, Math.pow(kMinWidthT / kage.kMinWidthT, 3)),
+				x2 - kage.kWidth * 4 * Math.min(1 - opt2 / 10, (kMinWidthT / kage.kMinWidthT) ** 3),
 				y2 - kMinWidthT * 0.5);
 			// poly.reverse();
 			polygons.push(poly);
