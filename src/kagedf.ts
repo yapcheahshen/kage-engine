@@ -1,6 +1,7 @@
 import { Kage } from "./kage";
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./kagecd";
 import { Polygons } from "./polygons";
+import { hypot } from "./util";
 
 export function dfDrawFont(
 	kage: Kage, polygons: Polygons,
@@ -150,7 +151,7 @@ export function dfDrawFont(
 			case 4: {
 				let rate = 6;
 				if ((x3 - x2) ** 2 + (y3 - y2) ** 2 < 14400) { // smaller than 120 x 120
-					rate = Math.sqrt((x3 - x2) ** 2 + (y3 - y2) ** 2) / 120 * 6;
+					rate = hypot(x3 - x2, y3 - y2) / 120 * 6;
 				}
 				if (a3 === 5) {
 					let tx1;

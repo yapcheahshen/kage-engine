@@ -2,6 +2,7 @@ import { divide_curve, find_offcurve, get_candidate } from "./curve";
 import { Kage } from "./kage";
 import { Polygon } from "./polygon";
 import { Polygons } from "./polygons";
+import { hypot } from "./util";
 
 function cdDrawCurveU(
 	kage: Kage, polygons: Polygons,
@@ -96,8 +97,8 @@ function cdDrawCurveU(
 		}
 
 		let hosomi = 0.5;
-		if (Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2) < 50) {
-			hosomi += 0.4 * (1 - Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2) / 50);
+		if (hypot(x2 - x1, y2 - y1) < 50) {
+			hosomi += 0.4 * (1 - hypot(x2 - x1, y2 - y1) / 50);
 		}
 
 		// ---------------------------------------------------------------

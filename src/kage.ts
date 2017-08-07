@@ -2,6 +2,7 @@ import { isCrossBoxWithOthers, isCrossWithOthers } from "./2d";
 import { Buhin } from "./buhin";
 import { dfDrawFont } from "./kagedf";
 import { Polygons } from "./polygons";
+import { hypot } from "./util";
 
 export enum KShotai {
 	kMincho = 0,
@@ -350,7 +351,7 @@ export class Kage {
 						const rad = Math.atan((strokesArray[i][6] - strokesArray[i][4]) / (strokesArray[i][5] - strokesArray[i][3]));
 						tx = strokesArray[i][5] - this.kAdjustUrokoLine[k] * Math.cos(rad) - 0.5 * Math.sin(rad);
 						ty = strokesArray[i][6] - this.kAdjustUrokoLine[k] * Math.sin(rad) - 0.5 * Math.cos(rad);
-						tlen = Math.sqrt((strokesArray[i][6] - strokesArray[i][4]) ** 2 + (strokesArray[i][5] - strokesArray[i][3]) ** 2);
+						tlen = hypot(strokesArray[i][6] - strokesArray[i][4], strokesArray[i][5] - strokesArray[i][3]);
 					}
 					if (tlen < this.kAdjustUrokoLength[k]
 						|| isCrossWithOthers(strokesArray, i, tx, ty, strokesArray[i][5], strokesArray[i][6])) {
