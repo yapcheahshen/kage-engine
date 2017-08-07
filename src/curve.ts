@@ -33,29 +33,21 @@ export function find_offcurve(
 	const area = 8;
 
 	const minx = ternarySearchMin((tx) => {
-		let diff = 0;
-		for (let tt = 0; tt < curve.length; tt++) {
-			const t = tt / curve.length;
-
-			// calculate a dot
+		return curve.reduce((diff, p, i) => {
+			const t = i / curve.length;
 			const x = quadraticBezier(nx1, tx, nx2, t);
 
-			diff += (curve[tt][0] - x) ** 2;
-		}
-		return diff;
+			return diff + (p[0] - x) ** 2;
+		}, 0);
 	}, sx - area, sx + area);
 
 	const miny = ternarySearchMin((ty) => {
-		let diff = 0;
-		for (let tt = 0; tt < curve.length; tt++) {
-			const t = tt / curve.length;
-
-			// calculate a dot
+		return curve.reduce((diff, p, i) => {
+			const t = i / curve.length;
 			const y = quadraticBezier(ny1, ty, ny2, t);
 
-			diff += (curve[tt][1] - y) ** 2;
-		}
-		return diff;
+			return diff + (p[1] - y) ** 2;
+		}, 0);
 	}, sy - area, sy + area);
 
 	return [nx1, ny1, minx, miny, nx2, ny2];

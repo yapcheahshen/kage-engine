@@ -93,10 +93,10 @@ function cdDrawCurveU(
 
 				const [curveL, curveR] = get_candidate(kage2, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4); // L and R
 
-				const {off: [offL1, offL2], index: indexL} = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curveL);
+				const { off: [offL1, offL2], index: indexL } = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curveL);
 				const curveL1 = curveL.slice(0, indexL + 1);
 				const curveL2 = curveL.slice(indexL);
-				const {off: [offR1, offR2], index: indexR} = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curveR);
+				const { off: [offR1, offR2], index: indexR } = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curveR);
 
 				const ncl1 = find_offcurve(kage2, curveL1, offL1[2], offL1[3]);
 				const ncl2 = find_offcurve(kage2, curveL2, offL2[2], offL2[3]);
@@ -108,9 +108,9 @@ function cdDrawCurveU(
 				poly.push(ncl2[4], ncl2[5]);
 
 				poly2.push(curveR[0][0], curveR[0][1]);
-				poly2.push(offR1[2] - (ncl1[2] - offL1[2]), offL1[3] - (ncl1[3] - offL1[3]), true);
+				poly2.push(offR1[2] - (ncl1[2] - offL1[2]), offL1[3] - (ncl1[3] - offL1[3]), true); // typo?
 				poly2.push(curveR[indexR][0], curveR[indexR][1]);
-				poly2.push(offR2[2] - (ncl2[2] - offL2[2]), offL2[3] - (ncl2[3] - offL2[3]), true);
+				poly2.push(offR2[2] - (ncl2[2] - offL2[2]), offL2[3] - (ncl2[3] - offL2[3]), true); // typo?
 				poly2.push(curveR[curveR.length - 1][0], curveR[curveR.length - 1][1]);
 
 				poly2.reverse();
@@ -159,11 +159,10 @@ function cdDrawCurveU(
 				// suiheisen ni setsuzoku
 				if (a1 === 132) {
 					let index = 0;
-					while (true) {
+					for (; index + 1 < poly2.array.length; index++) {
 						if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
 							break;
 						}
-						index++;
 					}
 					const newx1 = poly2.array[index + 1].x
 						+ (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1)
@@ -184,11 +183,10 @@ function cdDrawCurveU(
 				// suiheisen ni setsuzoku 2
 				if (a1 === 22 && y1 > y2) {
 					let index = 0;
-					while (true) {
+					for (; index + 1 < poly2.array.length; index++) {
 						if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
 							break;
 						}
-						index++;
 					}
 					const newx1 = poly2.array[index + 1].x
 						+ (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1)
@@ -249,11 +247,10 @@ function cdDrawCurveU(
 			// suiheisen ni setsuzoku
 			if (a1 === 132) {
 				let index = 0;
-				while (true) {
+				for (; index + 1 < poly2.array.length; index++) {
 					if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
 						break;
 					}
-					index++;
 				}
 				const newx1 = poly2.array[index + 1].x
 					+ (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1)
@@ -275,11 +272,10 @@ function cdDrawCurveU(
 			if (a1 === 22) {
 				if (x1 > sx1) {
 					let index = 0;
-					while (true) {
+					for (; index + 1 < poly2.array.length; index++) {
 						if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
 							break;
 						}
-						index++;
 					}
 					const newx1 = poly2.array[index + 1].x
 						+ (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1)
