@@ -15,7 +15,7 @@ export class Kage {
 
 	// properties
 	public kShotai: KShotai = KShotai.kMincho;
-	public kRate: number;
+	public kRate: number = 100;
 	public kMinWidthY: number;
 	public kMinWidthT: number;
 	public kWidth: number;
