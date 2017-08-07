@@ -42,3 +42,22 @@ export function cubicBezierDeriv(p1: number, p2: number, p3: number, p4: number,
 	return (-3 * ss) * p1 + 3 * (ss - 2 * st) * p2 + 3 * (2 * st - tt) * p3 + (3 * tt) * p4;
 	// = 3 * t * t * (-a + 3 * b - 3 * c + d) + 6 * t * (a - 2 * b + c) - 3 * a + 3 * b
 }
+
+export function ternarySearchMin(func: (x: number) => number, left: number, right: number, eps: number = 1E-5) {
+	while (left + eps < right) {
+		const x1 = left + (right - left) / 3;
+		const x2 = right - (right - left) / 3;
+		const y1 = func(x1);
+		const y2 = func(x2);
+		if (y1 < y2) {
+			right = x2;
+		} else {
+			left = x1;
+		}
+	}
+	return left + (right - left) / 2;
+}
+
+export function ternarySearchMax(func: (x: number) => number, left: number, right: number, eps?: number) {
+	return ternarySearchMin((x) => -func(x), left, right, eps);
+}

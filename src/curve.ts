@@ -1,5 +1,5 @@
 import { Kage } from "./kage";
-import { normalize, quadraticBezier, quadraticBezierDeriv } from "./util";
+import { normalize, quadraticBezier, quadraticBezierDeriv, ternarySearchMin } from "./util";
 
 export function divide_curve(
 	_kage: Kage,
@@ -31,11 +31,8 @@ export function find_offcurve(
 	const [nx2, ny2] = curve[curve.length - 1];
 
 	const area = 8;
-	const mesh = 2;
 
-	let mindiffx = Infinity;
-	let minx: number;
-	for (let tx = sx - area; tx < sx + area; tx += mesh) {
+	const minx = ternarySearchMin((tx) => {
 		let diff = 0;
 		for (let tt = 0; tt < curve.length; tt++) {
 			const t = tt / curve.length;
@@ -44,37 +41,11 @@ export function find_offcurve(
 			const x = quadraticBezier(nx1, tx, nx2, t);
 
 			diff += (curve[tt][0] - x) ** 2;
-			if (diff > mindiffx) {
-				break;
-			}
 		}
-		if (diff < mindiffx) {
-			minx = tx;
-			mindiffx = diff;
-		}
-	}
-	for (let tx = minx! - mesh + 1; tx <= minx + mesh - 1; tx += 0.5) {
-			let diff = 0;
-			for (let tt = 0; tt < curve.length; tt++) {
-				const t = tt / curve.length;
+		return diff;
+	}, sx - area, sx + area);
 
-				// calculate a dot
-				const x = quadraticBezier(nx1, tx, nx2, t);
-
-				diff += (curve[tt][0] - x) ** 2;
-				if (diff > mindiffx) {
-					break;
-				}
-			}
-			if (diff < mindiffx) {
-				minx = tx;
-				mindiffx = diff;
-			}
-	}
-
-	let mindiffy = Infinity;
-	let miny: number;
-	for (let ty = sy - area; ty < sy + area; ty += mesh) {
+	const miny = ternarySearchMin((ty) => {
 		let diff = 0;
 		for (let tt = 0; tt < curve.length; tt++) {
 			const t = tt / curve.length;
@@ -83,37 +54,11 @@ export function find_offcurve(
 			const y = quadraticBezier(ny1, ty, ny2, t);
 
 			diff += (curve[tt][1] - y) ** 2;
-			if (diff > mindiffy) {
-				break;
-			}
 		}
-		if (diff < mindiffy) {
-			miny = ty;
-			mindiffy = diff;
-		}
-	}
-	for (let ty = miny! - mesh + 1; ty <= miny + mesh - 1; ty += 0.5) {
-		let diff = 0;
-		for (let tt = 0; tt < curve.length; tt++) {
-			const t = tt / curve.length;
+		return diff;
+	}, sy - area, sy + area);
 
-			// calculate a dot
-			const y = quadraticBezier(ny1, ty, ny2, t);
-
-			diff += (curve[tt][1] - y) ** 2;
-			if (diff > mindiffy) {
-				break;
-			}
-		}
-		if (diff < mindiffy) {
-			miny = ty;
-			mindiffy = diff;
-		}
-	}
-
-	const mindiff = mindiffx + mindiffy;
-
-	return [nx1, ny1, minx, miny, nx2, ny2, mindiff];
+	return [nx1, ny1, minx, miny, nx2, ny2];
 }
 
 // ------------------------------------------------------------------
