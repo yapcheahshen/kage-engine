@@ -67,79 +67,21 @@ function isCrossBox(
 export function isCrossBoxWithOthers(
 	strokesArray: Stroke[], i: number,
 	bx1: number, by1: number, bx2: number, by2: number) {
-	for (let j = 0; j < strokesArray.length; j++) {
-		if (i === j) {
-			continue;
-		}
-		switch (strokesArray[j].a1) {
-			case 0:
-			case 8:
-			case 9:
-				break;
-			case 6:
-			case 7:
-				if (isCrossBox(
-					strokesArray[j].x3, strokesArray[j].y3, strokesArray[j].x4, strokesArray[j].y4,
-					bx1, by1, bx2, by2)) {
-					return true;
-				}
-			// falls through
-			case 2:
-			case 12:
-			case 3:
-				if (isCrossBox(
-					strokesArray[j].x2, strokesArray[j].y2, strokesArray[j].x3, strokesArray[j].y3,
-					bx1, by1, bx2, by2)) {
-					return true;
-				}
-			// falls through
-			default:
-				if (isCrossBox(
-					strokesArray[j].x1, strokesArray[j].y1, strokesArray[j].x2, strokesArray[j].y2,
-					bx1, by1, bx2, by2)) {
-					return true;
-				}
-		}
-	}
-	return false;
+	return strokesArray.some((stroke, j) => (
+		i !== j
+		&& stroke.getControlSegments().some(([x1, y1, x2, y2]) => (
+			isCrossBox(x1, y1, x2, y2, bx1, by1, bx2, by2)
+		))
+	));
 }
 
 export function isCrossWithOthers(
 	strokesArray: Stroke[], i: number,
 	bx1: number, by1: number, bx2: number, by2: number) {
-	for (let j = 0; j < strokesArray.length; j++) {
-		if (i === j) {
-			continue;
-		}
-		switch (strokesArray[j].a1) {
-			case 0:
-			case 8:
-			case 9:
-				break;
-			case 6:
-			case 7:
-				if (isCross(
-					strokesArray[j].x3, strokesArray[j].y3, strokesArray[j].x4, strokesArray[j].y4,
-					bx1, by1, bx2, by2)) {
-					return true;
-				}
-			// falls through
-			case 2:
-			case 12:
-			case 3:
-				if (isCross(
-					strokesArray[j].x2, strokesArray[j].y2, strokesArray[j].x3, strokesArray[j].y3,
-					bx1, by1, bx2, by2)) {
-					return true;
-				}
-			// falls through
-			default:
-				if (isCross(
-					strokesArray[j].x1, strokesArray[j].y1, strokesArray[j].x2, strokesArray[j].y2,
-					bx1, by1, bx2, by2)) {
-					return true;
-				}
-		}
-	}
-	return false;
+	return strokesArray.some((stroke, j) => (
+		i !== j
+		&& stroke.getControlSegments().some(([x1, y1, x2, y2]) => (
+			isCross(x1, y1, x2, y2, bx1, by1, bx2, by2)
+		))
+	));
 }

@@ -2,7 +2,7 @@ import { isCrossBoxWithOthers, isCrossWithOthers } from "./2d";
 import { Buhin } from "./buhin";
 import { dfDrawFont } from "./kagedf";
 import { Polygons } from "./polygons";
-import { Stroke } from "./stroke";
+import { stretch, Stroke } from "./stroke";
 import { hypot } from "./util";
 
 export enum KShotai {
@@ -54,6 +54,8 @@ export class Kage {
 	public kAdjustMageStep: number;
 
 	public kBuhin: Buhin;
+
+	public stretch = stretch;
 
 	constructor(size?: number) {
 		if (size === 1) {
@@ -217,16 +219,7 @@ export class Kage {
 		}
 		temp.forEach((stroke) => {
 			if (sx !== 0 || sy !== 0) {
-				stroke.x1 = this.stretch(sx, sx2, stroke.x1, box.minX, box.maxX);
-				stroke.y1 = this.stretch(sy, sy2, stroke.y1, box.minY, box.maxY);
-				stroke.x2 = this.stretch(sx, sx2, stroke.x2, box.minX, box.maxX);
-				stroke.y2 = this.stretch(sy, sy2, stroke.y2, box.minY, box.maxY);
-				if (stroke.a1 !== 99) {
-					stroke.x3 = this.stretch(sx, sx2, stroke.x3, box.minX, box.maxX);
-					stroke.y3 = this.stretch(sy, sy2, stroke.y3, box.minY, box.maxY);
-					stroke.x4 = this.stretch(sx, sx2, stroke.x4, box.minX, box.maxX);
-					stroke.y4 = this.stretch(sy, sy2, stroke.y4, box.minY, box.maxY);
-				}
+				stroke.stretch(sx, sx2, sy, sy2, box.minX, box.maxX, box.minY, box.maxY);
 			}
 			result.push(new Stroke([
 				stroke.a1, stroke.a2, stroke.a3,
@@ -251,56 +244,18 @@ export class Kage {
 
 		const strokes = this.getEachStrokes(glyph);
 		strokes.forEach((stroke) => {
-			if (stroke.a1 === 0) {
-				return;
-			}
-			minX = Math.min(minX, stroke.x1, stroke.x2);
-			maxX = Math.max(maxX, stroke.x1, stroke.x2);
-			minY = Math.min(minY, stroke.y1, stroke.y2);
-			maxY = Math.max(maxY, stroke.y1, stroke.y2);
-			if (stroke.a1 === 1) {
-				return;
-			}
-			if (stroke.a1 === 99) {
-				return;
-			}
-			minX = Math.min(minX, stroke.x3);
-			maxX = Math.max(maxX, stroke.x3);
-			minY = Math.min(minY, stroke.y3);
-			maxY = Math.max(maxY, stroke.y3);
-			if (stroke.a1 === 2 || stroke.a1 === 3 || stroke.a1 === 4) {
-				return;
-			}
-			minX = Math.min(minX, stroke.x4);
-			maxX = Math.max(maxX, stroke.x4);
-			minY = Math.min(minY, stroke.y4);
-			maxY = Math.max(maxY, stroke.y4);
+			const {
+				minX: sminX,
+				maxX: smaxX,
+				minY: sminY,
+				maxY: smaxY,
+			} = stroke.getBox();
+			minX = Math.min(minX, sminX);
+			maxX = Math.max(maxX, smaxX);
+			minY = Math.min(minY, sminY);
+			maxY = Math.max(maxY, smaxY);
 		});
-		return {
-			minX,
-			maxX,
-			minY,
-			maxY,
-		};
-	}
-
-	public stretch(dp: number, sp: number, p: number, min: number, max: number) {
-		let p1;
-		let p2;
-		let p3;
-		let p4;
-		if (p < sp + 100) {
-			p1 = min;
-			p3 = min;
-			p2 = sp + 100;
-			p4 = dp + 100;
-		} else {
-			p1 = sp + 100;
-			p3 = dp + 100;
-			p2 = max;
-			p4 = max;
-		}
-		return Math.floor(((p - p1) / (p2 - p1)) * (p4 - p3) + p3);
+		return { minX, maxX, minY, maxY };
 	}
 
 	private adjustHane(strokesArray: Stroke[]) {
