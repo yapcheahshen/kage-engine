@@ -1,3 +1,5 @@
+import { Stroke } from "./stroke";
+
 // Reference : http://www.cam.hi-ho.ne.jp/strong_warriors/teacher/chapter0{4,5}.html
 
 /** Cross product of two vectors */
@@ -63,13 +65,13 @@ function isCrossBox(
 }
 
 export function isCrossBoxWithOthers(
-	strokesArray: number[][], i: number,
+	strokesArray: Stroke[], i: number,
 	bx1: number, by1: number, bx2: number, by2: number) {
 	for (let j = 0; j < strokesArray.length; j++) {
 		if (i === j) {
 			continue;
 		}
-		switch (strokesArray[j][0]) {
+		switch (strokesArray[j].data[0]) {
 			case 0:
 			case 8:
 			case 9:
@@ -77,7 +79,7 @@ export function isCrossBoxWithOthers(
 			case 6:
 			case 7:
 				if (isCrossBox(
-					strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10],
+					strokesArray[j].data[7], strokesArray[j].data[8], strokesArray[j].data[9], strokesArray[j].data[10],
 					bx1, by1, bx2, by2)) {
 					return true;
 				}
@@ -86,14 +88,14 @@ export function isCrossBoxWithOthers(
 			case 12:
 			case 3:
 				if (isCrossBox(
-					strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8],
+					strokesArray[j].data[5], strokesArray[j].data[6], strokesArray[j].data[7], strokesArray[j].data[8],
 					bx1, by1, bx2, by2)) {
 					return true;
 				}
 			// falls through
 			default:
 				if (isCrossBox(
-					strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6],
+					strokesArray[j].data[3], strokesArray[j].data[4], strokesArray[j].data[5], strokesArray[j].data[6],
 					bx1, by1, bx2, by2)) {
 					return true;
 				}
@@ -103,32 +105,38 @@ export function isCrossBoxWithOthers(
 }
 
 export function isCrossWithOthers(
-	strokesArray: number[][], i: number,
+	strokesArray: Stroke[], i: number,
 	bx1: number, by1: number, bx2: number, by2: number) {
 	for (let j = 0; j < strokesArray.length; j++) {
 		if (i === j) {
 			continue;
 		}
-		switch (strokesArray[j][0]) {
+		switch (strokesArray[j].data[0]) {
 			case 0:
 			case 8:
 			case 9:
 				break;
 			case 6:
 			case 7:
-				if (isCross(strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10], bx1, by1, bx2, by2)) {
+				if (isCross(
+					strokesArray[j].data[7], strokesArray[j].data[8], strokesArray[j].data[9], strokesArray[j].data[10],
+					bx1, by1, bx2, by2)) {
 					return true;
 				}
 			// falls through
 			case 2:
 			case 12:
 			case 3:
-				if (isCross(strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8], bx1, by1, bx2, by2)) {
+				if (isCross(
+					strokesArray[j].data[5], strokesArray[j].data[6], strokesArray[j].data[7], strokesArray[j].data[8],
+					bx1, by1, bx2, by2)) {
 					return true;
 				}
 			// falls through
 			default:
-				if (isCross(strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6], bx1, by1, bx2, by2)) {
+				if (isCross(
+					strokesArray[j].data[3], strokesArray[j].data[4], strokesArray[j].data[5], strokesArray[j].data[6],
+					bx1, by1, bx2, by2)) {
 					return true;
 				}
 		}
