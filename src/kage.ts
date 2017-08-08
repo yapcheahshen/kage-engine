@@ -127,12 +127,12 @@ export class Kage {
 			strokesArray.forEach((stroke) => {
 				dfDrawFont(
 					this, polygons,
-					stroke.data[0],
-					stroke.data[1], stroke.data[2],
-					stroke.data[3], stroke.data[4],
-					stroke.data[5], stroke.data[6],
-					stroke.data[7], stroke.data[8],
-					stroke.data[9], stroke.data[10]);
+					stroke.a1,
+					stroke.a2, stroke.a3,
+					stroke.x1, stroke.y1,
+					stroke.x2, stroke.y2,
+					stroke.x3, stroke.y3,
+					stroke.x4, stroke.y4);
 			});
 		}
 	}
@@ -152,12 +152,12 @@ export class Kage {
 				const polygons = new Polygons();
 				dfDrawFont(
 					this, polygons,
-					stroke.data[0],
-					stroke.data[1], stroke.data[2],
-					stroke.data[3], stroke.data[4],
-					stroke.data[5], stroke.data[6],
-					stroke.data[7], stroke.data[8],
-					stroke.data[9], stroke.data[10]);
+					stroke.a1,
+					stroke.a2, stroke.a3,
+					stroke.x1, stroke.y1,
+					stroke.x2, stroke.y2,
+					stroke.x3, stroke.y3,
+					stroke.x4, stroke.y4);
 				result.push(polygons);
 			});
 		}
@@ -217,27 +217,27 @@ export class Kage {
 		}
 		temp.forEach((stroke) => {
 			if (sx !== 0 || sy !== 0) {
-				stroke.data[3] = this.stretch(sx, sx2, stroke.data[3], box.minX, box.maxX);
-				stroke.data[4] = this.stretch(sy, sy2, stroke.data[4], box.minY, box.maxY);
-				stroke.data[5] = this.stretch(sx, sx2, stroke.data[5], box.minX, box.maxX);
-				stroke.data[6] = this.stretch(sy, sy2, stroke.data[6], box.minY, box.maxY);
-				if (stroke.data[0] !== 99) {
-					stroke.data[7] = this.stretch(sx, sx2, stroke.data[7], box.minX, box.maxX);
-					stroke.data[8] = this.stretch(sy, sy2, stroke.data[8], box.minY, box.maxY);
-					stroke.data[9] = this.stretch(sx, sx2, stroke.data[9], box.minX, box.maxX);
-					stroke.data[10] = this.stretch(sy, sy2, stroke.data[10], box.minY, box.maxY);
+				stroke.x1 = this.stretch(sx, sx2, stroke.x1, box.minX, box.maxX);
+				stroke.y1 = this.stretch(sy, sy2, stroke.y1, box.minY, box.maxY);
+				stroke.x2 = this.stretch(sx, sx2, stroke.x2, box.minX, box.maxX);
+				stroke.y2 = this.stretch(sy, sy2, stroke.y2, box.minY, box.maxY);
+				if (stroke.a1 !== 99) {
+					stroke.x3 = this.stretch(sx, sx2, stroke.x3, box.minX, box.maxX);
+					stroke.y3 = this.stretch(sy, sy2, stroke.y3, box.minY, box.maxY);
+					stroke.x4 = this.stretch(sx, sx2, stroke.x4, box.minX, box.maxX);
+					stroke.y4 = this.stretch(sy, sy2, stroke.y4, box.minY, box.maxY);
 				}
 			}
 			result.push(new Stroke([
-				stroke.data[0], stroke.data[1], stroke.data[2],
-				x1 + stroke.data[3] * (x2 - x1) / 200,
-				y1 + stroke.data[4] * (y2 - y1) / 200,
-				x1 + stroke.data[5] * (x2 - x1) / 200,
-				y1 + stroke.data[6] * (y2 - y1) / 200,
-				x1 + stroke.data[7] * (x2 - x1) / 200,
-				y1 + stroke.data[8] * (y2 - y1) / 200,
-				x1 + stroke.data[9] * (x2 - x1) / 200,
-				y1 + stroke.data[10] * (y2 - y1) / 200,
+				stroke.a1, stroke.a2, stroke.a3,
+				x1 + stroke.x1 * (x2 - x1) / 200,
+				y1 + stroke.y1 * (y2 - y1) / 200,
+				x1 + stroke.x2 * (x2 - x1) / 200,
+				y1 + stroke.y2 * (y2 - y1) / 200,
+				x1 + stroke.x3 * (x2 - x1) / 200,
+				y1 + stroke.y3 * (y2 - y1) / 200,
+				x1 + stroke.x4 * (x2 - x1) / 200,
+				y1 + stroke.y4 * (y2 - y1) / 200,
 			]));
 		});
 		return result;
@@ -251,30 +251,30 @@ export class Kage {
 
 		const strokes = this.getEachStrokes(glyph);
 		strokes.forEach((stroke) => {
-			if (stroke.data[0] === 0) {
+			if (stroke.a1 === 0) {
 				return;
 			}
-			minX = Math.min(minX, stroke.data[3], stroke.data[5]);
-			maxX = Math.max(maxX, stroke.data[3], stroke.data[5]);
-			minY = Math.min(minY, stroke.data[4], stroke.data[6]);
-			maxY = Math.max(maxY, stroke.data[4], stroke.data[6]);
-			if (stroke.data[0] === 1) {
+			minX = Math.min(minX, stroke.x1, stroke.x2);
+			maxX = Math.max(maxX, stroke.x1, stroke.x2);
+			minY = Math.min(minY, stroke.y1, stroke.y2);
+			maxY = Math.max(maxY, stroke.y1, stroke.y2);
+			if (stroke.a1 === 1) {
 				return;
 			}
-			if (stroke.data[0] === 99) {
+			if (stroke.a1 === 99) {
 				return;
 			}
-			minX = Math.min(minX, stroke.data[7]);
-			maxX = Math.max(maxX, stroke.data[7]);
-			minY = Math.min(minY, stroke.data[8]);
-			maxY = Math.max(maxY, stroke.data[8]);
-			if (stroke.data[0] === 2 || stroke.data[0] === 3 || stroke.data[0] === 4) {
+			minX = Math.min(minX, stroke.x3);
+			maxX = Math.max(maxX, stroke.x3);
+			minY = Math.min(minY, stroke.y3);
+			maxY = Math.max(maxY, stroke.y3);
+			if (stroke.a1 === 2 || stroke.a1 === 3 || stroke.a1 === 4) {
 				return;
 			}
-			minX = Math.min(minX, stroke.data[9]);
-			maxX = Math.max(maxX, stroke.data[9]);
-			minY = Math.min(minY, stroke.data[10]);
-			maxY = Math.max(maxY, stroke.data[10]);
+			minX = Math.min(minX, stroke.x4);
+			maxX = Math.max(maxX, stroke.x4);
+			minY = Math.min(minY, stroke.y4);
+			maxY = Math.max(maxY, stroke.y4);
 		});
 		return {
 			minX,
@@ -305,18 +305,18 @@ export class Kage {
 
 	private adjustHane(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
-			if ((stroke.data[0] === 1 || stroke.data[0] === 2 || stroke.data[0] === 6) && stroke.data[2] === 4) {
+			if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6) && stroke.a3 === 4) {
 				let lpx: number; // lastPointX
 				let lpy: number; // lastPointY
-				if (stroke.data[0] === 1) {
-					lpx = stroke.data[5];
-					lpy = stroke.data[6];
-				} else if (stroke.data[0] === 2) {
-					lpx = stroke.data[7];
-					lpy = stroke.data[8];
+				if (stroke.a1 === 1) {
+					lpx = stroke.x2;
+					lpy = stroke.y2;
+				} else if (stroke.a1 === 2) {
+					lpx = stroke.x3;
+					lpy = stroke.y3;
 				} else {
-					lpx = stroke.data[9];
-					lpy = stroke.data[10];
+					lpx = stroke.x4;
+					lpy = stroke.y4;
 				}
 				let mn = Infinity; // mostNear
 				if (lpx + 18 < 100) {
@@ -324,16 +324,16 @@ export class Kage {
 				}
 				strokesArray.forEach((stroke2, j) => {
 					if (i !== j
-						&& stroke2.data[0] === 1
-						&& stroke2.data[3] === stroke2.data[5] && stroke2.data[3] < lpx
-						&& stroke2.data[4] <= lpy && stroke2.data[6] >= lpy) {
-						if (lpx - stroke2.data[3] < 100) {
-							mn = Math.min(mn, lpx - stroke2.data[3]);
+						&& stroke2.a1 === 1
+						&& stroke2.x1 === stroke2.x2 && stroke2.x1 < lpx
+						&& stroke2.y1 <= lpy && stroke2.y2 >= lpy) {
+						if (lpx - stroke2.x1 < 100) {
+							mn = Math.min(mn, lpx - stroke2.x1);
 						}
 					}
 				});
 				if (mn !== Infinity) {
-					stroke.data[2] += 700 - Math.floor(mn / 15) * 100; // 0-99 -> 0-700
+					stroke.a3 += 700 - Math.floor(mn / 15) * 100; // 0-99 -> 0-700
 				}
 			}
 		});
@@ -342,24 +342,24 @@ export class Kage {
 
 	private adjustUroko(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
-			if (stroke.data[0] === 1 && stroke.data[2] === 0) { // no operation for TATE
+			if (stroke.a1 === 1 && stroke.a3 === 0) { // no operation for TATE
 				for (let k = 0; k < this.kAdjustUrokoLengthStep; k++) {
 					let tx;
 					let ty;
 					let tlen;
-					if (stroke.data[4] === stroke.data[6]) { // YOKO
-						tx = stroke.data[5] - this.kAdjustUrokoLine[k];
-						ty = stroke.data[6] - 0.5;
-						tlen = stroke.data[5] - stroke.data[3];
+					if (stroke.y1 === stroke.y2) { // YOKO
+						tx = stroke.x2 - this.kAdjustUrokoLine[k];
+						ty = stroke.y2 - 0.5;
+						tlen = stroke.x2 - stroke.x1;
 					} else {
-						const rad = Math.atan((stroke.data[6] - stroke.data[4]) / (stroke.data[5] - stroke.data[3]));
-						tx = stroke.data[5] - this.kAdjustUrokoLine[k] * Math.cos(rad) - 0.5 * Math.sin(rad);
-						ty = stroke.data[6] - this.kAdjustUrokoLine[k] * Math.sin(rad) - 0.5 * Math.cos(rad);
-						tlen = hypot(stroke.data[6] - stroke.data[4], stroke.data[5] - stroke.data[3]);
+						const rad = Math.atan((stroke.y2 - stroke.y1) / (stroke.x2 - stroke.x1));
+						tx = stroke.x2 - this.kAdjustUrokoLine[k] * Math.cos(rad) - 0.5 * Math.sin(rad);
+						ty = stroke.y2 - this.kAdjustUrokoLine[k] * Math.sin(rad) - 0.5 * Math.cos(rad);
+						tlen = hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
 					}
 					if (tlen < this.kAdjustUrokoLength[k]
-						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.data[5], stroke.data[6])) {
-						stroke.data[2] += (this.kAdjustUrokoLengthStep - k) * 100;
+						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
+						stroke.a3 += (this.kAdjustUrokoLengthStep - k) * 100;
 						break;
 					}
 				}
@@ -370,27 +370,27 @@ export class Kage {
 
 	private adjustUroko2(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
-			if (stroke.data[0] === 1 && stroke.data[2] === 0 && stroke.data[4] === stroke.data[6]) {
+			if (stroke.a1 === 1 && stroke.a3 === 0 && stroke.y1 === stroke.y2) {
 				let pressure = 0;
 				strokesArray.forEach((stroke2, j) => {
 					if (i !== j && (
 						(
-							stroke2.data[0] === 1
-							&& stroke2.data[4] === stroke2.data[6]
-							&& !(stroke.data[3] + 1 > stroke2.data[5] || stroke.data[5] - 1 < stroke2.data[3])
-							&& Math.abs(stroke.data[4] - stroke2.data[4]) < this.kAdjustUroko2Length
+							stroke2.a1 === 1
+							&& stroke2.y1 === stroke2.y2
+							&& !(stroke.x1 + 1 > stroke2.x2 || stroke.x2 - 1 < stroke2.x1)
+							&& Math.abs(stroke.y1 - stroke2.y1) < this.kAdjustUroko2Length
 						) || (
-							stroke2.data[0] === 3
-							&& stroke2.data[6] === stroke2.data[8]
-							&& !(stroke.data[3] + 1 > stroke2.data[7] || stroke.data[5] - 1 < stroke2.data[5])
-							&& Math.abs(stroke.data[4] - stroke2.data[6]) < this.kAdjustUroko2Length
+							stroke2.a1 === 3
+							&& stroke2.y2 === stroke2.y3
+							&& !(stroke.x1 + 1 > stroke2.x3 || stroke.x2 - 1 < stroke2.x2)
+							&& Math.abs(stroke.y1 - stroke2.y2) < this.kAdjustUroko2Length
 						))) {
-						pressure += (this.kAdjustUroko2Length - Math.abs(stroke.data[4] - stroke2.data[6])) ** 1.1;
+						pressure += (this.kAdjustUroko2Length - Math.abs(stroke.y1 - stroke2.y2)) ** 1.1;
 					}
 				});
 				const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
-				if (stroke.data[2] < result) {
-					stroke.data[2] = stroke.data[2] % 100
+				if (stroke.a3 < result) {
+					stroke.a3 = stroke.a3 % 100
 						+ Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
 				}
 			}
@@ -400,19 +400,19 @@ export class Kage {
 
 	private adjustTate(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
-			if ((stroke.data[0] === 1 || stroke.data[0] === 3 || stroke.data[0] === 7)
-				&& stroke.data[3] === stroke.data[5]) {
+			if ((stroke.a1 === 1 || stroke.a1 === 3 || stroke.a1 === 7)
+				&& stroke.x1 === stroke.x2) {
 				strokesArray.forEach((stroke2, j) => {
 					if (i !== j
-						&& (stroke2.data[0] === 1 || stroke2.data[0] === 3 || stroke2.data[0] === 7)
-						&& stroke2.data[3] === stroke2.data[5]
-						&& !(stroke.data[4] + 1 > stroke2.data[6] || stroke.data[6] - 1 < stroke2.data[4])
-						&& Math.abs(stroke.data[3] - stroke2.data[3]) < this.kMinWidthT * this.kAdjustTateStep) {
-						stroke.data[1] += (
-							this.kAdjustTateStep - Math.floor(Math.abs(stroke.data[3] - stroke2.data[3]) / this.kMinWidthT)
+						&& (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
+						&& stroke2.x1 === stroke2.x2
+						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
+						&& Math.abs(stroke.x1 - stroke2.x1) < this.kMinWidthT * this.kAdjustTateStep) {
+						stroke.a2 += (
+							this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT)
 						) * 1000;
-						if (stroke.data[1] > this.kAdjustTateStep * 1000) {
-							stroke.data[1] = stroke.data[1] % 1000 + this.kAdjustTateStep * 1000;
+						if (stroke.a2 > this.kAdjustTateStep * 1000) {
+							stroke.a2 = stroke.a2 % 1000 + this.kAdjustTateStep * 1000;
 						}
 					}
 				});
@@ -423,25 +423,25 @@ export class Kage {
 
 	private adjustMage(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
-			if (stroke.data[0] === 3 && stroke.data[6] === stroke.data[8]) {
+			if (stroke.a1 === 3 && stroke.y2 === stroke.y3) {
 				strokesArray.forEach((stroke2, j) => {
 					if (i !== j && (
 						(
-							stroke2.data[0] === 1
-							&& stroke2.data[4] === stroke2.data[6]
-							&& !(stroke.data[5] + 1 > stroke2.data[5] || stroke.data[7] - 1 < stroke2.data[3])
-							&& Math.abs(stroke.data[6] - stroke2.data[4]) < this.kMinWidthT * this.kAdjustMageStep
+							stroke2.a1 === 1
+							&& stroke2.y1 === stroke2.y2
+							&& !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
+							&& Math.abs(stroke.y2 - stroke2.y1) < this.kMinWidthT * this.kAdjustMageStep
 						) || (
-							stroke2.data[0] === 3
-							&& stroke2.data[6] === stroke2.data[8]
-							&& !(stroke.data[5] + 1 > stroke2.data[7] || stroke.data[7] - 1 < stroke2.data[5])
-							&& Math.abs(stroke.data[6] - stroke2.data[6]) < this.kMinWidthT * this.kAdjustMageStep
+							stroke2.a1 === 3
+							&& stroke2.y2 === stroke2.y3
+							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
+							&& Math.abs(stroke.y2 - stroke2.y2) < this.kMinWidthT * this.kAdjustMageStep
 						))) {
-						stroke.data[2] += (
-							this.kAdjustMageStep - Math.floor(Math.abs(stroke.data[6] - stroke2.data[6]) / this.kMinWidthT)
+						stroke.a3 += (
+							this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT)
 						) * 1000;
-						if (stroke.data[2] > this.kAdjustMageStep * 1000) {
-							stroke.data[2] = stroke.data[2] % 1000 + this.kAdjustMageStep * 1000;
+						if (stroke.a3 > this.kAdjustMageStep * 1000) {
+							stroke.a3 = stroke.a3 % 1000 + this.kAdjustMageStep * 1000;
 						}
 					}
 				});
@@ -452,13 +452,13 @@ export class Kage {
 
 	private adjustKirikuchi(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke) => {
-			if (stroke.data[0] === 2 && stroke.data[1] === 32
-				&& stroke.data[3] > stroke.data[5] && stroke.data[4] < stroke.data[6]) {
+			if (stroke.a1 === 2 && stroke.a2 === 32
+				&& stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
 				for (const stroke2 of strokesArray) { // no need to skip when i == j
-					if (stroke2.data[0] === 1
-						&& stroke2.data[3] < stroke.data[3] && stroke2.data[5] > stroke.data[3]
-						&& stroke2.data[4] === stroke.data[4] && stroke2.data[4] === stroke2.data[6]) {
-						stroke.data[1] = 132;
+					if (stroke2.a1 === 1
+						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1
+						&& stroke2.y1 === stroke.y1 && stroke2.y1 === stroke2.y2) {
+						stroke.a2 = 132;
 						break;
 					}
 				}
@@ -469,19 +469,19 @@ export class Kage {
 
 	private adjustKakato(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
-			if (stroke.data[0] === 1
-				&& (stroke.data[2] === 13 || stroke.data[2] === 23)) {
+			if (stroke.a1 === 1
+				&& (stroke.a3 === 13 || stroke.a3 === 23)) {
 				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
 					if (isCrossBoxWithOthers(
 						strokesArray, i,
-						stroke.data[5] - this.kAdjustKakatoRangeX / 2,
-						stroke.data[6] + this.kAdjustKakatoRangeY[k],
-						stroke.data[5] + this.kAdjustKakatoRangeX / 2,
-						stroke.data[6] + this.kAdjustKakatoRangeY[k + 1])
-						|| stroke.data[6] + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
-						|| stroke.data[6] - stroke.data[4] < this.kAdjustKakatoRangeY[k + 1] // for thin box
+						stroke.x2 - this.kAdjustKakatoRangeX / 2,
+						stroke.y2 + this.kAdjustKakatoRangeY[k],
+						stroke.x2 + this.kAdjustKakatoRangeX / 2,
+						stroke.y2 + this.kAdjustKakatoRangeY[k + 1])
+						|| stroke.y2 + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
+						|| stroke.y2 - stroke.y1 < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
-						stroke.data[2] += (3 - k) * 100;
+						stroke.a3 += (3 - k) * 100;
 						break;
 					}
 				}

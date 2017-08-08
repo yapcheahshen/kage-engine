@@ -71,7 +71,7 @@ export function isCrossBoxWithOthers(
 		if (i === j) {
 			continue;
 		}
-		switch (strokesArray[j].data[0]) {
+		switch (strokesArray[j].a1) {
 			case 0:
 			case 8:
 			case 9:
@@ -79,7 +79,7 @@ export function isCrossBoxWithOthers(
 			case 6:
 			case 7:
 				if (isCrossBox(
-					strokesArray[j].data[7], strokesArray[j].data[8], strokesArray[j].data[9], strokesArray[j].data[10],
+					strokesArray[j].x3, strokesArray[j].y3, strokesArray[j].x4, strokesArray[j].y4,
 					bx1, by1, bx2, by2)) {
 					return true;
 				}
@@ -88,14 +88,14 @@ export function isCrossBoxWithOthers(
 			case 12:
 			case 3:
 				if (isCrossBox(
-					strokesArray[j].data[5], strokesArray[j].data[6], strokesArray[j].data[7], strokesArray[j].data[8],
+					strokesArray[j].x2, strokesArray[j].y2, strokesArray[j].x3, strokesArray[j].y3,
 					bx1, by1, bx2, by2)) {
 					return true;
 				}
 			// falls through
 			default:
 				if (isCrossBox(
-					strokesArray[j].data[3], strokesArray[j].data[4], strokesArray[j].data[5], strokesArray[j].data[6],
+					strokesArray[j].x1, strokesArray[j].y1, strokesArray[j].x2, strokesArray[j].y2,
 					bx1, by1, bx2, by2)) {
 					return true;
 				}
@@ -111,7 +111,7 @@ export function isCrossWithOthers(
 		if (i === j) {
 			continue;
 		}
-		switch (strokesArray[j].data[0]) {
+		switch (strokesArray[j].a1) {
 			case 0:
 			case 8:
 			case 9:
@@ -119,7 +119,7 @@ export function isCrossWithOthers(
 			case 6:
 			case 7:
 				if (isCross(
-					strokesArray[j].data[7], strokesArray[j].data[8], strokesArray[j].data[9], strokesArray[j].data[10],
+					strokesArray[j].x3, strokesArray[j].y3, strokesArray[j].x4, strokesArray[j].y4,
 					bx1, by1, bx2, by2)) {
 					return true;
 				}
@@ -128,14 +128,14 @@ export function isCrossWithOthers(
 			case 12:
 			case 3:
 				if (isCross(
-					strokesArray[j].data[5], strokesArray[j].data[6], strokesArray[j].data[7], strokesArray[j].data[8],
+					strokesArray[j].x2, strokesArray[j].y2, strokesArray[j].x3, strokesArray[j].y3,
 					bx1, by1, bx2, by2)) {
 					return true;
 				}
 			// falls through
 			default:
 				if (isCross(
-					strokesArray[j].data[3], strokesArray[j].data[4], strokesArray[j].data[5], strokesArray[j].data[6],
+					strokesArray[j].x1, strokesArray[j].y1, strokesArray[j].x2, strokesArray[j].y2,
 					bx1, by1, bx2, by2)) {
 					return true;
 				}
