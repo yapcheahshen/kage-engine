@@ -10,7 +10,7 @@
     "build:ts": "tsc",
     "build:browser": "browserify lib/browser.js -o dist/kage.js",
     "clean": "rm lib/* dist/*",
-    "lint": "tslint -p .",
+    "lint": "tslint -p . && eslint test",
     "test": "node test/index.js"
   },
   "repository": {

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 const {Kage, Polygons} = require("../lib/");
 
 function testKage(buhins, name, result, curve = false) {
