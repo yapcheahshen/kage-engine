@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
-// Reference : http://www.cam.hi-ho.ne.jp/strong_warriors/teacher/chapter0{4,5}.html
 Object.defineProperty(exports, "__esModule", { value: true });
+// Reference : http://www.cam.hi-ho.ne.jp/strong_warriors/teacher/chapter0{4,5}.html
 /** Cross product of two vectors */
 function cross(x1, y1, x2, y2) {
     return x1 * y2 - x2 * y1;
@@ -58,26 +58,26 @@ function isCrossBoxWithOthers(strokesArray, i, bx1, by1, bx2, by2) {
         if (i === j) {
             continue;
         }
-        switch (strokesArray[j][0]) {
+        switch (strokesArray[j].a1) {
             case 0:
             case 8:
             case 9:
                 break;
             case 6:
             case 7:
-                if (isCrossBox(strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10], bx1, by1, bx2, by2)) {
+                if (isCrossBox(strokesArray[j].x3, strokesArray[j].y3, strokesArray[j].x4, strokesArray[j].y4, bx1, by1, bx2, by2)) {
                     return true;
                 }
             // falls through
             case 2:
             case 12:
             case 3:
-                if (isCrossBox(strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8], bx1, by1, bx2, by2)) {
+                if (isCrossBox(strokesArray[j].x2, strokesArray[j].y2, strokesArray[j].x3, strokesArray[j].y3, bx1, by1, bx2, by2)) {
                     return true;
                 }
             // falls through
             default:
-                if (isCrossBox(strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6], bx1, by1, bx2, by2)) {
+                if (isCrossBox(strokesArray[j].x1, strokesArray[j].y1, strokesArray[j].x2, strokesArray[j].y2, bx1, by1, bx2, by2)) {
                     return true;
                 }
         }
@@ -90,26 +90,26 @@ function isCrossWithOthers(strokesArray, i, bx1, by1, bx2, by2) {
         if (i === j) {
             continue;
         }
-        switch (strokesArray[j][0]) {
+        switch (strokesArray[j].a1) {
             case 0:
             case 8:
             case 9:
                 break;
             case 6:
             case 7:
-                if (isCross(strokesArray[j][7], strokesArray[j][8], strokesArray[j][9], strokesArray[j][10], bx1, by1, bx2, by2)) {
+                if (isCross(strokesArray[j].x3, strokesArray[j].y3, strokesArray[j].x4, strokesArray[j].y4, bx1, by1, bx2, by2)) {
                     return true;
                 }
             // falls through
             case 2:
             case 12:
             case 3:
-                if (isCross(strokesArray[j][5], strokesArray[j][6], strokesArray[j][7], strokesArray[j][8], bx1, by1, bx2, by2)) {
+                if (isCross(strokesArray[j].x2, strokesArray[j].y2, strokesArray[j].x3, strokesArray[j].y3, bx1, by1, bx2, by2)) {
                     return true;
                 }
             // falls through
             default:
-                if (isCross(strokesArray[j][3], strokesArray[j][4], strokesArray[j][5], strokesArray[j][6], bx1, by1, bx2, by2)) {
+                if (isCross(strokesArray[j].x1, strokesArray[j].y1, strokesArray[j].x2, strokesArray[j].y2, bx1, by1, bx2, by2)) {
                     return true;
                 }
         }
@@ -227,7 +227,7 @@ function get_candidate(kage, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4) {
 }
 exports.get_candidate = get_candidate;
 
-},{"./util":11}],5:[function(require,module,exports){
+},{"./util":12}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var kage_1 = require("./kage");
@@ -242,6 +242,7 @@ var _2d_1 = require("./2d");
 var buhin_1 = require("./buhin");
 var kagedf_1 = require("./kagedf");
 var polygons_1 = require("./polygons");
+var stroke_1 = require("./stroke");
 var util_1 = require("./util");
 var KShotai;
 (function (KShotai) {
@@ -250,7 +251,7 @@ var KShotai;
 })(KShotai = exports.KShotai || (exports.KShotai = {}));
 var Kage = (function () {
     function Kage(size) {
-        // TODO: must be static
+        // TODO: should be static
         this.kMincho = KShotai.kMincho;
         this.kGothic = KShotai.kGothic;
         // properties
@@ -310,7 +311,7 @@ var Kage = (function () {
         if (data !== "") {
             var strokesArray = this.adjustKirikuchi(this.adjustUroko2(this.adjustUroko(this.adjustKakato(this.adjustTate(this.adjustMage(this.adjustHane(this.getEachStrokes(data))))))));
             strokesArray.forEach(function (stroke) {
-                kagedf_1.dfDrawFont(_this, polygons, stroke[0], stroke[1], stroke[2], stroke[3], stroke[4], stroke[5], stroke[6], stroke[7], stroke[8], stroke[9], stroke[10]);
+                kagedf_1.dfDrawFont(_this, polygons, stroke.a1, stroke.a2, stroke.a3, stroke.x1, stroke.y1, stroke.x2, stroke.y2, stroke.x3, stroke.y3, stroke.x4, stroke.y4);
             });
         }
     };
@@ -321,7 +322,7 @@ var Kage = (function () {
             var strokesArray = this.adjustKirikuchi(this.adjustUroko2(this.adjustUroko(this.adjustKakato(this.adjustTate(this.adjustMage(this.adjustHane(this.getEachStrokes(data))))))));
             strokesArray.forEach(function (stroke) {
                 var polygons = new polygons_1.Polygons();
-                kagedf_1.dfDrawFont(_this, polygons, stroke[0], stroke[1], stroke[2], stroke[3], stroke[4], stroke[5], stroke[6], stroke[7], stroke[8], stroke[9], stroke[10]);
+                kagedf_1.dfDrawFont(_this, polygons, stroke.a1, stroke.a2, stroke.a3, stroke.x1, stroke.y1, stroke.x2, stroke.y2, stroke.x3, stroke.y3, stroke.x4, stroke.y4);
                 result.push(polygons);
             });
         }
@@ -334,7 +335,7 @@ var Kage = (function () {
         strokes.forEach(function (stroke) {
             var columns = stroke.split(":");
             if (Math.floor(+columns[0]) !== 99) {
-                strokesArray.push([
+                strokesArray.push(new stroke_1.Stroke([
                     Math.floor(+columns[0]),
                     Math.floor(+columns[1]),
                     Math.floor(+columns[2]),
@@ -346,7 +347,7 @@ var Kage = (function () {
                     Math.floor(+columns[8]),
                     Math.floor(+columns[9]),
                     Math.floor(+columns[10]),
-                ]);
+                ]));
             }
             else {
                 var buhin = _this.kBuhin.search(columns[7]);
@@ -373,28 +374,28 @@ var Kage = (function () {
         }
         temp.forEach(function (stroke) {
             if (sx !== 0 || sy !== 0) {
-                stroke[3] = _this.stretch(sx, sx2, stroke[3], box.minX, box.maxX);
-                stroke[4] = _this.stretch(sy, sy2, stroke[4], box.minY, box.maxY);
-                stroke[5] = _this.stretch(sx, sx2, stroke[5], box.minX, box.maxX);
-                stroke[6] = _this.stretch(sy, sy2, stroke[6], box.minY, box.maxY);
-                if (stroke[0] !== 99) {
-                    stroke[7] = _this.stretch(sx, sx2, stroke[7], box.minX, box.maxX);
-                    stroke[8] = _this.stretch(sy, sy2, stroke[8], box.minY, box.maxY);
-                    stroke[9] = _this.stretch(sx, sx2, stroke[9], box.minX, box.maxX);
-                    stroke[10] = _this.stretch(sy, sy2, stroke[10], box.minY, box.maxY);
+                stroke.x1 = _this.stretch(sx, sx2, stroke.x1, box.minX, box.maxX);
+                stroke.y1 = _this.stretch(sy, sy2, stroke.y1, box.minY, box.maxY);
+                stroke.x2 = _this.stretch(sx, sx2, stroke.x2, box.minX, box.maxX);
+                stroke.y2 = _this.stretch(sy, sy2, stroke.y2, box.minY, box.maxY);
+                if (stroke.a1 !== 99) {
+                    stroke.x3 = _this.stretch(sx, sx2, stroke.x3, box.minX, box.maxX);
+                    stroke.y3 = _this.stretch(sy, sy2, stroke.y3, box.minY, box.maxY);
+                    stroke.x4 = _this.stretch(sx, sx2, stroke.x4, box.minX, box.maxX);
+                    stroke.y4 = _this.stretch(sy, sy2, stroke.y4, box.minY, box.maxY);
                 }
             }
-            result.push([
-                stroke[0], stroke[1], stroke[2],
-                x1 + stroke[3] * (x2 - x1) / 200,
-                y1 + stroke[4] * (y2 - y1) / 200,
-                x1 + stroke[5] * (x2 - x1) / 200,
-                y1 + stroke[6] * (y2 - y1) / 200,
-                x1 + stroke[7] * (x2 - x1) / 200,
-                y1 + stroke[8] * (y2 - y1) / 200,
-                x1 + stroke[9] * (x2 - x1) / 200,
-                y1 + stroke[10] * (y2 - y1) / 200,
-            ]);
+            result.push(new stroke_1.Stroke([
+                stroke.a1, stroke.a2, stroke.a3,
+                x1 + stroke.x1 * (x2 - x1) / 200,
+                y1 + stroke.y1 * (y2 - y1) / 200,
+                x1 + stroke.x2 * (x2 - x1) / 200,
+                y1 + stroke.y2 * (y2 - y1) / 200,
+                x1 + stroke.x3 * (x2 - x1) / 200,
+                y1 + stroke.y3 * (y2 - y1) / 200,
+                x1 + stroke.x4 * (x2 - x1) / 200,
+                y1 + stroke.y4 * (y2 - y1) / 200,
+            ]));
         });
         return result;
     };
@@ -405,30 +406,30 @@ var Kage = (function () {
         var maxY = 0;
         var strokes = this.getEachStrokes(glyph);
         strokes.forEach(function (stroke) {
-            if (stroke[0] === 0) {
+            if (stroke.a1 === 0) {
                 return;
             }
-            minX = Math.min(minX, stroke[3], stroke[5]);
-            maxX = Math.max(maxX, stroke[3], stroke[5]);
-            minY = Math.min(minY, stroke[4], stroke[6]);
-            maxY = Math.max(maxY, stroke[4], stroke[6]);
-            if (stroke[0] === 1) {
+            minX = Math.min(minX, stroke.x1, stroke.x2);
+            maxX = Math.max(maxX, stroke.x1, stroke.x2);
+            minY = Math.min(minY, stroke.y1, stroke.y2);
+            maxY = Math.max(maxY, stroke.y1, stroke.y2);
+            if (stroke.a1 === 1) {
                 return;
             }
-            if (stroke[0] === 99) {
+            if (stroke.a1 === 99) {
                 return;
             }
-            minX = Math.min(minX, stroke[7]);
-            maxX = Math.max(maxX, stroke[7]);
-            minY = Math.min(minY, stroke[8]);
-            maxY = Math.max(maxY, stroke[8]);
-            if (stroke[0] === 2 || stroke[0] === 3 || stroke[0] === 4) {
+            minX = Math.min(minX, stroke.x3);
+            maxX = Math.max(maxX, stroke.x3);
+            minY = Math.min(minY, stroke.y3);
+            maxY = Math.max(maxY, stroke.y3);
+            if (stroke.a1 === 2 || stroke.a1 === 3 || stroke.a1 === 4) {
                 return;
             }
-            minX = Math.min(minX, stroke[9]);
-            maxX = Math.max(maxX, stroke[9]);
-            minY = Math.min(minY, stroke[10]);
-            maxY = Math.max(maxY, stroke[10]);
+            minX = Math.min(minX, stroke.x4);
+            maxX = Math.max(maxX, stroke.x4);
+            minY = Math.min(minY, stroke.y4);
+            maxY = Math.max(maxY, stroke.y4);
         });
         return {
             minX: minX,
@@ -458,20 +459,20 @@ var Kage = (function () {
     };
     Kage.prototype.adjustHane = function (strokesArray) {
         strokesArray.forEach(function (stroke, i) {
-            if ((stroke[0] === 1 || stroke[0] === 2 || stroke[0] === 6) && stroke[2] === 4) {
+            if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6) && stroke.a3 === 4) {
                 var lpx_1; // lastPointX
                 var lpy_1; // lastPointY
-                if (stroke[0] === 1) {
-                    lpx_1 = stroke[5];
-                    lpy_1 = stroke[6];
+                if (stroke.a1 === 1) {
+                    lpx_1 = stroke.x2;
+                    lpy_1 = stroke.y2;
                 }
-                else if (stroke[0] === 2) {
-                    lpx_1 = stroke[7];
-                    lpy_1 = stroke[8];
+                else if (stroke.a1 === 2) {
+                    lpx_1 = stroke.x3;
+                    lpy_1 = stroke.y3;
                 }
                 else {
-                    lpx_1 = stroke[9];
-                    lpy_1 = stroke[10];
+                    lpx_1 = stroke.x4;
+                    lpy_1 = stroke.y4;
                 }
                 var mn_1 = Infinity; // mostNear
                 if (lpx_1 + 18 < 100) {
@@ -479,16 +480,16 @@ var Kage = (function () {
                 }
                 strokesArray.forEach(function (stroke2, j) {
                     if (i !== j
-                        && stroke2[0] === 1
-                        && stroke2[3] === stroke2[5] && stroke2[3] < lpx_1
-                        && stroke2[4] <= lpy_1 && stroke2[6] >= lpy_1) {
-                        if (lpx_1 - stroke2[3] < 100) {
-                            mn_1 = Math.min(mn_1, lpx_1 - stroke2[3]);
+                        && stroke2.a1 === 1
+                        && stroke2.x1 === stroke2.x2 && stroke2.x1 < lpx_1
+                        && stroke2.y1 <= lpy_1 && stroke2.y2 >= lpy_1) {
+                        if (lpx_1 - stroke2.x1 < 100) {
+                            mn_1 = Math.min(mn_1, lpx_1 - stroke2.x1);
                         }
                     }
                 });
                 if (mn_1 !== Infinity) {
-                    stroke[2] += 700 - Math.floor(mn_1 / 15) * 100; // 0-99 -> 0-700
+                    stroke.a3 += 700 - Math.floor(mn_1 / 15) * 100; // 0-99 -> 0-700
                 }
             }
         });
@@ -497,25 +498,25 @@ var Kage = (function () {
     Kage.prototype.adjustUroko = function (strokesArray) {
         var _this = this;
         strokesArray.forEach(function (stroke, i) {
-            if (stroke[0] === 1 && stroke[2] === 0) {
+            if (stroke.a1 === 1 && stroke.a3 === 0) {
                 for (var k = 0; k < _this.kAdjustUrokoLengthStep; k++) {
                     var tx = void 0;
                     var ty = void 0;
                     var tlen = void 0;
-                    if (stroke[4] === stroke[6]) {
-                        tx = stroke[5] - _this.kAdjustUrokoLine[k];
-                        ty = stroke[6] - 0.5;
-                        tlen = stroke[5] - stroke[3];
+                    if (stroke.y1 === stroke.y2) {
+                        tx = stroke.x2 - _this.kAdjustUrokoLine[k];
+                        ty = stroke.y2 - 0.5;
+                        tlen = stroke.x2 - stroke.x1;
                     }
                     else {
-                        var rad = Math.atan((stroke[6] - stroke[4]) / (stroke[5] - stroke[3]));
-                        tx = stroke[5] - _this.kAdjustUrokoLine[k] * Math.cos(rad) - 0.5 * Math.sin(rad);
-                        ty = stroke[6] - _this.kAdjustUrokoLine[k] * Math.sin(rad) - 0.5 * Math.cos(rad);
-                        tlen = util_1.hypot(stroke[6] - stroke[4], stroke[5] - stroke[3]);
+                        var rad = Math.atan((stroke.y2 - stroke.y1) / (stroke.x2 - stroke.x1));
+                        tx = stroke.x2 - _this.kAdjustUrokoLine[k] * Math.cos(rad) - 0.5 * Math.sin(rad);
+                        ty = stroke.y2 - _this.kAdjustUrokoLine[k] * Math.sin(rad) - 0.5 * Math.cos(rad);
+                        tlen = util_1.hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
                     }
                     if (tlen < _this.kAdjustUrokoLength[k]
-                        || _2d_1.isCrossWithOthers(strokesArray, i, tx, ty, stroke[5], stroke[6])) {
-                        stroke[2] += (_this.kAdjustUrokoLengthStep - k) * 100;
+                        || _2d_1.isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
+                        stroke.a3 += (_this.kAdjustUrokoLengthStep - k) * 100;
                         break;
                     }
                 }
@@ -526,22 +527,22 @@ var Kage = (function () {
     Kage.prototype.adjustUroko2 = function (strokesArray) {
         var _this = this;
         strokesArray.forEach(function (stroke, i) {
-            if (stroke[0] === 1 && stroke[2] === 0 && stroke[4] === stroke[6]) {
+            if (stroke.a1 === 1 && stroke.a3 === 0 && stroke.y1 === stroke.y2) {
                 var pressure_1 = 0;
                 strokesArray.forEach(function (stroke2, j) {
-                    if (i !== j && ((stroke2[0] === 1
-                        && stroke2[4] === stroke2[6]
-                        && !(stroke[3] + 1 > stroke2[5] || stroke[5] - 1 < stroke2[3])
-                        && Math.abs(stroke[4] - stroke2[4]) < _this.kAdjustUroko2Length) || (stroke2[0] === 3
-                        && stroke2[6] === stroke2[8]
-                        && !(stroke[3] + 1 > stroke2[7] || stroke[5] - 1 < stroke2[5])
-                        && Math.abs(stroke[4] - stroke2[6]) < _this.kAdjustUroko2Length))) {
-                        pressure_1 += Math.pow((_this.kAdjustUroko2Length - Math.abs(stroke[4] - stroke2[6])), 1.1);
+                    if (i !== j && ((stroke2.a1 === 1
+                        && stroke2.y1 === stroke2.y2
+                        && !(stroke.x1 + 1 > stroke2.x2 || stroke.x2 - 1 < stroke2.x1)
+                        && Math.abs(stroke.y1 - stroke2.y1) < _this.kAdjustUroko2Length) || (stroke2.a1 === 3
+                        && stroke2.y2 === stroke2.y3
+                        && !(stroke.x1 + 1 > stroke2.x3 || stroke.x2 - 1 < stroke2.x2)
+                        && Math.abs(stroke.y1 - stroke2.y2) < _this.kAdjustUroko2Length))) {
+                        pressure_1 += Math.pow((_this.kAdjustUroko2Length - Math.abs(stroke.y1 - stroke2.y2)), 1.1);
                     }
                 });
                 var result = Math.min(Math.floor(pressure_1 / _this.kAdjustUroko2Length), _this.kAdjustUroko2Step) * 100;
-                if (stroke[2] < result) {
-                    stroke[2] = stroke[2] % 100
+                if (stroke.a3 < result) {
+                    stroke.a3 = stroke.a3 % 100
                         + Math.min(Math.floor(pressure_1 / _this.kAdjustUroko2Length), _this.kAdjustUroko2Step) * 100;
                 }
             }
@@ -551,17 +552,17 @@ var Kage = (function () {
     Kage.prototype.adjustTate = function (strokesArray) {
         var _this = this;
         strokesArray.forEach(function (stroke, i) {
-            if ((stroke[0] === 1 || stroke[0] === 3 || stroke[0] === 7)
-                && stroke[3] === stroke[5]) {
+            if ((stroke.a1 === 1 || stroke.a1 === 3 || stroke.a1 === 7)
+                && stroke.x1 === stroke.x2) {
                 strokesArray.forEach(function (stroke2, j) {
                     if (i !== j
-                        && (stroke2[0] === 1 || stroke2[0] === 3 || stroke2[0] === 7)
-                        && stroke2[3] === stroke2[5]
-                        && !(stroke[4] + 1 > stroke2[6] || stroke[6] - 1 < stroke2[4])
-                        && Math.abs(stroke[3] - stroke2[3]) < _this.kMinWidthT * _this.kAdjustTateStep) {
-                        stroke[1] += (_this.kAdjustTateStep - Math.floor(Math.abs(stroke[3] - stroke2[3]) / _this.kMinWidthT)) * 1000;
-                        if (stroke[1] > _this.kAdjustTateStep * 1000) {
-                            stroke[1] = stroke[1] % 1000 + _this.kAdjustTateStep * 1000;
+                        && (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
+                        && stroke2.x1 === stroke2.x2
+                        && !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
+                        && Math.abs(stroke.x1 - stroke2.x1) < _this.kMinWidthT * _this.kAdjustTateStep) {
+                        stroke.a2 += (_this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / _this.kMinWidthT)) * 1000;
+                        if (stroke.a2 > _this.kAdjustTateStep * 1000) {
+                            stroke.a2 = stroke.a2 % 1000 + _this.kAdjustTateStep * 1000;
                         }
                     }
                 });
@@ -572,18 +573,18 @@ var Kage = (function () {
     Kage.prototype.adjustMage = function (strokesArray) {
         var _this = this;
         strokesArray.forEach(function (stroke, i) {
-            if (stroke[0] === 3 && stroke[6] === stroke[8]) {
+            if (stroke.a1 === 3 && stroke.y2 === stroke.y3) {
                 strokesArray.forEach(function (stroke2, j) {
-                    if (i !== j && ((stroke2[0] === 1
-                        && stroke2[4] === stroke2[6]
-                        && !(stroke[5] + 1 > stroke2[5] || stroke[7] - 1 < stroke2[3])
-                        && Math.abs(stroke[6] - stroke2[4]) < _this.kMinWidthT * _this.kAdjustMageStep) || (stroke2[0] === 3
-                        && stroke2[6] === stroke2[8]
-                        && !(stroke[5] + 1 > stroke2[7] || stroke[7] - 1 < stroke2[5])
-                        && Math.abs(stroke[6] - stroke2[6]) < _this.kMinWidthT * _this.kAdjustMageStep))) {
-                        stroke[2] += (_this.kAdjustMageStep - Math.floor(Math.abs(stroke[6] - stroke2[6]) / _this.kMinWidthT)) * 1000;
-                        if (stroke[2] > _this.kAdjustMageStep * 1000) {
-                            stroke[2] = stroke[2] % 1000 + _this.kAdjustMageStep * 1000;
+                    if (i !== j && ((stroke2.a1 === 1
+                        && stroke2.y1 === stroke2.y2
+                        && !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
+                        && Math.abs(stroke.y2 - stroke2.y1) < _this.kMinWidthT * _this.kAdjustMageStep) || (stroke2.a1 === 3
+                        && stroke2.y2 === stroke2.y3
+                        && !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
+                        && Math.abs(stroke.y2 - stroke2.y2) < _this.kMinWidthT * _this.kAdjustMageStep))) {
+                        stroke.a3 += (_this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / _this.kMinWidthT)) * 1000;
+                        if (stroke.a3 > _this.kAdjustMageStep * 1000) {
+                            stroke.a3 = stroke.a3 % 1000 + _this.kAdjustMageStep * 1000;
                         }
                     }
                 });
@@ -593,14 +594,14 @@ var Kage = (function () {
     };
     Kage.prototype.adjustKirikuchi = function (strokesArray) {
         strokesArray.forEach(function (stroke) {
-            if (stroke[0] === 2 && stroke[1] === 32
-                && stroke[3] > stroke[5] && stroke[4] < stroke[6]) {
+            if (stroke.a1 === 2 && stroke.a2 === 32
+                && stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
                 for (var _i = 0, strokesArray_1 = strokesArray; _i < strokesArray_1.length; _i++) {
                     var stroke2 = strokesArray_1[_i];
-                    if (stroke2[0] === 1
-                        && stroke2[3] < stroke[3] && stroke2[5] > stroke[3]
-                        && stroke2[4] === stroke[4] && stroke2[4] === stroke[6]) {
-                        stroke[1] = 132;
+                    if (stroke2.a1 === 1
+                        && stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1
+                        && stroke2.y1 === stroke.y1 && stroke2.y1 === stroke2.y2) {
+                        stroke.a2 = 132;
                         break;
                     }
                 }
@@ -611,14 +612,14 @@ var Kage = (function () {
     Kage.prototype.adjustKakato = function (strokesArray) {
         var _this = this;
         strokesArray.forEach(function (stroke, i) {
-            if (stroke[0] === 1
-                && (stroke[2] === 13 || stroke[2] === 23)) {
+            if (stroke.a1 === 1
+                && (stroke.a3 === 13 || stroke.a3 === 23)) {
                 for (var k = 0; k < _this.kAdjustKakatoStep; k++) {
-                    if (_2d_1.isCrossBoxWithOthers(strokesArray, i, stroke[5] - _this.kAdjustKakatoRangeX / 2, stroke[6] + _this.kAdjustKakatoRangeY[k], stroke[5] + _this.kAdjustKakatoRangeX / 2, stroke[6] + _this.kAdjustKakatoRangeY[k + 1])
-                        || stroke[6] + _this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
-                        || stroke[6] - stroke[4] < _this.kAdjustKakatoRangeY[k + 1] // for thin box
+                    if (_2d_1.isCrossBoxWithOthers(strokesArray, i, stroke.x2 - _this.kAdjustKakatoRangeX / 2, stroke.y2 + _this.kAdjustKakatoRangeY[k], stroke.x2 + _this.kAdjustKakatoRangeX / 2, stroke.y2 + _this.kAdjustKakatoRangeY[k + 1])
+                        || stroke.y2 + _this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
+                        || stroke.y2 - stroke.y1 < _this.kAdjustKakatoRangeY[k + 1] // for thin box
                     ) {
-                        stroke[2] += (3 - k) * 100;
+                        stroke.a3 += (3 - k) * 100;
                         break;
                     }
                 }
@@ -630,7 +631,7 @@ var Kage = (function () {
 }());
 exports.Kage = Kage;
 
-},{"./2d":1,"./buhin":3,"./kagedf":8,"./polygons":10,"./util":11}],7:[function(require,module,exports){
+},{"./2d":1,"./buhin":3,"./kagedf":8,"./polygons":10,"./stroke":11,"./util":12}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var curve_1 = require("./curve");
@@ -1709,7 +1710,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 }
 exports.cdDrawLine = cdDrawLine;
 
-},{"./curve":4,"./kage":6,"./polygon":9,"./util":11}],8:[function(require,module,exports){
+},{"./curve":4,"./kage":6,"./polygon":9,"./util":12}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var kagecd_1 = require("./kagecd");
@@ -1992,7 +1993,7 @@ function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x4, y4) 
 }
 exports.dfDrawFont = dfDrawFont;
 
-},{"./kagecd":7,"./util":11}],9:[function(require,module,exports){
+},{"./kagecd":7,"./util":12}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Polygon = (function () {
@@ -2148,6 +2149,17 @@ var Polygons = (function () {
 exports.Polygons = Polygons;
 
 },{}],11:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Stroke = (function () {
+    function Stroke(data) {
+        this.a1 = data[0], this.a2 = data[1], this.a3 = data[2], this.x1 = data[3], this.y1 = data[4], this.x2 = data[5], this.y2 = data[6], this.x3 = data[7], this.y3 = data[8], this.x4 = data[9], this.y4 = data[10];
+    }
+    return Stroke;
+}());
+exports.Stroke = Stroke;
+
+},{}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.hypot = Math.hypot || (function (x, y) { return Math.sqrt(x * x + y * y); });
