@@ -192,9 +192,8 @@ export class Kage {
 		x2: number, y2: number,
 		sx: number, sy: number,
 		sx2: number, sy2: number) {
-		const temp = this.getEachStrokes(buhin);
-		const result: Stroke[] = [];
-		const box = this.getBox(buhin);
+		const strokes = this.getEachStrokes(buhin);
+		const box = this.getBox(strokes);
 		if (sx !== 0 || sy !== 0) {
 			if (sx > 100) {
 				sx -= 200;
@@ -203,32 +202,28 @@ export class Kage {
 				sy2 = 0;
 			}
 		}
-		temp.forEach((stroke) => {
+		strokes.forEach((stroke) => {
 			if (sx !== 0 || sy !== 0) {
 				stroke.stretch(sx, sx2, sy, sy2, box.minX, box.maxX, box.minY, box.maxY);
 			}
-			result.push(new Stroke([
-				stroke.a1, stroke.a2, stroke.a3,
-				x1 + stroke.x1 * (x2 - x1) / 200,
-				y1 + stroke.y1 * (y2 - y1) / 200,
-				x1 + stroke.x2 * (x2 - x1) / 200,
-				y1 + stroke.y2 * (y2 - y1) / 200,
-				x1 + stroke.x3 * (x2 - x1) / 200,
-				y1 + stroke.y3 * (y2 - y1) / 200,
-				x1 + stroke.x4 * (x2 - x1) / 200,
-				y1 + stroke.y4 * (y2 - y1) / 200,
-			]));
+			stroke.x1 = x1 + stroke.x1 * (x2 - x1) / 200;
+			stroke.y1 = y1 + stroke.y1 * (y2 - y1) / 200;
+			stroke.x2 = x1 + stroke.x2 * (x2 - x1) / 200;
+			stroke.y2 = y1 + stroke.y2 * (y2 - y1) / 200;
+			stroke.x3 = x1 + stroke.x3 * (x2 - x1) / 200;
+			stroke.y3 = y1 + stroke.y3 * (y2 - y1) / 200;
+			stroke.x4 = x1 + stroke.x4 * (x2 - x1) / 200;
+			stroke.y4 = y1 + stroke.y4 * (y2 - y1) / 200;
 		});
-		return result;
+		return strokes;
 	}
 
-	private getBox(glyph: string) {
+	private getBox(strokes: Stroke[]) {
 		let minX = 200;
 		let minY = 200;
 		let maxX = 0;
 		let maxY = 0;
 
-		const strokes = this.getEachStrokes(glyph);
 		strokes.forEach((stroke) => {
 			const {
 				minX: sminX,
