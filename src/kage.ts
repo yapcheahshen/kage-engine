@@ -127,14 +127,7 @@ export class Kage {
 									this.adjustHane(
 										this.getEachStrokes(data))))))));
 			strokesArray.forEach((stroke) => {
-				dfDrawFont(
-					this, polygons,
-					stroke.a1,
-					stroke.a2, stroke.a3,
-					stroke.x1, stroke.y1,
-					stroke.x2, stroke.y2,
-					stroke.x3, stroke.y3,
-					stroke.x4, stroke.y4);
+				dfDrawFont(this, polygons, stroke);
 			});
 		}
 	}
@@ -152,14 +145,7 @@ export class Kage {
 										this.getEachStrokes(data))))))));
 			strokesArray.forEach((stroke) => {
 				const polygons = new Polygons();
-				dfDrawFont(
-					this, polygons,
-					stroke.a1,
-					stroke.a2, stroke.a3,
-					stroke.x1, stroke.y1,
-					stroke.x2, stroke.y2,
-					stroke.x3, stroke.y3,
-					stroke.x4, stroke.y4);
+				dfDrawFont(this, polygons, stroke);
 				result.push(polygons);
 			});
 		}

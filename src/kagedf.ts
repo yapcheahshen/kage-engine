@@ -1,13 +1,12 @@
 import { Kage } from "./kage";
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./kagecd";
 import { Polygons } from "./polygons";
+import { Stroke } from "./stroke";
 import { hypot, normalize } from "./util";
 
 export function dfDrawFont(
 	kage: Kage, polygons: Polygons,
-	a1: number, a2: number, a3: number,
-	x1: number, y1: number, x2: number, y2: number,
-	x3: number, y3: number, x4: number, y4: number) {
+	{ a1, a2, a3, x1, y1, x2, y2, x3, y3, x4, y4 }: Stroke) {
 
 	if (kage.kShotai === kage.kMincho) {
 		switch (a1 % 100) { // ... no need to divide
