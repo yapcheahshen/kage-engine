@@ -152,7 +152,7 @@ export class Kage {
 		return result;
 	}
 
-	public getEachStrokes(glyphData: string) {
+	private getEachStrokes(glyphData: string) {
 		let strokesArray: Stroke[] = [];
 		const strokes = glyphData.split("$");
 		strokes.forEach((stroke) => {
@@ -186,7 +186,7 @@ export class Kage {
 		return strokesArray;
 	}
 
-	public getEachStrokesOfBuhin(
+	private getEachStrokesOfBuhin(
 		buhin: string,
 		x1: number, y1: number,
 		x2: number, y2: number,
@@ -222,7 +222,7 @@ export class Kage {
 		return result;
 	}
 
-	public getBox(glyph: string) {
+	private getBox(glyph: string) {
 		let minX = 200;
 		let minY = 200;
 		let maxX = 0;
