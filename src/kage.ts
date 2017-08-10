@@ -276,6 +276,81 @@ export class Kage {
 		return strokesArray;
 	}
 
+	private adjustMage(strokesArray: Stroke[]) {
+		strokesArray.forEach((stroke, i) => {
+			if (stroke.a1 === 3 && stroke.y2 === stroke.y3) {
+				strokesArray.forEach((stroke2, j) => {
+					if (i !== j && (
+						(
+							stroke2.a1 === 1
+							&& stroke2.y1 === stroke2.y2
+							&& !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
+							&& Math.abs(stroke.y2 - stroke2.y1) < this.kMinWidthT * this.kAdjustMageStep
+						) || (
+							stroke2.a1 === 3
+							&& stroke2.y2 === stroke2.y3
+							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
+							&& Math.abs(stroke.y2 - stroke2.y2) < this.kMinWidthT * this.kAdjustMageStep
+						))) {
+						stroke.a3 += (
+							this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT)
+						) * 1000;
+						if (stroke.a3 > this.kAdjustMageStep * 1000) {
+							stroke.a3 = stroke.a3 % 1000 + this.kAdjustMageStep * 1000;
+						}
+					}
+				});
+			}
+		});
+		return strokesArray;
+	}
+
+	private adjustTate(strokesArray: Stroke[]) {
+		strokesArray.forEach((stroke, i) => {
+			if ((stroke.a1 === 1 || stroke.a1 === 3 || stroke.a1 === 7)
+				&& stroke.x1 === stroke.x2) {
+				strokesArray.forEach((stroke2, j) => {
+					if (i !== j
+						&& (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
+						&& stroke2.x1 === stroke2.x2
+						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
+						&& Math.abs(stroke.x1 - stroke2.x1) < this.kMinWidthT * this.kAdjustTateStep) {
+						stroke.a2 += (
+							this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT)
+						) * 1000;
+						if (stroke.a2 > this.kAdjustTateStep * 1000) {
+							stroke.a2 = stroke.a2 % 1000 + this.kAdjustTateStep * 1000;
+						}
+					}
+				});
+			}
+		});
+		return strokesArray;
+	}
+
+	private adjustKakato(strokesArray: Stroke[]) {
+		strokesArray.forEach((stroke, i) => {
+			if (stroke.a1 === 1
+				&& (stroke.a3 === 13 || stroke.a3 === 23)) {
+				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
+					if (isCrossBoxWithOthers(
+						strokesArray, i,
+						stroke.x2 - this.kAdjustKakatoRangeX / 2,
+						stroke.y2 + this.kAdjustKakatoRangeY[k],
+						stroke.x2 + this.kAdjustKakatoRangeX / 2,
+						stroke.y2 + this.kAdjustKakatoRangeY[k + 1])
+						|| stroke.y2 + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
+						|| stroke.y2 - stroke.y1 < this.kAdjustKakatoRangeY[k + 1] // for thin box
+					) {
+						stroke.a3 += (3 - k) * 100;
+						break;
+					}
+				}
+			}
+		});
+		return strokesArray;
+	}
+
 	private adjustUroko(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
 			if (stroke.a1 === 1 && stroke.a3 === 0) { // no operation for TATE
@@ -334,58 +409,6 @@ export class Kage {
 		return strokesArray;
 	}
 
-	private adjustTate(strokesArray: Stroke[]) {
-		strokesArray.forEach((stroke, i) => {
-			if ((stroke.a1 === 1 || stroke.a1 === 3 || stroke.a1 === 7)
-				&& stroke.x1 === stroke.x2) {
-				strokesArray.forEach((stroke2, j) => {
-					if (i !== j
-						&& (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
-						&& stroke2.x1 === stroke2.x2
-						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
-						&& Math.abs(stroke.x1 - stroke2.x1) < this.kMinWidthT * this.kAdjustTateStep) {
-						stroke.a2 += (
-							this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT)
-						) * 1000;
-						if (stroke.a2 > this.kAdjustTateStep * 1000) {
-							stroke.a2 = stroke.a2 % 1000 + this.kAdjustTateStep * 1000;
-						}
-					}
-				});
-			}
-		});
-		return strokesArray;
-	}
-
-	private adjustMage(strokesArray: Stroke[]) {
-		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 3 && stroke.y2 === stroke.y3) {
-				strokesArray.forEach((stroke2, j) => {
-					if (i !== j && (
-						(
-							stroke2.a1 === 1
-							&& stroke2.y1 === stroke2.y2
-							&& !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
-							&& Math.abs(stroke.y2 - stroke2.y1) < this.kMinWidthT * this.kAdjustMageStep
-						) || (
-							stroke2.a1 === 3
-							&& stroke2.y2 === stroke2.y3
-							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
-							&& Math.abs(stroke.y2 - stroke2.y2) < this.kMinWidthT * this.kAdjustMageStep
-						))) {
-						stroke.a3 += (
-							this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT)
-						) * 1000;
-						if (stroke.a3 > this.kAdjustMageStep * 1000) {
-							stroke.a3 = stroke.a3 % 1000 + this.kAdjustMageStep * 1000;
-						}
-					}
-				});
-			}
-		});
-		return strokesArray;
-	}
-
 	private adjustKirikuchi(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke) => {
 			if (stroke.a1 === 2 && stroke.a2 === 32
@@ -395,29 +418,6 @@ export class Kage {
 						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1
 						&& stroke2.y1 === stroke.y1 && stroke2.y1 === stroke2.y2) {
 						stroke.a2 = 132;
-						break;
-					}
-				}
-			}
-		});
-		return strokesArray;
-	}
-
-	private adjustKakato(strokesArray: Stroke[]) {
-		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 1
-				&& (stroke.a3 === 13 || stroke.a3 === 23)) {
-				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
-					if (isCrossBoxWithOthers(
-						strokesArray, i,
-						stroke.x2 - this.kAdjustKakatoRangeX / 2,
-						stroke.y2 + this.kAdjustKakatoRangeY[k],
-						stroke.x2 + this.kAdjustKakatoRangeX / 2,
-						stroke.y2 + this.kAdjustKakatoRangeY[k + 1])
-						|| stroke.y2 + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
-						|| stroke.y2 - stroke.y1 < this.kAdjustKakatoRangeY[k + 1] // for thin box
-					) {
-						stroke.a3 += (3 - k) * 100;
 						break;
 					}
 				}
