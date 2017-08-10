@@ -67,17 +67,17 @@ export class Kage {
 			this.kMage = 6;
 			this.kUseCurve = false;
 
-			this.kAdjustKakatoL = [8, 5, 3, 1, 0]; // for KAKATO adjustment 000,100,200,300,400
-			this.kAdjustKakatoR = [4, 3, 2, 1]; // for KAKATO adjustment 000,100,200,300
-			this.kAdjustKakatoRangeX = 12; // check area width
-			this.kAdjustKakatoRangeY = [1, 11, 14, 18]; // 3 steps of checking
-			this.kAdjustKakatoStep = 3; // number of steps
+			this.kAdjustKakatoL = [8, 5, 3, 1, 0];
+			this.kAdjustKakatoR = [4, 3, 2, 1];
+			this.kAdjustKakatoRangeX = 12;
+			this.kAdjustKakatoRangeY = [1, 11, 14, 18];
+			this.kAdjustKakatoStep = 3;
 
-			this.kAdjustUrokoX = [14, 12, 9, 7]; // for UROKO adjustment 000,100,200,300
-			this.kAdjustUrokoY = [7, 6, 5, 4]; // for UROKO adjustment 000,100,200,300
-			this.kAdjustUrokoLength = [13, 21, 30]; // length for checking
-			this.kAdjustUrokoLengthStep = 3; // number of steps
-			this.kAdjustUrokoLine = [13, 15, 18]; // check for crossing. corresponds to length
+			this.kAdjustUrokoX = [14, 12, 9, 7];
+			this.kAdjustUrokoY = [7, 6, 5, 4];
+			this.kAdjustUrokoLength = [13, 21, 30];
+			this.kAdjustUrokoLengthStep = 3;
+			this.kAdjustUrokoLine = [13, 15, 18];
 		} else {
 			this.kMinWidthY = 2;
 			this.kMinWidthT = 6;
@@ -87,17 +87,17 @@ export class Kage {
 			this.kMage = 10;
 			this.kUseCurve = false;
 
-			this.kAdjustKakatoL = [14, 9, 5, 2, 0]; // for KAKATO adjustment 000,100,200,300,400
-			this.kAdjustKakatoR = [8, 6, 4, 2]; // for KAKATO adjustment 000,100,200,300
-			this.kAdjustKakatoRangeX = 20; // check area width
-			this.kAdjustKakatoRangeY = [1, 19, 24, 30]; // 3 steps of checking
-			this.kAdjustKakatoStep = 3; // number of steps
+			this.kAdjustKakatoL = [14, 9, 5, 2, 0];
+			this.kAdjustKakatoR = [8, 6, 4, 2];
+			this.kAdjustKakatoRangeX = 20;
+			this.kAdjustKakatoRangeY = [1, 19, 24, 30];
+			this.kAdjustKakatoStep = 3;
 
-			this.kAdjustUrokoX = [24, 20, 16, 12]; // for UROKO adjustment 000,100,200,300
-			this.kAdjustUrokoY = [12, 11, 9, 8]; // for UROKO adjustment 000,100,200,300
-			this.kAdjustUrokoLength = [22, 36, 50]; // length for checking
-			this.kAdjustUrokoLengthStep = 3; // number of steps
-			this.kAdjustUrokoLine = [22, 26, 30]; // check for crossing. corresponds to length
+			this.kAdjustUrokoX = [24, 20, 16, 12];
+			this.kAdjustUrokoY = [12, 11, 9, 8];
+			this.kAdjustUrokoLength = [22, 36, 50];
+			this.kAdjustUrokoLengthStep = 3;
+			this.kAdjustUrokoLine = [22, 26, 30];
 
 			this.kAdjustUroko2Step = 3;
 			this.kAdjustUroko2Length = 40;
@@ -269,7 +269,7 @@ export class Kage {
 					}
 				});
 				if (mn !== Infinity) {
-					stroke.a3 += 700 - Math.floor(mn / 15) * 100; // 0-99 -> 0-700
+					stroke.opt3 += 7 - Math.floor(mn / 15);
 				}
 			}
 		});
@@ -292,11 +292,9 @@ export class Kage {
 							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
 							&& Math.abs(stroke.y2 - stroke2.y2) < this.kMinWidthT * this.kAdjustMageStep
 						))) {
-						stroke.a3 += (
-							this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT)
-						) * 1000;
-						if (stroke.a3 > this.kAdjustMageStep * 1000) {
-							stroke.a3 = stroke.a3 % 1000 + this.kAdjustMageStep * 1000;
+						stroke.mageAdjustment += this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT);
+						if (stroke.mageAdjustment > this.kAdjustMageStep) {
+							stroke.mageAdjustment = this.kAdjustMageStep;
 						}
 					}
 				});
@@ -315,11 +313,9 @@ export class Kage {
 						&& stroke2.x1 === stroke2.x2
 						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
 						&& Math.abs(stroke.x1 - stroke2.x1) < this.kMinWidthT * this.kAdjustTateStep) {
-						stroke.a2 += (
-							this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT)
-						) * 1000;
-						if (stroke.a2 > this.kAdjustTateStep * 1000) {
-							stroke.a2 = stroke.a2 % 1000 + this.kAdjustTateStep * 1000;
+						stroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT);
+						if (stroke.tateAdjustment > this.kAdjustTateStep) {
+							stroke.tateAdjustment = this.kAdjustTateStep;
 						}
 					}
 				});
@@ -342,7 +338,7 @@ export class Kage {
 						|| stroke.y2 + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
 						|| stroke.y2 - stroke.y1 < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
-						stroke.a3 += (3 - k) * 100;
+						stroke.opt3 += 3 - k;
 						break;
 					}
 				}
@@ -370,7 +366,7 @@ export class Kage {
 					}
 					if (tlen < this.kAdjustUrokoLength[k]
 						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
-						stroke.a3 += (this.kAdjustUrokoLengthStep - k) * 100;
+						stroke.opt3 += this.kAdjustUrokoLengthStep - k;
 						break;
 					}
 				}
@@ -400,9 +396,8 @@ export class Kage {
 					}
 				});
 				const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
-				if (stroke.a3 < result) {
-					stroke.a3 = stroke.a3 % 100
-						+ Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
+				if (stroke.a3 < result) { // always true?
+					stroke.opt3 = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
 				}
 			}
 		});
@@ -417,7 +412,7 @@ export class Kage {
 					if (stroke2.a1 === 1
 						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1
 						&& stroke2.y1 === stroke.y1 && stroke2.y1 === stroke2.y2) {
-						stroke.a2 = 132;
+						stroke.kirikuchiAdjustment = 1;
 						break;
 					}
 				}

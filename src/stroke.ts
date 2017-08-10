@@ -20,15 +20,15 @@ export function stretch(dp: number, sp: number, p: number, min: number, max: num
 export class Stroke {
 	public a1: number;
 	/**
-	 * 100s place: adjustKirikuchi (when X32)
-	 * 1000s place: adjustTate
+	 * 100s place: adjustKirikuchi (when 2:X32)
+	 * 1000s place: adjustTate (when {1,3,7})
 	 */
-	public a2: number;
+	public get a2() { return this.a2_ + this.kirikuchiAdjustment * 100 + this.tateAdjustment * 1000; }
 	/**
-	 * 100s place: adjustHane (when X04), adjustUroko/adjustUroko2 (when X00), adjustKakato (when X13/X23)
-	 * 1000s place: adjustMage
+	 * 100s place: adjustHane (when {1,2,6}::X04), adjustUroko/adjustUroko2 (when 1::X00), adjustKakato (when 1::X{13,23})
+	 * 1000s place: adjustMage (when 3)
 	 */
-	public a3: number;
+	public get a3() { return this.a3_ + this.opt3 * 100 + this.mageAdjustment * 1000; }
 	public x1: number;
 	public y1: number;
 	public x2: number;
@@ -38,11 +38,25 @@ export class Stroke {
 	public x4: number;
 	public y4: number;
 
+	public kirikuchiAdjustment: number;
+	public tateAdjustment: number;
+
+	// public haneAdjustment: number;
+	// public urokoAdjustment: number;
+	// public kakatoAdjustment: number;
+	public mageAdjustment: number;
+
+	// temporarily
+	public opt3: number;
+
+	private a2_: number;
+	private a3_: number;
+
 	constructor(data: number[]) {
 		[
 			this.a1,
-			this.a2,
-			this.a3,
+			this.a2_,
+			this.a3_,
 			this.x1,
 			this.y1,
 			this.x2,
@@ -52,6 +66,14 @@ export class Stroke {
 			this.x4,
 			this.y4,
 		] = data;
+
+		this.kirikuchiAdjustment = Math.floor(this.a2_ / 100) % 10;
+		this.tateAdjustment = Math.floor(this.a2_ / 1000);
+		this.a2_ %= 100;
+
+		this.opt3 = Math.floor(this.a3_ / 100) % 10;
+		this.mageAdjustment = Math.floor(this.a3_ / 1000);
+		this.a3_ %= 100;
 	}
 
 	public getControlSegments() {
