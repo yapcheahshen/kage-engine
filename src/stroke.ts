@@ -19,7 +19,15 @@ export function stretch(dp: number, sp: number, p: number, min: number, max: num
 
 export class Stroke {
 	public a1: number;
+	/**
+	 * 100s place: adjustKirikuchi (when X32)
+	 * 1000s place: adjustTate
+	 */
 	public a2: number;
+	/**
+	 * 100s place: adjustHane (when X04), adjustUroko/adjustUroko2 (when X00), adjustKakato (when X13/X23)
+	 * 1000s place: adjustMage
+	 */
 	public a3: number;
 	public x1: number;
 	public y1: number;
@@ -75,7 +83,7 @@ export class Stroke {
 		this.y1 = stretch(sy, sy2, this.y1, bminY, bmaxY);
 		this.x2 = stretch(sx, sx2, this.x2, bminX, bmaxX);
 		this.y2 = stretch(sy, sy2, this.y2, bminY, bmaxY);
-		if (this.a1 !== 99) {
+		if (this.a1 !== 99) { // always true
 			this.x3 = stretch(sx, sx2, this.x3, bminX, bmaxX);
 			this.y3 = stretch(sy, sy2, this.y3, bminY, bmaxY);
 			this.x4 = stretch(sx, sx2, this.x4, bminX, bmaxX);
