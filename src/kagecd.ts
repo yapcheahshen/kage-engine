@@ -301,10 +301,11 @@ function cdDrawCurveU(
 
 		// process for head of stroke
 		const rad1 = Math.atan2(sy1 - y1, sx1 - x1);
-		const XX = Math.sin(rad1);
-		const XY = -Math.cos(rad1);
-		const YX = Math.cos(rad1);
-		const YY = Math.sin(rad1);
+		const v = sx1 === x1 ? -1 : 1; // for backward compatibility...
+		const XX = Math.sin(rad1) * v;
+		const XY = -Math.cos(rad1) * v;
+		const YX = Math.cos(rad1) * v;
+		const YY = Math.sin(rad1) * v;
 
 		if (a1 === 12) {
 			if (x1 === x2) {
@@ -511,10 +512,11 @@ function cdDrawCurveU(
 				polygons.push(poly);
 			} else {
 				const poly = new Polygon();
-				const YX2 = -Math.sin(rad2);
-				const YY2 = Math.cos(rad2);
-				const XX2 = Math.cos(rad2);
-				const XY2 = Math.sin(rad2);
+				const v2 = sx2 === x2 ? -1 : 1; // for backward compatibility...
+				const YX2 = -Math.sin(rad2) * v2;
+				const YY2 = Math.cos(rad2) * v2;
+				const XX2 = Math.cos(rad2) * v2;
+				const XY2 = Math.sin(rad2) * v2;
 				poly.push(x2 + kMinWidthT * kage.kL2RDfatten * YX2, y2 + kMinWidthT * kage.kL2RDfatten * YY2);
 				poly.push(x2 - kMinWidthT * kage.kL2RDfatten * YX2, y2 - kMinWidthT * kage.kL2RDfatten * YY2);
 				poly.push(
