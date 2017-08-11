@@ -34,6 +34,9 @@ function isCross(
 	x11: number, y11: number, x12: number, y12: number,
 	x21: number, y21: number, x22: number, y22: number) {
 	const cross_1112_2122 = cross(x12 - x11, y12 - y11, x22 - x21, y22 - y21);
+	if (isNaN(cross_1112_2122)) {
+		return true; // for backward compatibility...
+	}
 	if (cross_1112_2122 === 0) {
 		// parallel
 		return false; // XXX should check if segments overlap?
