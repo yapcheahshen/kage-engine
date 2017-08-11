@@ -1,4 +1,5 @@
 import { Stroke } from "./stroke";
+import { round } from "./util";
 
 // Reference : http://www.cam.hi-ho.ne.jp/strong_warriors/teacher/chapter0{4,5}.html
 
@@ -28,10 +29,6 @@ function cross(x1: number, y1: number, x2: number, y2: number) {
 // 	}
 // 	return new Point((c1 * b2 - c2 * b1) / temp, (a1 * c2 - a2 * c1) / temp);
 // }
-
-function round(v: number, rate: number = 1E8) {
-	return Math.round(v * rate) / rate;
-}
 
 function isCross(
 	x11: number, y11: number, x12: number, y12: number,

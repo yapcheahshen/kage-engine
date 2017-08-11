@@ -63,3 +63,7 @@ export function ternarySearchMin(func: (x: number) => number, left: number, righ
 export function ternarySearchMax(func: (x: number) => number, left: number, right: number, eps?: number) {
 	return ternarySearchMin((x) => -func(x), left, right, eps);
 }
+
+export function round(v: number, rate: number = 1E8) {
+	return Math.round(v * rate) / rate;
+}
