@@ -1073,141 +1073,55 @@ export function cdDrawLine(
 			}
 		}
 	} else { // gothic
-		if (tx1 === tx2) { // if TATE stroke, use y-axis
-			let x1;
-			let y1;
-			let x2;
-			let y2;
-			let a1;
-			let a2;
-			if (ty1 > ty2) {
-				x1 = tx2;
-				y1 = ty2;
-				x2 = tx1;
-				y2 = ty1;
-				a1 = ta2;
-				a2 = ta1;
-			} else {
-				x1 = tx1;
-				y1 = ty1;
-				x2 = tx2;
-				y2 = ty2;
-				a1 = ta1;
-				a2 = ta2;
-			}
-
-			if (a1 % 10 === 2) {
-				y1 -= kage.kWidth;
-			}
-			if (a2 % 10 === 2) {
-				y2 += kage.kWidth;
-			}
-			if (a1 % 10 === 3) {
-				y1 -= kage.kWidth * kage.kKakato;
-			}
-			if (a2 % 10 === 3) {
-				y2 += kage.kWidth * kage.kKakato;
-			}
-
-			const poly = new Polygon();
-			poly.push(x1 - kage.kWidth, y1);
-			poly.push(x2 - kage.kWidth, y2);
-			poly.push(x2 + kage.kWidth, y2);
-			poly.push(x1 + kage.kWidth, y1);
-			// poly.reverse(); // for fill-rule
-
-			polygons.push(poly);
-		} else if (ty1 === ty2) { // if YOKO stroke, use x-axis
-			let x1;
-			let y1;
-			let x2;
-			let y2;
-			let a1;
-			let a2;
-			if (tx1 > tx2) {
-				x1 = tx2;
-				y1 = ty2;
-				x2 = tx1;
-				y2 = ty1;
-				a1 = ta2;
-				a2 = ta1;
-			} else {
-				x1 = tx1;
-				y1 = ty1;
-				x2 = tx2;
-				y2 = ty2;
-				a1 = ta1;
-				a2 = ta2;
-			}
-			if (a1 % 10 === 2) {
-				x1 -= kage.kWidth;
-			}
-			if (a2 % 10 === 2) {
-				x2 += kage.kWidth;
-			}
-			if (a1 % 10 === 3) {
-				x1 -= kage.kWidth * kage.kKakato;
-			}
-			if (a2 % 10 === 3) {
-				x2 += kage.kWidth * kage.kKakato;
-			}
-
-			const poly = new Polygon();
-			poly.push(x1, y1 - kage.kWidth);
-			poly.push(x2, y2 - kage.kWidth);
-			poly.push(x2, y2 + kage.kWidth);
-			poly.push(x1, y1 + kage.kWidth);
-
-			polygons.push(poly);
-		} else { // for others, use x-axis
-			let x1;
-			let y1;
-			let x2;
-			let y2;
-			let a1;
-			let a2;
-			if (tx1 > tx2) {
-				x1 = tx2;
-				y1 = ty2;
-				x2 = tx1;
-				y2 = ty1;
-				a1 = ta2;
-				a2 = ta1;
-			} else {
-				x1 = tx1;
-				y1 = ty1;
-				x2 = tx2;
-				y2 = ty2;
-				a1 = ta1;
-				a2 = ta2;
-			}
-			// x2 > x1, y2 !== y1
-			const [dx, dy] = normalize([x2 - x1, y2 - y1], kage.kWidth);
-			if (a1 % 10 === 2) {
-				x1 -= dx;
-				y1 -= dy;
-			}
-			if (a2 % 10 === 2) {
-				x2 += dx;
-				y2 += dy;
-			}
-			if (a1 % 10 === 3) {
-				x1 -= dx * kage.kKakato;
-				y1 -= dy * kage.kKakato;
-			}
-			if (a2 % 10 === 3) {
-				x2 += dx * kage.kKakato;
-				y2 += dy * kage.kKakato;
-			}
-
-			// SUICHOKU NO ICHI ZURASHI HA Math.sin TO Math.cos NO IREKAE + x-axis MAINASU KA
-			const poly = new Polygon();
-			poly.push(x1 + dy, y1 - dx);
-			poly.push(x2 + dy, y2 - dx);
-			poly.push(x2 - dy, y2 + dx);
-			poly.push(x1 - dy, y1 + dx);
-
-			polygons.push(poly);
+		let x1;
+		let y1;
+		let x2;
+		let y2;
+		let a1;
+		let a2;
+		if (tx1 === tx2 && ty1 > ty2 || tx1 > tx2) {
+			x1 = tx2;
+			y1 = ty2;
+			x2 = tx1;
+			y2 = ty1;
+			a1 = ta2;
+			a2 = ta1;
+		} else {
+			x1 = tx1;
+			y1 = ty1;
+			x2 = tx2;
+			y2 = ty2;
+			a1 = ta1;
+			a2 = ta2;
 		}
+		const [dx, dy] = (x1 === x2 && y1 === y2) ? [0, kage.kWidth] : normalize([x2 - x1, y2 - y1], kage.kWidth);
+		if (a1 % 10 === 2) {
+			x1 -= dx;
+			y1 -= dy;
+		}
+		if (a2 % 10 === 2) {
+			x2 += dx;
+			y2 += dy;
+		}
+		if (a1 % 10 === 3) {
+			x1 -= dx * kage.kKakato;
+			y1 -= dy * kage.kKakato;
+		}
+		if (a2 % 10 === 3) {
+			x2 += dx * kage.kKakato;
+			y2 += dy * kage.kKakato;
+		}
+
+		// SUICHOKU NO ICHI ZURASHI HA Math.sin TO Math.cos NO IREKAE + x-axis MAINASU KA
+		const poly = new Polygon();
+		poly.push(x1 + dy, y1 - dx);
+		poly.push(x2 + dy, y2 - dx);
+		poly.push(x2 - dy, y2 + dx);
+		poly.push(x1 - dy, y1 + dx);
+		if (tx1 === tx2) {
+			poly.reverse(); // ?????
+		}
+
+		polygons.push(poly);
 	}
 }
