@@ -29,6 +29,10 @@ function cross(x1: number, y1: number, x2: number, y2: number) {
 // 	return new Point((c1 * b2 - c2 * b1) / temp, (a1 * c2 - a2 * c1) / temp);
 // }
 
+function round(v: number, rate: number = 1E8) {
+	return Math.round(v * rate) / rate;
+}
+
 function isCross(
 	x11: number, y11: number, x12: number, y12: number,
 	x21: number, y21: number, x22: number, y22: number) {
@@ -43,7 +47,7 @@ function isCross(
 	const cross_2122_2111 = cross(x22 - x21, y22 - y21, x11 - x21, y11 - y21);
 	const cross_2122_2112 = cross(x22 - x21, y22 - y21, x12 - x21, y12 - y21);
 
-	return cross_1112_1121 * cross_1112_1122 <= 0 && cross_2122_2111 * cross_2122_2112 <= 0;
+	return round(cross_1112_1121 * cross_1112_1122) <= 0 && round(cross_2122_2111 * cross_2122_2112) <= 0;
 }
 
 function isCrossBox(
