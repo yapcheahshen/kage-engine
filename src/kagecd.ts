@@ -147,7 +147,7 @@ function cdDrawCurveU(
 					}
 
 					// line SUICHOKU by vector
-					const [ia, ib] = (ix === 0)
+					const [ia, ib] = (ix === 0 && iy === 0)
 						? [-kMinWidthT * deltad, 0] // ?????
 						: normalize([-iy, ix], kMinWidthT * deltad);
 
@@ -235,7 +235,7 @@ function cdDrawCurveU(
 				}
 
 				// line SUICHOKU by vector
-				const [ia, ib] = (ix === 0)
+				const [ia, ib] = (ix === 0 && iy === 0)
 					? [-kMinWidthT * deltad, 0] // ?????
 					: normalize([-iy, ix], kMinWidthT * deltad);
 
@@ -619,10 +619,10 @@ function cdDrawCurveU(
 			}
 			// SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
 			const [ia, ib] = (kage.kShotai === kage.kMincho) // always false ?
-				? (ix === 0)
+				? (ix === 0 && iy === 0)
 					? [-kage.kMinWidthT * Math.sqrt(1 - t), 0] // ?????
 					: normalize([-iy, ix], kage.kMinWidthT * Math.sqrt(1 - t))
-				: (ix === 0)
+				: (ix === 0 && iy === 0)
 					? [-kage.kWidth, 0] // ?????
 					: normalize([-iy, ix], kage.kWidth);
 
