@@ -23,12 +23,12 @@ export class Stroke {
 	 * 100s place: adjustKirikuchi (when 2:X32)
 	 * 1000s place: adjustTate (when {1,3,7})
 	 */
-	public get a2() { return this.a2_ + this.kirikuchiAdjustment * 100 + this.tateAdjustment * 1000; }
+	public get a2() { return this.a2_100 + this.kirikuchiAdjustment * 100 + this.tateAdjustment * 1000; }
 	/**
 	 * 100s place: adjustHane (when {1,2,6}::X04), adjustUroko/adjustUroko2 (when 1::X00), adjustKakato (when 1::X{13,23})
 	 * 1000s place: adjustMage (when 3)
 	 */
-	public get a3() { return this.a3_ + this.opt3 * 100 + this.mageAdjustment * 1000; }
+	public get a3() { return this.a3_100 + this.opt3 * 100 + this.mageAdjustment * 1000; }
 	public x1: number;
 	public y1: number;
 	public x2: number;
@@ -49,14 +49,14 @@ export class Stroke {
 	// temporarily
 	public opt3: number;
 
-	private a2_: number;
-	private a3_: number;
+	public a2_100: number;
+	public a3_100: number;
 
 	constructor(data: number[]) {
 		[
 			this.a1,
-			this.a2_,
-			this.a3_,
+			this.a2_100,
+			this.a3_100,
 			this.x1,
 			this.y1,
 			this.x2,
@@ -67,13 +67,13 @@ export class Stroke {
 			this.y4,
 		] = data;
 
-		this.kirikuchiAdjustment = Math.floor(this.a2_ / 100) % 10;
-		this.tateAdjustment = Math.floor(this.a2_ / 1000);
-		this.a2_ %= 100;
+		this.kirikuchiAdjustment = Math.floor(this.a2_100 / 100) % 10;
+		this.tateAdjustment = Math.floor(this.a2_100 / 1000);
+		this.a2_100 %= 100;
 
-		this.opt3 = Math.floor(this.a3_ / 100) % 10;
-		this.mageAdjustment = Math.floor(this.a3_ / 1000);
-		this.a3_ %= 100;
+		this.opt3 = Math.floor(this.a3_100 / 100) % 10;
+		this.mageAdjustment = Math.floor(this.a3_100 / 1000);
+		this.a3_100 %= 100;
 	}
 
 	public getControlSegments() {
