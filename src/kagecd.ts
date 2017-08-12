@@ -8,15 +8,12 @@ function cdDrawCurveU(
 	kage: Kage, polygons: Polygons,
 	x1: number, y1: number, sx1: number, sy1: number,
 	sx2: number, sy2: number, x2: number, y2: number,
-	ta1: number, ta2: number) {
+	ta1: number, ta2: number,
+	opt1: number, opt2: number, opt3: number, opt4: number) {
 
 	if (kage.kShotai === kage.kMincho) { // mincho
 		const a1 = ta1 % 1000;
 		const a2 = ta2 % 100;
-		const opt1 = Math.floor((ta1 % 10000) / 1000);
-		const opt2 = Math.floor((ta2 % 1000) / 100);
-		const opt3 = Math.floor(ta1 / 10000);
-		const opt4 = Math.floor(ta2 / 1000);
 
 		const kMinWidthT = kage.kMinWidthT - opt1 / 2;
 		const kMinWidthT2 = kage.kMinWidthT - opt4 / 2;
@@ -602,15 +599,17 @@ export function cdDrawBezier(
 	kage: Kage, polygons: Polygons,
 	x1: number, y1: number, x2: number, y2: number,
 	x3: number, y3: number, x4: number, y4: number,
-	a1: number, a2: number) {
-	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2);
+	a1: number, a2: number,
+	opt1: number, opt2: number, opt3: number, opt4: number) {
+	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, opt2, opt3, opt4);
 }
 
 export function cdDrawCurve(
 	kage: Kage, polygons: Polygons,
 	x1: number, y1: number, x2: number, y2: number, x3: number, y3: number,
-	a1: number, a2: number) {
-	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2);
+	a1: number, a2: number,
+	opt1: number, opt2: number, opt3: number, opt4: number) {
+	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2, opt1, opt2, opt3, opt4);
 }
 
 export function cdDrawLine(
