@@ -12,8 +12,8 @@ function cdDrawCurveU(
 	opt1: number, opt2: number, opt3: number, opt4: number) {
 
 	if (kage.kShotai === kage.kMincho) { // mincho
-		const a1 = ta1 % 1000;
-		const a2 = ta2 % 100;
+		const a1 = ta1;
+		const a2 = ta2;
 
 		const kMinWidthT = kage.kMinWidthT - opt1 / 2;
 		const kMinWidthT2 = kage.kMinWidthT - opt4 / 2;
@@ -306,9 +306,9 @@ function cdDrawCurveU(
 				poly.push(x1 - kMinWidthT, y1 - kMinWidthT);
 				polygons.push(poly);
 			} else {
-				const [dx, dy] = (sx1 === x1)
-					? (sy1 === y1) // for backward compatibility...
-						? [0, kMinWidthT]
+				const [dx, dy] = (sx1 === x1) // for backward compatibility...
+					? (sy1 === y1)
+						? [0, kMinWidthT] // previously NaN?
 						: [sy1 < y1 ? kMinWidthT : -kMinWidthT, 0]
 					: normalize([sy1 - y1, -(sx1 - x1)], kMinWidthT);
 				const poly = new Polygon();
@@ -328,37 +328,28 @@ function cdDrawCurveU(
 					type *= 16;
 				}
 				const pm = type < 0 ? -1 : 1;
-				const move = kage.kMinWidthY * (type >= 0 ? 0 : type) * pm;
-				if (x1 === sx1) {
-					const poly = new Polygon();
-					poly.push(x1 - kMinWidthT, y1 + 1);
-					poly.push(x1 + kMinWidthT, y1);
-					poly.push(x1 - kMinWidthT * pm, y1 - kage.kMinWidthY * type * pm);
-					// if(x1 > x2){
-					//  poly.reverse();
-					// }
-					polygons.push(poly);
-					// beginning of the stroke
-					const poly2 = new Polygon();
-					poly2.push(x1 + kMinWidthT, y1 - move);
+				const move = type < 0 ? -type * kage.kMinWidthY : 0;
+				const [XX, XY] = (x1 === sx1)
+					? [1, 0] // ?????
+					: normalize([sy1 - y1, -(sx1 - x1)]);
+				const poly = new Polygon();
+				poly.push(x1 - kMinWidthT * XX + 1 * -XY, y1 - kMinWidthT * XY + 1 * XX);
+				poly.push(x1 + kMinWidthT * XX, y1 + kMinWidthT * XY);
+				poly.push(
+					x1 - kMinWidthT * pm * XX - kage.kMinWidthY * type * pm * -XY,
+					y1 - kMinWidthT * pm * XY - kage.kMinWidthY * type * pm * XX);
+				// if(x1 > x2){
+				//  poly.reverse();
+				// }
+				polygons.push(poly);
+				// beginning of the stroke
+				const poly2 = new Polygon();
+				poly2.push(x1 + kMinWidthT, y1 - move);
+				if (x1 === sx1 && y1 === sy1) { // ?????
+					// type === -6.4 && pm === -1 && move === 6.4 * kage.kMinWidthY
 					poly2.push(x1 + kMinWidthT * 1.5, y1 + kage.kMinWidthY - move);
 					poly2.push(x1 + kMinWidthT - 2, y1 + kage.kMinWidthY * 2 + 1);
-					polygons.push(poly2);
 				} else {
-					const [XX, XY] = normalize([sy1 - y1, -(sx1 - x1)]);
-					const poly = new Polygon();
-					poly.push(x1 - kMinWidthT * XX + 1 * -XY, y1 - kMinWidthT * XY + 1 * XX);
-					poly.push(x1 + kMinWidthT * XX, y1 + kMinWidthT * XY);
-					poly.push(
-						x1 - kMinWidthT * pm * XX - kage.kMinWidthY * type * pm * -XY,
-						y1 - kMinWidthT * pm * XY - kage.kMinWidthY * type * pm * XX);
-					// if(x1 > x2){
-					//  poly.reverse();
-					// }
-					polygons.push(poly);
-					// beginning of the stroke
-					const poly2 = new Polygon();
-					poly2.push(x1 + kMinWidthT * XX - move * -XY, y1 + kMinWidthT * XY - move * XX);
 					poly2.push(
 						x1 + kMinWidthT * 1.5 * XX + (kage.kMinWidthY - move * 1.2) * -XY,
 						y1 + kMinWidthT * 1.5 * XY + (kage.kMinWidthY - move * 1.2) * XX);
@@ -368,45 +359,33 @@ function cdDrawCurveU(
 					// if(x1 < x2){
 					//  poly2.reverse();
 					// }
-					polygons.push(poly2);
 				}
+				polygons.push(poly2);
 			} else { // bottom to up
-				if (x1 === sx1) {
-					const poly = new Polygon();
-					poly.push(x1 - kMinWidthT, y1);
-					poly.push(x1 + kMinWidthT, y1);
-					poly.push(x1 + kMinWidthT, y1 - kage.kMinWidthY);
-					polygons.push(poly);
-					// beginning of the stroke
-					const poly2 = new Polygon();
-					poly2.push(x1 - kMinWidthT, y1);
-					poly2.push(x1 - kMinWidthT * 1.5, y1 + kage.kMinWidthY);
-					poly2.push(x1 - kMinWidthT * 0.5, y1 + kage.kMinWidthY * 3);
-					polygons.push(poly2);
-				} else {
-					const [XX, XY] = normalize([sy1 - y1, -(sx1 - x1)]);
-					const poly = new Polygon();
-					poly.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
-					poly.push(x1 + kMinWidthT * XX, y1 + kMinWidthT * XY);
-					poly.push(x1 + kMinWidthT * XX - kage.kMinWidthY * -XY, y1 + kMinWidthT * XY - kage.kMinWidthY * XX);
-					// if(x1 < x2){
-					//  poly.reverse();
-					// }
-					polygons.push(poly);
-					// beginning of the stroke
-					const poly2 = new Polygon();
-					poly2.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
-					poly2.push(
-						x1 - kMinWidthT * 1.5 * XX + kage.kMinWidthY * -XY,
-						y1 + kage.kMinWidthY * XX - kMinWidthT * 1.5 * XY);
-					poly2.push(
-						x1 - kMinWidthT * 0.5 * XX + kage.kMinWidthY * 3 * -XY,
-						y1 + kage.kMinWidthY * 3 * XX - kMinWidthT * 0.5 * XY);
-					// if(x1 < x2){
-					//  poly2.reverse();
-					// }
-					polygons.push(poly2);
-				}
+				const [XX, XY] = (x1 === sx1)
+					? [1, 0] // ?????
+					: normalize([sy1 - y1, -(sx1 - x1)]);
+				const poly = new Polygon();
+				poly.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
+				poly.push(x1 + kMinWidthT * XX, y1 + kMinWidthT * XY);
+				poly.push(x1 + kMinWidthT * XX - kage.kMinWidthY * -XY, y1 + kMinWidthT * XY - kage.kMinWidthY * XX);
+				// if(x1 < x2){
+				//  poly.reverse();
+				// }
+				polygons.push(poly);
+				// beginning of the stroke
+				const poly2 = new Polygon();
+				poly2.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
+				poly2.push(
+					x1 - kMinWidthT * 1.5 * XX + kage.kMinWidthY * -XY,
+					y1 + kage.kMinWidthY * XX - kMinWidthT * 1.5 * XY);
+				poly2.push(
+					x1 - kMinWidthT * 0.5 * XX + kage.kMinWidthY * 3 * -XY,
+					y1 + kage.kMinWidthY * 3 * XX - kMinWidthT * 0.5 * XY);
+				// if(x1 < x2){
+				//  poly2.reverse();
+				// }
+				polygons.push(poly2);
 			}
 		}
 
@@ -515,8 +494,8 @@ function cdDrawCurveU(
 			polygons.push(poly);
 		}
 	} else { // gothic
-		const a1 = ta1 % 1000;
-		const a2 = ta2 % 100;
+		const a1 = ta1;
+		const a2 = ta2;
 		if (a1 % 10 === 2) {
 			const [dx1, dy1] = (x1 === sx1 && y1 === sy1)
 				? [0, kage.kWidth] // ?????
@@ -622,8 +601,8 @@ export function cdDrawLine(
 		const y1 = ty1;
 		const x2 = tx2;
 		const y2 = ty2;
-		const a1 = ta1 % 1000;
-		const a2 = ta2 % 100;
+		const a1 = ta1;
+		const a2 = ta2;
 
 		const kMinWidthT = kage.kMinWidthT - opt1 / 2;
 

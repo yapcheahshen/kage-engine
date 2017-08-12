@@ -118,14 +118,8 @@ export class Kage {
 
 	public makeGlyph2(polygons: Polygons, data: string) {
 		if (data !== "") {
-			const strokesArray = this.adjustKirikuchi(
-				this.adjustUroko2(
-					this.adjustUroko(
-						this.adjustKakato(
-							this.adjustTate(
-								this.adjustMage(
-									this.adjustHane(
-										this.getEachStrokes(data))))))));
+			const strokesArray = this.getEachStrokes(data);
+			this.adjustStrokes(strokesArray);
 			strokesArray.forEach((stroke) => {
 				dfDrawFont(this, polygons, stroke);
 			});
@@ -135,14 +129,8 @@ export class Kage {
 	public makeGlyph3(data: string) {
 		const result: Polygons[] = [];
 		if (data !== "") {
-			const strokesArray = this.adjustKirikuchi(
-				this.adjustUroko2(
-					this.adjustUroko(
-						this.adjustKakato(
-							this.adjustTate(
-								this.adjustMage(
-									this.adjustHane(
-										this.getEachStrokes(data))))))));
+			const strokesArray = this.getEachStrokes(data);
+			this.adjustStrokes(strokesArray);
 			strokesArray.forEach((stroke) => {
 				const polygons = new Polygons();
 				dfDrawFont(this, polygons, stroke);
@@ -239,9 +227,21 @@ export class Kage {
 		return { minX, maxX, minY, maxY };
 	}
 
+	private adjustStrokes(strokesArray: Stroke[]) {
+		this.adjustHane(strokesArray);
+		this.adjustMage(strokesArray);
+		this.adjustTate(strokesArray);
+		this.adjustKakato(strokesArray);
+		this.adjustUroko(strokesArray);
+		this.adjustUroko2(strokesArray);
+		this.adjustKirikuchi(strokesArray);
+		return strokesArray;
+	}
+
 	private adjustHane(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
-			if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6) && stroke.a3 === 4) {
+			if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6)
+				&& stroke.a3_100 === 4 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
 				let lpx: number; // lastPointX
 				let lpy: number; // lastPointY
 				if (stroke.a1 === 1) {
@@ -269,7 +269,7 @@ export class Kage {
 					}
 				});
 				if (mn !== Infinity) {
-					stroke.opt3 += 7 - Math.floor(mn / 15);
+					stroke.opt2 += 7 - Math.floor(mn / 15);
 				}
 			}
 		});
@@ -327,7 +327,7 @@ export class Kage {
 	private adjustKakato(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
 			if (stroke.a1 === 1
-				&& (stroke.a3 === 13 || stroke.a3 === 23)) {
+				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
 				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
 					if (isCrossBoxWithOthers(
 						strokesArray, i,
@@ -338,7 +338,7 @@ export class Kage {
 						|| stroke.y2 + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
 						|| stroke.y2 - stroke.y1 < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
-						stroke.opt3 += 3 - k;
+						stroke.opt2 += 3 - k;
 						break;
 					}
 				}
@@ -349,7 +349,8 @@ export class Kage {
 
 	private adjustUroko(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 1 && stroke.a3 === 0) { // no operation for TATE
+			if (stroke.a1 === 1
+				&& stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) { // no operation for TATE
 				for (let k = 0; k < this.kAdjustUrokoLengthStep; k++) {
 					let tx;
 					let ty;
@@ -370,7 +371,7 @@ export class Kage {
 					}
 					if (tlen < this.kAdjustUrokoLength[k]
 						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
-						stroke.opt3 += this.kAdjustUrokoLengthStep - k;
+						stroke.opt2 += this.kAdjustUrokoLengthStep - k;
 						break;
 					}
 				}
@@ -381,7 +382,8 @@ export class Kage {
 
 	private adjustUroko2(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 1 && stroke.a3 === 0 && stroke.y1 === stroke.y2) {
+			if (stroke.a1 === 1 && stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0
+				&& stroke.y1 === stroke.y2) {
 				let pressure = 0;
 				strokesArray.forEach((stroke2, j) => {
 					if (i !== j && (
@@ -399,10 +401,10 @@ export class Kage {
 						pressure += (this.kAdjustUroko2Length - Math.abs(stroke.y1 - stroke2.y2)) ** 1.1;
 					}
 				});
-				const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
-				if (stroke.a3 < result) { // always true?
-					stroke.opt3 = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
-				}
+				// const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
+				// if (stroke.a3 < result) {
+				stroke.opt2 = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
+				// }
 			}
 		});
 		return strokesArray;
@@ -410,12 +412,13 @@ export class Kage {
 
 	private adjustKirikuchi(strokesArray: Stroke[]) {
 		strokesArray.forEach((stroke) => {
-			if (stroke.a1 === 2 && stroke.a2 === 32
+			if (stroke.a1 === 2
+				&& stroke.a2_100 === 32 && stroke.kirikuchiAdjustment === 0 && stroke.tateAdjustment === 0 && stroke.opt3 === 0
 				&& stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
 				for (const stroke2 of strokesArray) { // no need to skip when i == j
 					if (stroke2.a1 === 1
-						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1
-						&& stroke2.y1 === stroke.y1 && stroke2.y1 === stroke2.y2) {
+						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1 && stroke2.y1 === stroke.y1
+						&& stroke2.y1 === stroke2.y2) {
 						stroke.kirikuchiAdjustment = 1;
 						break;
 					}
