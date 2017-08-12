@@ -3,7 +3,7 @@ import { Buhin } from "./buhin";
 import { dfDrawFont } from "./kagedf";
 import { Polygons } from "./polygons";
 import { stretch, Stroke } from "./stroke";
-import { hypot } from "./util";
+import { hypot, normalize } from "./util";
 
 export enum KShotai {
 	kMincho = 0,
@@ -357,11 +357,15 @@ export class Kage {
 					if (stroke.y1 === stroke.y2) { // YOKO
 						tx = stroke.x2 - this.kAdjustUrokoLine[k];
 						ty = stroke.y2 - 0.5;
-						tlen = stroke.x2 - stroke.x1;
+						tlen = stroke.x2 - stroke.x1; // should be Math.abs(...)?
 					} else {
-						const rad = Math.atan((stroke.y2 - stroke.y1) / (stroke.x2 - stroke.x1));
-						tx = stroke.x2 - this.kAdjustUrokoLine[k] * Math.cos(rad) - 0.5 * Math.sin(rad);
-						ty = stroke.y2 - this.kAdjustUrokoLine[k] * Math.sin(rad) - 0.5 * Math.cos(rad);
+						const [cosrad, sinrad] = (stroke.x1 === stroke.x2)
+							? [0, (stroke.y2 - stroke.y1) / (stroke.x2 - stroke.x1) > 0 ? 1 : -1] // maybe unnecessary?
+							: (stroke.x2 - stroke.x1 < 0)
+								? normalize([stroke.x1 - stroke.x2, stroke.y1 - stroke.y2]) // for backward compatibility...
+								: normalize([stroke.x2 - stroke.x1, stroke.y2 - stroke.y1]);
+						tx = stroke.x2 - this.kAdjustUrokoLine[k] * cosrad - 0.5 * sinrad;
+						ty = stroke.y2 - this.kAdjustUrokoLine[k] * sinrad - 0.5 * cosrad;
 						tlen = hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
 					}
 					if (tlen < this.kAdjustUrokoLength[k]
