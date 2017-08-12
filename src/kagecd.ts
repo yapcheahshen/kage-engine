@@ -616,7 +616,7 @@ export function cdDrawCurve(
 export function cdDrawLine(
 	kage: Kage, polygons: Polygons,
 	tx1: number, ty1: number, tx2: number, ty2: number,
-	ta1: number, ta2: number) {
+	ta1: number, ta2: number, opt1: number, opt2: number) {
 
 	if (kage.kShotai === kage.kMincho) { // mincho
 		const x1 = tx1;
@@ -625,8 +625,6 @@ export function cdDrawLine(
 		const y2 = ty2;
 		const a1 = ta1 % 1000;
 		const a2 = ta2 % 100;
-		const opt1 = Math.floor(ta1 / 1000);
-		const opt2 = Math.floor(ta2 / 100);
 
 		const kMinWidthT = kage.kMinWidthT - opt1 / 2;
 
