@@ -300,11 +300,10 @@ function cdDrawCurveU(
 		}
 
 		// process for head of stroke
-		const [XX, XY] = (sy1 === y1)
-			? [1, 0] // ?????
-			: (sx1 === x1)
-				? [0, sy1 > y1 ? -1 : 1] // for backward compatibility...
-				: normalize([-(y1 - sy1), x1 - sx1]);
+		const rad1 = Math.atan2(sy1 - y1, sx1 - x1);
+		const v = sx1 === x1 ? -1 : 1; // for backward compatibility...
+		const XX = Math.sin(rad1) * v;
+		const XY = -Math.cos(rad1) * v;
 
 		if (a1 === 12) {
 			if (x1 === x2) {
