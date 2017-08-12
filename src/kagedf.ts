@@ -107,9 +107,9 @@ export function dfDrawFont(
 				break;
 			}
 			case 4: {
-				let rate = 6;
-				if ((x3 - x2) ** 2 + (y3 - y2) ** 2 < 14400) { // smaller than 120 x 120
-					rate = hypot(x3 - x2, y3 - y2) / 120 * 6;
+				let rate = hypot(x3 - x2, y3 - y2) / 120 * 6;
+				if (rate > 6) {
+					rate = 6;
 				}
 				if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
 					const [dx1, dy1] = (x1 === x2 && y1 === y2)
@@ -167,8 +167,7 @@ export function dfDrawFont(
 				} else {
 					cdDrawBezier(
 						kage, polygons, x1, y1, x2, y2, x3, y3, x4, y4,
-						a2_100 + kirikuchiAdjustment * 100, a3_100,
-						tateAdjustment, opt2, opt3, mageAdjustment);
+						a2_100 + kirikuchiAdjustment * 100, a3_100, tateAdjustment, opt2, opt3, mageAdjustment);
 				}
 				break;
 			}

@@ -12,8 +12,8 @@ function cdDrawCurveU(
 	opt1: number, opt2: number, opt3: number, opt4: number) {
 
 	if (kage.kShotai === kage.kMincho) { // mincho
-		const a1 = ta1 % 1000;
-		const a2 = ta2 % 100;
+		const a1 = ta1;
+		const a2 = ta2;
 
 		const kMinWidthT = kage.kMinWidthT - opt1 / 2;
 		const kMinWidthT2 = kage.kMinWidthT - opt4 / 2;
@@ -515,8 +515,8 @@ function cdDrawCurveU(
 			polygons.push(poly);
 		}
 	} else { // gothic
-		const a1 = ta1 % 1000;
-		const a2 = ta2 % 100;
+		const a1 = ta1;
+		const a2 = ta2;
 		if (a1 % 10 === 2) {
 			const [dx1, dy1] = (x1 === sx1 && y1 === sy1)
 				? [0, kage.kWidth] // ?????
@@ -622,8 +622,8 @@ export function cdDrawLine(
 		const y1 = ty1;
 		const x2 = tx2;
 		const y2 = ty2;
-		const a1 = ta1 % 1000;
-		const a2 = ta2 % 100;
+		const a1 = ta1;
+		const a2 = ta2;
 
 		const kMinWidthT = kage.kMinWidthT - opt1 / 2;
 

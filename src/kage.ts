@@ -118,14 +118,8 @@ export class Kage {
 
 	public makeGlyph2(polygons: Polygons, data: string) {
 		if (data !== "") {
-			const strokesArray = this.adjustKirikuchi(
-				this.adjustUroko2(
-					this.adjustUroko(
-						this.adjustKakato(
-							this.adjustTate(
-								this.adjustMage(
-									this.adjustHane(
-										this.getEachStrokes(data))))))));
+			const strokesArray = this.getEachStrokes(data);
+			this.adjustStrokes(strokesArray);
 			strokesArray.forEach((stroke) => {
 				dfDrawFont(this, polygons, stroke);
 			});
@@ -135,14 +129,8 @@ export class Kage {
 	public makeGlyph3(data: string) {
 		const result: Polygons[] = [];
 		if (data !== "") {
-			const strokesArray = this.adjustKirikuchi(
-				this.adjustUroko2(
-					this.adjustUroko(
-						this.adjustKakato(
-							this.adjustTate(
-								this.adjustMage(
-									this.adjustHane(
-										this.getEachStrokes(data))))))));
+			const strokesArray = this.getEachStrokes(data);
+			this.adjustStrokes(strokesArray);
 			strokesArray.forEach((stroke) => {
 				const polygons = new Polygons();
 				dfDrawFont(this, polygons, stroke);
@@ -237,6 +225,17 @@ export class Kage {
 			maxY = Math.max(maxY, smaxY);
 		});
 		return { minX, maxX, minY, maxY };
+	}
+
+	private adjustStrokes(strokesArray: Stroke[]) {
+		this.adjustHane(strokesArray);
+		this.adjustMage(strokesArray);
+		this.adjustTate(strokesArray);
+		this.adjustKakato(strokesArray);
+		this.adjustUroko(strokesArray);
+		this.adjustUroko2(strokesArray);
+		this.adjustKirikuchi(strokesArray);
+		return strokesArray;
 	}
 
 	private adjustHane(strokesArray: Stroke[]) {
@@ -418,8 +417,8 @@ export class Kage {
 				&& stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
 				for (const stroke2 of strokesArray) { // no need to skip when i == j
 					if (stroke2.a1 === 1
-						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1
-						&& stroke2.y1 === stroke.y1 && stroke2.y1 === stroke2.y2) {
+						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1 && stroke2.y1 === stroke.y1
+						&& stroke2.y1 === stroke2.y2) {
 						stroke.kirikuchiAdjustment = 1;
 						break;
 					}
