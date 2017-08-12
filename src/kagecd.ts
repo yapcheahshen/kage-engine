@@ -344,7 +344,7 @@ function cdDrawCurveU(
 				polygons.push(poly);
 				// beginning of the stroke
 				const poly2 = new Polygon();
-				poly2.push(x1 + kMinWidthT, y1 - move);
+				poly2.push(x1 + kMinWidthT * XX - move * -XY, y1 + kMinWidthT * XY - move * XX);
 				if (x1 === sx1 && y1 === sy1) { // ?????
 					// type === -6.4 && pm === -1 && move === 6.4 * kage.kMinWidthY
 					poly2.push(x1 + kMinWidthT * 1.5, y1 + kage.kMinWidthY - move);
