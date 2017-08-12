@@ -300,10 +300,6 @@ function cdDrawCurveU(
 		}
 
 		// process for head of stroke
-		const rad1 = Math.atan2(sy1 - y1, sx1 - x1);
-		const v = sx1 === x1 ? -1 : 1; // for backward compatibility...
-		const XX = Math.sin(rad1) * v;
-		const XY = -Math.cos(rad1) * v;
 
 		if (a1 === 12) {
 			if (x1 === x2) {
@@ -313,23 +309,29 @@ function cdDrawCurveU(
 				poly.push(x1 - kMinWidthT, y1 - kMinWidthT);
 				polygons.push(poly);
 			} else {
+				const [dx, dy] = (sx1 === x1)
+					? (sy1 === y1) // for backward compatibility...
+						? [0, kMinWidthT]
+						: [sy1 < y1 ? kMinWidthT : -kMinWidthT, 0]
+					: normalize([sy1 - y1, -(sx1 - x1)], kMinWidthT);
 				const poly = new Polygon();
-				poly.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
-				poly.push(x1 + kMinWidthT * XX, y1 + kMinWidthT * XY);
-				poly.push(x1 - kMinWidthT * XX - kMinWidthT * -XY, y1 - kMinWidthT * XY - kMinWidthT * XX);
+				poly.push(x1 - dx, y1 - dy);
+				poly.push(x1 + dx, y1 + dy);
+				poly.push(x1 - dx + dy, y1 - dy - dx);
 				polygons.push(poly);
 			}
 		}
 
 		if (a1 === 0) {
 			if (y1 <= y2) { // from up to bottom
-				let type = (Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4);
+				let type = Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4;
 				if (type > 0) {
 					type *= 2;
 				} else {
 					type *= 16;
 				}
 				const pm = type < 0 ? -1 : 1;
+				const move = kage.kMinWidthY * (type >= 0 ? 0 : type) * pm;
 				if (x1 === sx1) {
 					const poly = new Polygon();
 					poly.push(x1 - kMinWidthT, y1 + 1);
@@ -339,7 +341,14 @@ function cdDrawCurveU(
 					//  poly.reverse();
 					// }
 					polygons.push(poly);
+					// beginning of the stroke
+					const poly2 = new Polygon();
+					poly2.push(x1 + kMinWidthT, y1 - move);
+					poly2.push(x1 + kMinWidthT * 1.5, y1 + kage.kMinWidthY - move);
+					poly2.push(x1 + kMinWidthT - 2, y1 + kage.kMinWidthY * 2 + 1);
+					polygons.push(poly2);
 				} else {
+					const [XX, XY] = normalize([sy1 - y1, -(sx1 - x1)]);
 					const poly = new Polygon();
 					poly.push(x1 - kMinWidthT * XX + 1 * -XY, y1 - kMinWidthT * XY + 1 * XX);
 					poly.push(x1 + kMinWidthT * XX, y1 + kMinWidthT * XY);
@@ -350,31 +359,19 @@ function cdDrawCurveU(
 					//  poly.reverse();
 					// }
 					polygons.push(poly);
-				}
-				// beginning of the stroke
-				if (pm > 0) {
-					type = 0;
-				}
-				const move = kage.kMinWidthY * type * pm;
-				if (x1 === sx1) {
-					const poly = new Polygon();
-					poly.push(x1 + kMinWidthT, y1 - move);
-					poly.push(x1 + kMinWidthT * 1.5, y1 + kage.kMinWidthY - move);
-					poly.push(x1 + kMinWidthT - 2, y1 + kage.kMinWidthY * 2 + 1);
-					polygons.push(poly);
-				} else {
-					const poly = new Polygon();
-					poly.push(x1 + kMinWidthT * XX - move * -XY, y1 + kMinWidthT * XY - move * XX);
-					poly.push(
+					// beginning of the stroke
+					const poly2 = new Polygon();
+					poly2.push(x1 + kMinWidthT * XX - move * -XY, y1 + kMinWidthT * XY - move * XX);
+					poly2.push(
 						x1 + kMinWidthT * 1.5 * XX + (kage.kMinWidthY - move * 1.2) * -XY,
 						y1 + kMinWidthT * 1.5 * XY + (kage.kMinWidthY - move * 1.2) * XX);
-					poly.push(
+					poly2.push(
 						x1 + (kMinWidthT - 2) * XX + (kage.kMinWidthY * 2 - move * 0.8 + 1) * -XY,
 						y1 + (kMinWidthT - 2) * XY + (kage.kMinWidthY * 2 - move * 0.8 + 1) * XX);
 					// if(x1 < x2){
-					//  poly.reverse();
+					//  poly2.reverse();
 					// }
-					polygons.push(poly);
+					polygons.push(poly2);
 				}
 			} else { // bottom to up
 				if (x1 === sx1) {
@@ -383,7 +380,14 @@ function cdDrawCurveU(
 					poly.push(x1 + kMinWidthT, y1);
 					poly.push(x1 + kMinWidthT, y1 - kage.kMinWidthY);
 					polygons.push(poly);
+					// beginning of the stroke
+					const poly2 = new Polygon();
+					poly2.push(x1 - kMinWidthT, y1);
+					poly2.push(x1 - kMinWidthT * 1.5, y1 + kage.kMinWidthY);
+					poly2.push(x1 - kMinWidthT * 0.5, y1 + kage.kMinWidthY * 3);
+					polygons.push(poly2);
 				} else {
+					const [XX, XY] = normalize([sy1 - y1, -(sx1 - x1)]);
 					const poly = new Polygon();
 					poly.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
 					poly.push(x1 + kMinWidthT * XX, y1 + kMinWidthT * XY);
@@ -392,27 +396,19 @@ function cdDrawCurveU(
 					//  poly.reverse();
 					// }
 					polygons.push(poly);
-				}
-				// beginning of the stroke
-				if (x1 === sx1) {
-					const poly = new Polygon();
-					poly.push(x1 - kMinWidthT, y1);
-					poly.push(x1 - kMinWidthT * 1.5, y1 + kage.kMinWidthY);
-					poly.push(x1 - kMinWidthT * 0.5, y1 + kage.kMinWidthY * 3);
-					polygons.push(poly);
-				} else {
-					const poly = new Polygon();
-					poly.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
-					poly.push(
+					// beginning of the stroke
+					const poly2 = new Polygon();
+					poly2.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
+					poly2.push(
 						x1 - kMinWidthT * 1.5 * XX + kage.kMinWidthY * -XY,
 						y1 + kage.kMinWidthY * XX - kMinWidthT * 1.5 * XY);
-					poly.push(
+					poly2.push(
 						x1 - kMinWidthT * 0.5 * XX + kage.kMinWidthY * 3 * -XY,
 						y1 + kage.kMinWidthY * 3 * XX - kMinWidthT * 0.5 * XY);
 					// if(x1 < x2){
-					//  poly.reverse();
+					//  poly2.reverse();
 					// }
-					polygons.push(poly);
+					polygons.push(poly2);
 				}
 			}
 		}
@@ -860,11 +856,14 @@ export function cdDrawLine(
 						x1 - Math.sin(rad) * kMinWidthT * v - (kMinWidthT + kage.kMinWidthY) * Math.cos(rad) * v,
 						y1 + Math.cos(rad) * kMinWidthT * v - (kMinWidthT + kage.kMinWidthY) * Math.sin(rad) * v);
 					break;
-				case 22:
+				case 22: {
+					const rad2 = Math.atan((y2 - y1) / (x2 - x1));
+					const v2 = x1 > x2 ? -1 : 1;
 					// TODO: why " + 1" ???
-					poly0.set(0, x1 + (kMinWidthT * v + 1) / Math.sin(rad), y1 + 1);
-					poly0.set(3, x1 - (kMinWidthT * v) / Math.sin(rad), y1);
+					poly0.set(0, x1 + (kMinWidthT * v2 + 1) / Math.sin(rad2), y1 + 1);
+					poly0.set(3, x1 - (kMinWidthT * v2) / Math.sin(rad2), y1);
 					break;
+				}
 				case 32:
 					poly0.set(0, x1 + (kMinWidthT * v) / Math.sin(rad), y1);
 					poly0.set(3, x1 - (kMinWidthT * v) / Math.sin(rad), y1);
@@ -1007,12 +1006,12 @@ export function cdDrawLine(
 				polygons.push(poly);
 			}
 
-			const XX = Math.sin(rad) * v;
-			const XY = -Math.cos(rad) * v;
-			const YX = Math.cos(rad) * v;
-			const YY = Math.sin(rad) * v;
-
 			if (a1 === 0) { // beginning of the storke
+				const XX = Math.sin(rad) * v;
+				const XY = -Math.cos(rad) * v;
+				const YX = Math.cos(rad) * v;
+				const YY = Math.sin(rad) * v;
+
 				const poly = new Polygon();
 				poly.push(
 					x1 + kMinWidthT * XX + (kage.kMinWidthY * 0.5) * YX,
