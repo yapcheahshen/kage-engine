@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-const {Kage, Polygons} = require("../lib/");
+const {Kage, Polygons} = require("../");
 
 function testKage(buhins, name, result, curve = false) {
 	const kage = new Kage();
@@ -29,10 +29,10 @@ function testKage(buhins, name, result, curve = false) {
 			}
 			const dx = point.x - r[0];
 			const dy = point.y - r[1];
-			if (dx > 1 || dy > 1) {
+			if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
 				throw new Error(`Different point ${j + 1} in polygon ${i + 1} in ${name}: dx=${dx}, dy=${dy}`);
 			}
-			if (dx > 0.05 || dy > 0.05) {
+			if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
 				console.warn(`[warn] Slightly different point ${j + 1} in polygon ${i + 1} in ${name}: dx=${dx}, dy=${dy}`);
 			}
 		}

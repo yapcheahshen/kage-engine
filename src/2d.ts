@@ -1,4 +1,5 @@
 import { Stroke } from "./stroke";
+import { round } from "./util";
 
 // Reference : http://www.cam.hi-ho.ne.jp/strong_warriors/teacher/chapter0{4,5}.html
 
@@ -33,6 +34,9 @@ function isCross(
 	x11: number, y11: number, x12: number, y12: number,
 	x21: number, y21: number, x22: number, y22: number) {
 	const cross_1112_2122 = cross(x12 - x11, y12 - y11, x22 - x21, y22 - y21);
+	if (isNaN(cross_1112_2122)) {
+		return true; // for backward compatibility...
+	}
 	if (cross_1112_2122 === 0) {
 		// parallel
 		return false; // XXX should check if segments overlap?
@@ -43,7 +47,7 @@ function isCross(
 	const cross_2122_2111 = cross(x22 - x21, y22 - y21, x11 - x21, y11 - y21);
 	const cross_2122_2112 = cross(x22 - x21, y22 - y21, x12 - x21, y12 - y21);
 
-	return cross_1112_1121 * cross_1112_1122 <= 0 && cross_2122_2111 * cross_2122_2112 <= 0;
+	return round(cross_1112_1121 * cross_1112_1122, 1E5) <= 0 && round(cross_2122_2111 * cross_2122_2112, 1E5) <= 0;
 }
 
 function isCrossBox(

@@ -5,10 +5,11 @@
   "directories": {
     "doc": "docs"
   },
+  "main": "lib/index.js",
   "scripts": {
     "build": "npm run build:ts && npm run build:browser",
     "build:ts": "tsc",
-    "build:browser": "browserify lib/browser.js -o dist/kage.js",
+    "build:browser": "mkdir -p dist && browserify lib/browser.js -o dist/kage.js",
     "clean": "rm lib/* dist/*",
     "lint": "tslint -p . && eslint test",
     "test": "node test/index.js"

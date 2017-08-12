@@ -21,10 +21,10 @@ export function quadraticBezier(p1: number, p2: number, p3: number, t: number) {
 
 /** Returns d/dt(quadraticBezier) */
 export function quadraticBezierDeriv(p1: number, p2: number, p3: number, t: number) {
-	const s = 1 - t;
+	// const s = 1 - t;
 	// ds/dt = -1
-	return (-2 * s) * p1 + 2 * (s - t) * p2 + (2 * t) * p3;
-	// = 2 * t * (p1 - 2 * p2 + p3) - 2 * p1 + 2 * p2
+	// return (-2 * s) * p1 + 2 * (s - t) * p2 + (2 * t) * p3;
+	return 2 * (t * (p1 - 2 * p2 + p3) - p1 + p2);
 }
 
 export function cubicBezier(p1: number, p2: number, p3: number, p4: number, t: number) {
@@ -34,13 +34,13 @@ export function cubicBezier(p1: number, p2: number, p3: number, p4: number, t: n
 
 /** Returns d/dt(cubicBezier) */
 export function cubicBezierDeriv(p1: number, p2: number, p3: number, p4: number, t: number) {
-	const s = 1 - t;
+	// const s = 1 - t;
 	// ds/dt = -1
-	const ss = s * s;
-	const st = s * t;
-	const tt = t * t;
-	return (-3 * ss) * p1 + 3 * (ss - 2 * st) * p2 + 3 * (2 * st - tt) * p3 + (3 * tt) * p4;
-	// = 3 * t * t * (-a + 3 * b - 3 * c + d) + 6 * t * (a - 2 * b + c) - 3 * a + 3 * b
+	// const ss = s * s;
+	// const st = s * t;
+	// const tt = t * t;
+	// return (-3 * ss) * p1 + 3 * (ss - 2 * st) * p2 + 3 * (2 * st - tt) * p3 + (3 * tt) * p4;
+	return round(3 * (t * (t * (-p1 + 3 * p2 - 3 * p3 + p4) + 2 * (p1 - 2 * p2 + p3)) - p1 + p2));
 }
 
 /** Find the minimum of a function by ternary search. */
@@ -62,4 +62,8 @@ export function ternarySearchMin(func: (x: number) => number, left: number, righ
 /** Find the maximum of a function by ternary search. */
 export function ternarySearchMax(func: (x: number) => number, left: number, right: number, eps?: number) {
 	return ternarySearchMin((x) => -func(x), left, right, eps);
+}
+
+export function round(v: number, rate: number = 1E8) {
+	return Math.round(v * rate) / rate;
 }
