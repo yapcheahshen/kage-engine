@@ -35,6 +35,9 @@ function testKage(buhins, name, result, curve = false) {
 			if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
 				console.warn(`[warn] Slightly different point ${j + 1} in polygon ${i + 1} in ${name}: dx=${dx}, dy=${dy}`);
 			}
+			if (isNaN(point.x) || isNaN(point.y)) {
+				throw new Error(`NaN point ${j + 1} in polygon ${i + 1} in ${name}`);
+			}
 		}
 	}
 }
