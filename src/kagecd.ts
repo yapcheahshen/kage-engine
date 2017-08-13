@@ -400,45 +400,31 @@ function cdDrawCurveU(
 		// process for tail
 
 		if (a2 === 1 || a2 === 8 || a2 === 15) { // the last filled circle ... it can change 15->5
-			if (sx2 === x2) {
-				const [dx, dy] = [0, -kMinWidthT2];
-				const poly = new Polygon();
-				if (kage.kUseCurve) {
-					// by curve path
-					poly.push(x2 + dy, y2 + dx);
-					poly.push(x2 + dx * 0.9 + dy * 0.9, y2 - dy * 0.9 + dx * 0.9, true);
-					poly.push(x2 + dx, y2 - dy);
-					poly.push(x2 + dx * 0.9 - dy * 0.9, y2 - dy * 0.9 - dx * 0.9, true);
-					poly.push(x2 - dy, y2 - dx);
-				} else {
-					// by polygon
-					poly.push(x2 + dy, y2 + dx);
-					poly.push(x2 + dx * 0.7 + dy * 0.7, y2 - dy * 0.7 + dx * 0.7);
-					poly.push(x2 + dx, y2 - dy);
-					poly.push(x2 + dx * 0.7 - dy * 0.7, y2 - dy * 0.7 - dx * 0.7);
-					poly.push(x2 - dy, y2 - dx);
-				}
-				polygons.push(poly);
-			} else {
-				const [dx, dy] = (sy2 === y2)
+			const [dx, dy] = (sx2 === x2)
+				? [0, kMinWidthT2] // ?????
+				: (sy2 === y2)
 					? [kMinWidthT2, 0] // ?????
 					: normalize([x2 - sx2, y2 - sy2], kMinWidthT2);
-				const poly = new Polygon();
-				if (kage.kUseCurve) {
-					poly.push(x2 + dy, y2 - dx);
-					poly.push(x2 + dx * 0.9 + dy * 0.9, y2 + dy * 0.9 - dx * 0.9, true);
-					poly.push(x2 + dx, y2 + dy);
-					poly.push(x2 + dx * 0.9 - dy * 0.9, y2 + dy * 0.9 + dx * 0.9, true);
-					poly.push(x2 - dy, y2 + dx);
-				} else {
-					poly.push(x2 + dy, y2 - dx);
-					poly.push(x2 + dx * 0.7 + dy * 0.7, y2 + dy * 0.7 - dx * 0.7);
-					poly.push(x2 + dx, y2 + dy);
-					poly.push(x2 + dx * 0.7 - dy * 0.7, y2 + dy * 0.7 + dx * 0.7);
-					poly.push(x2 - dy, y2 + dx);
-				}
-				polygons.push(poly);
+			const poly = new Polygon();
+			if (kage.kUseCurve) {
+				// by curve path
+				poly.push(x2 + dy, y2 - dx);
+				poly.push(x2 + dx * 0.9 + dy * 0.9, y2 + dy * 0.9 - dx * 0.9, true);
+				poly.push(x2 + dx, y2 + dy);
+				poly.push(x2 + dx * 0.9 - dy * 0.9, y2 + dy * 0.9 + dx * 0.9, true);
+				poly.push(x2 - dy, y2 + dx);
+			} else {
+				// by polygon
+				poly.push(x2 + dy, y2 - dx);
+				poly.push(x2 + dx * 0.7 + dy * 0.7, y2 + dy * 0.7 - dx * 0.7);
+				poly.push(x2 + dx, y2 + dy);
+				poly.push(x2 + dx * 0.7 - dy * 0.7, y2 + dy * 0.7 + dx * 0.7);
+				poly.push(x2 - dy, y2 + dx);
 			}
+			if (sx2 === x2) {
+				poly.reverse();
+			}
+			polygons.push(poly);
 		}
 
 		if (a2 === 9 || (a1 === 7 && a2 === 0)) { // Math.sinnyu & L2RD Harai ... no need for a2=9
@@ -464,17 +450,11 @@ function cdDrawCurveU(
 		if (a2 === 15) { // jump up ... it can change 15->5
 			// anytime same degree
 			const poly = new Polygon();
-			if (y1 < y2) {
-				poly.push(x2, y2 - kMinWidthT + 1);
-				poly.push(x2 + 2, y2 - kMinWidthT - kage.kWidth * 5);
-				poly.push(x2, y2 - kMinWidthT - kage.kWidth * 5);
-				poly.push(x2 - kMinWidthT, y2 - kMinWidthT + 1);
-			} else {
-				poly.push(x2, y2 + kMinWidthT - 1);
-				poly.push(x2 - 2, y2 + kMinWidthT + kage.kWidth * 5);
-				poly.push(x2, y2 + kMinWidthT + kage.kWidth * 5);
-				poly.push(x2 + kMinWidthT, y2 + kMinWidthT - 1);
-			}
+			const rv = y1 < y2 ? 1 : -1;
+			poly.push(x2, y2 - rv * (kMinWidthT - 1));
+			poly.push(x2 + rv * 2, y2 - rv * (kMinWidthT + kage.kWidth * 5));
+			poly.push(x2, y2 - rv * (kMinWidthT + kage.kWidth * 5));
+			poly.push(x2 - rv * kMinWidthT, y2 - rv * (kMinWidthT - 1));
 			polygons.push(poly);
 		}
 
