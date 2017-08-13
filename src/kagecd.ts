@@ -306,10 +306,8 @@ function cdDrawCurveU(
 				poly.push(x1 - kMinWidthT, y1 - kMinWidthT);
 				polygons.push(poly);
 			} else {
-				const [dx, dy] = (sx1 === x1) // for backward compatibility...
-					? (sy1 === y1)
-						? [0, kMinWidthT] // previously NaN?
-						: [sy1 < y1 ? kMinWidthT : -kMinWidthT, 0]
+				const [dx, dy] = (sx1 === x1)
+					? [sy1 < y1 ? kMinWidthT : -kMinWidthT, 0] // for backward compatibility...
 					: normalize([sy1 - y1, -(sx1 - x1)], kMinWidthT);
 				const poly = new Polygon();
 				poly.push(x1 - dx, y1 - dy);
@@ -555,13 +553,9 @@ function cdDrawCurveU(
 				iy = cubicBezierDeriv(y1, sy1, sy2, y2, t);
 			}
 			// SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
-			const [ia, ib] = (kage.kShotai === kage.kMincho) // always false ?
-				? (ix === 0)
-					? [-kage.kMinWidthT * Math.sqrt(1 - t), 0] // ?????
-					: normalize([-iy, ix], kage.kMinWidthT * Math.sqrt(1 - t))
-				: (ix === 0)
-					? [-kage.kWidth, 0] // ?????
-					: normalize([-iy, ix], kage.kWidth);
+			const [ia, ib] = (ix === 0)
+				? [-kage.kWidth, 0] // ?????
+				: normalize([-iy, ix], kage.kWidth);
 
 			// save to polygon
 			poly.push(x - ia, y - ib);
