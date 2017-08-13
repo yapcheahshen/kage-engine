@@ -306,10 +306,8 @@ function cdDrawCurveU(
 				poly.push(x1 - kMinWidthT, y1 - kMinWidthT);
 				polygons.push(poly);
 			} else {
-				const [dx, dy] = (sx1 === x1) // for backward compatibility...
-					? (sy1 === y1)
-						? [0, kMinWidthT] // previously NaN?
-						: [sy1 < y1 ? kMinWidthT : -kMinWidthT, 0]
+				const [dx, dy] = (sx1 === x1)
+					? [sy1 < y1 ? kMinWidthT : -kMinWidthT, 0] // for backward compatibility...
 					: normalize([sy1 - y1, -(sx1 - x1)], kMinWidthT);
 				const poly = new Polygon();
 				poly.push(x1 - dx, y1 - dy);
@@ -555,13 +553,9 @@ function cdDrawCurveU(
 				iy = cubicBezierDeriv(y1, sy1, sy2, y2, t);
 			}
 			// SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
-			const [ia, ib] = (kage.kShotai === kage.kMincho) // always false ?
-				? (ix === 0)
-					? [-kage.kMinWidthT * Math.sqrt(1 - t), 0] // ?????
-					: normalize([-iy, ix], kage.kMinWidthT * Math.sqrt(1 - t))
-				: (ix === 0)
-					? [-kage.kWidth, 0] // ?????
-					: normalize([-iy, ix], kage.kWidth);
+			const [ia, ib] = (ix === 0)
+				? [-kage.kWidth, 0] // ?????
+				: normalize([-iy, ix], kage.kWidth);
 
 			// save to polygon
 			poly.push(x - ia, y - ib);
@@ -606,58 +600,115 @@ export function cdDrawLine(
 
 		const kMinWidthT = kage.kMinWidthT - opt1 / 2;
 
-		if (x1 === x2) { // if TATE stroke, use y-axis
+		if (x1 === x2 || y1 !== y2 && (x1 > x2 || Math.abs(y2 - y1) >= Math.abs(x2 - x1) || a1 === 6 || a2 === 6)) {
+			// if TATE stroke, use y-axis
+			// for others, use x-axis
+			// KAKUDO GA FUKAI or KAGI NO YOKO BOU
+			const [cosrad, sinrad] = (x1 === x2)
+				? [0, 1] // ?????
+				: normalize([x2 - x1, y2 - y1]);
 			const poly0 = new Polygon(4);
 			switch (a1) {
 				case 0:
-					poly0.set(3, x1 - kMinWidthT, y1 - kage.kMinWidthY / 2);
-					poly0.set(0, x1 + kMinWidthT, y1 + kage.kMinWidthY / 2);
+					poly0.set(0,
+						x1 + sinrad * kMinWidthT + cosrad * kage.kMinWidthY / 2,
+						y1 - cosrad * kMinWidthT + sinrad * kage.kMinWidthY / 2);
+					poly0.set(3,
+						x1 - sinrad * kMinWidthT - cosrad * kage.kMinWidthY / 2,
+						y1 + cosrad * kMinWidthT - sinrad * kage.kMinWidthY / 2);
 					break;
 				case 1:
 				case 6: // ... no need
-				case 22:
-					poly0.set(3, x1 - kMinWidthT, y1);
-					poly0.set(0, x1 + kMinWidthT, y1);
+					poly0.set(0, x1 + sinrad * kMinWidthT, y1 - cosrad * kMinWidthT);
+					poly0.set(3, x1 - sinrad * kMinWidthT, y1 + cosrad * kMinWidthT);
 					break;
 				case 12:
-					poly0.set(3, x1 - kMinWidthT, y1 - kage.kMinWidthY - kMinWidthT);
-					poly0.set(0, x1 + kMinWidthT, y1 - kage.kMinWidthY);
+					poly0.set(0,
+						x1 + sinrad * kMinWidthT - cosrad * kage.kMinWidthY,
+						y1 - cosrad * kMinWidthT - sinrad * kage.kMinWidthY);
+					poly0.set(3,
+						x1 - sinrad * kMinWidthT - cosrad * (kMinWidthT + kage.kMinWidthY),
+						y1 + cosrad * kMinWidthT - sinrad * (kMinWidthT + kage.kMinWidthY));
+					break;
+				case 22:
+					if (x1 === x2) {
+						poly0.set(0, x1 + kMinWidthT, y1);
+						poly0.set(3, x1 - kMinWidthT, y1);
+					} else {
+						const rad = Math.atan((y2 - y1) / (x2 - x1));
+						const v = x1 > x2 ? -1 : 1;
+						// TODO: why " + 1" ???
+						poly0.set(0, x1 + (kMinWidthT * v + 1) / Math.sin(rad), y1 + 1);
+						poly0.set(3, x1 - (kMinWidthT * v) / Math.sin(rad), y1);
+					}
 					break;
 				case 32:
-					poly0.set(3, x1 - kMinWidthT, y1 - kage.kMinWidthY);
-					poly0.set(0, x1 + kMinWidthT, y1 - kage.kMinWidthY);
+					if (x1 === x2) {
+						poly0.set(0, x1 + kMinWidthT, y1 - kage.kMinWidthY);
+						poly0.set(3, x1 - kMinWidthT, y1 - kage.kMinWidthY);
+					} else {
+						poly0.set(0, x1 + kMinWidthT / sinrad, y1);
+						poly0.set(3, x1 - kMinWidthT / sinrad, y1);
+					}
 					break;
 			}
 
 			switch (a2) {
 				case 0:
 					if (a1 === 6) { // KAGI's tail ... no need
-						poly0.set(2, x2 - kMinWidthT, y2);
-						poly0.set(1, x2 + kMinWidthT, y2);
+						poly0.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
+						poly0.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
 					} else {
-						poly0.set(2, x2 - kMinWidthT, y2 + kMinWidthT / 2);
-						poly0.set(1, x2 + kMinWidthT, y2 - kMinWidthT / 2);
+						poly0.set(1,
+							x2 + sinrad * kMinWidthT - cosrad * kMinWidthT / 2,
+							y2 - cosrad * kMinWidthT - sinrad * kMinWidthT / 2);
+						poly0.set(2,
+							x2 - sinrad * kMinWidthT + cosrad * kMinWidthT / 2,
+							y2 + cosrad * kMinWidthT + sinrad * kMinWidthT / 2);
 					}
 					break;
-				case 1:
-					poly0.set(2, x2 - kMinWidthT, y2);
-					poly0.set(1, x2 + kMinWidthT, y2);
+				case 5:
+					if (x1 === x2) {
+						break;
+					}
+				// falls through
+				case 1: // is needed?
+					poly0.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
+					poly0.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
 					break;
 				case 13:
-					poly0.set(2, x2 - kMinWidthT, y2 + kage.kAdjustKakatoL[opt2] + kMinWidthT);
-					poly0.set(1, x2 + kMinWidthT, y2 + kage.kAdjustKakatoL[opt2]);
+					poly0.set(1,
+						x2 + sinrad * kMinWidthT + cosrad * kage.kAdjustKakatoL[opt2],
+						y2 - cosrad * kMinWidthT + sinrad * kage.kAdjustKakatoL[opt2]);
+					poly0.set(2,
+						x2 - sinrad * kMinWidthT + cosrad * (kage.kAdjustKakatoL[opt2] + kMinWidthT),
+						y2 + cosrad * kMinWidthT + sinrad * (kage.kAdjustKakatoL[opt2] + kMinWidthT));
 					break;
 				case 23:
-					poly0.set(2, x2 - kMinWidthT, y2 + kage.kAdjustKakatoR[opt2] + kMinWidthT);
-					poly0.set(1, x2 + kMinWidthT, y2 + kage.kAdjustKakatoR[opt2]);
+					poly0.set(1,
+						x2 + sinrad * kMinWidthT + cosrad * kage.kAdjustKakatoR[opt2],
+						y2 - cosrad * kMinWidthT + sinrad * kage.kAdjustKakatoR[opt2]);
+					poly0.set(2,
+						x2 - sinrad * kMinWidthT + cosrad * (kage.kAdjustKakatoR[opt2] + kMinWidthT),
+						y2 + cosrad * kMinWidthT + sinrad * (kage.kAdjustKakatoR[opt2] + kMinWidthT));
 					break;
 				case 24: // for T/H design
-					poly0.set(2, x2 - kMinWidthT, y2 + kage.kMinWidthY);
-					poly0.set(1, x2 + kMinWidthT, y2 + kage.kMinWidthY);
+					if (x1 === x2) {
+						poly0.set(1, x2 + kMinWidthT, y2 + kage.kMinWidthY);
+						poly0.set(2, x2 - kMinWidthT, y2 + kage.kMinWidthY);
+					} else {
+						poly0.set(1, x2 + kMinWidthT / sinrad, y2);
+						poly0.set(2, x2 - kMinWidthT / sinrad, y2);
+					}
 					break;
 				case 32:
-					poly0.set(2, x2 - kMinWidthT, y2 + kage.kMinWidthY);
-					poly0.set(1, x2 + kMinWidthT, y2 + kage.kMinWidthY);
+					if (x1 === x2) {
+						poly0.set(1, x2 + kMinWidthT, y2 + kage.kMinWidthY);
+						poly0.set(2, x2 - kMinWidthT, y2 + kage.kMinWidthY);
+					} else {
+						poly0.set(1, x2 + kMinWidthT / sinrad, y2);
+						poly0.set(2, x2 - kMinWidthT / sinrad, y2);
+					}
 					break;
 			}
 
@@ -666,90 +717,146 @@ export function cdDrawLine(
 			if (a2 === 24) { // for T design
 				const poly = new Polygon();
 				poly.push(x2, y2 + kage.kMinWidthY);
-				poly.push(x2 + kMinWidthT, y2 - kage.kMinWidthY * 3);
+				if (x1 === x2) {
+					poly.push(x2 + kMinWidthT, y2 - kage.kMinWidthY * 3);
+				} else {
+					poly.push(x2 + kMinWidthT * 0.5, y2 - kage.kMinWidthY * 4);
+				}
 				poly.push(x2 + kMinWidthT * 2, y2 - kage.kMinWidthY);
 				poly.push(x2 + kMinWidthT * 2, y2 + kage.kMinWidthY);
 				polygons.push(poly);
 			}
 
 			if (a2 === 13 && opt2 === 4) { // for new GTH box's left bottom corner
-				const poly = new Polygon();
-				poly.push(x2 - kMinWidthT, y2 - kage.kMinWidthY * 3);
-				poly.push(x2 - kMinWidthT * 2, y2);
-				poly.push(x2 - kage.kMinWidthY, y2 + kage.kMinWidthY * 5);
-				poly.push(x2 + kMinWidthT, y2 + kage.kMinWidthY);
-				polygons.push(poly);
+				if (x1 === x2) {
+					const poly = new Polygon();
+					poly.push(x2 - kMinWidthT, y2 - kage.kMinWidthY * 3);
+					poly.push(x2 - kMinWidthT * 2, y2);
+					poly.push(x2 - kage.kMinWidthY, y2 + kage.kMinWidthY * 5);
+					poly.push(x2 + kMinWidthT, y2 + kage.kMinWidthY);
+					polygons.push(poly);
+				} else { // MUKI KANKEINASHI
+					const poly = new Polygon();
+					const m = (x1 > x2 && y1 !== y2)
+						? Math.floor((x1 - x2) / (y2 - y1) * 3)
+						: 0;
+					poly.push(x2 + m, y2 - kage.kMinWidthY * 5);
+					poly.push(x2 - kMinWidthT * 2 + m, y2);
+					poly.push(x2 - kage.kMinWidthY + m, y2 + kage.kMinWidthY * 5);
+					poly.push(x2 + kMinWidthT + m, y2 + kage.kMinWidthY);
+					poly.push(x2 + m, y2);
+					polygons.push(poly);
+				}
 			}
 
-			if (a1 === 22) { // box's right top corner
+			if (a1 === 22) {
+				// box's right top corner
+				// SHIKAKU MIGIUE UROKO NANAME DEMO MASSUGU MUKI
 				const poly = new Polygon();
 				poly.push(x1 - kMinWidthT, y1 - kage.kMinWidthY);
 				poly.push(x1, y1 - kage.kMinWidthY - kage.kWidth);
 				poly.push(x1 + kMinWidthT + kage.kWidth, y1 + kage.kMinWidthY);
-				poly.push(x1 + kMinWidthT, y1 + kMinWidthT);
-				poly.push(x1 - kMinWidthT, y1);
+				if (x1 === x2) {
+					poly.push(x1 + kMinWidthT, y1 + kMinWidthT);
+					poly.push(x1 - kMinWidthT, y1);
+				} else {
+					poly.push(x1 + kMinWidthT, y1 + kMinWidthT - 1);
+					poly.push(x1 - kMinWidthT, y1 + kMinWidthT + 4);
+				}
 				polygons.push(poly);
 			}
 
 			if (a1 === 0) { // beginning of the stroke
 				const poly = new Polygon();
-				poly.push(x1 + kMinWidthT, y1 + kage.kMinWidthY * 0.5);
-				poly.push(x1 + kMinWidthT + kMinWidthT * 0.5, y1 + kage.kMinWidthY * 0.5 + kage.kMinWidthY);
-				poly.push(x1 + kMinWidthT - 2, y1 + kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2 + 1);
+				poly.push(
+					x1 + kMinWidthT * sinrad + kage.kMinWidthY * 0.5 * cosrad,
+					y1 + kMinWidthT * -cosrad + kage.kMinWidthY * 0.5 * sinrad);
+				poly.push(
+					x1 + (kMinWidthT + kMinWidthT * 0.5) * sinrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY) * cosrad,
+					y1 + (kMinWidthT + kMinWidthT * 0.5) * -cosrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY) * sinrad);
+				if (x1 === x2) {
+					poly.push(
+						x1 + (kMinWidthT - 2) * sinrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2 + 1) * cosrad,
+						y1 + (kMinWidthT - 2) * -cosrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2 + 1) * sinrad);
+				} else {
+					poly.push(
+						x1 + (kMinWidthT - 2) * sinrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2) * cosrad,
+						y1 + (kMinWidthT + 1) * -cosrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2) * sinrad);
+				}
 				polygons.push(poly);
 			}
 
-			if ((a1 === 6 && a2 === 0) || a2 === 1) { // KAGI NO YOKO BOU NO SAIGO NO MARU ... no need only used at 1st=yoko
+			if (x1 === x2 && a2 === 1 || a1 === 6 && (a2 === 0 || x1 !== x2 && a2 === 5)) {
+				// KAGI NO YOKO BOU NO SAIGO NO MARU ... no need only used at 1st=yoko
 				const poly = new Polygon();
 				if (kage.kUseCurve) {
-					poly.push(x2 - kMinWidthT, y2);
-					poly.push(x2 - kMinWidthT * 0.9, y2 + kMinWidthT * 0.9, true);
-					poly.push(x2, y2 + kMinWidthT);
-					poly.push(x2 + kMinWidthT * 0.9, y2 + kMinWidthT * 0.9, true);
-					poly.push(x2 + kMinWidthT, y2);
+					poly.push(x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
+					poly.push(
+						x2 - cosrad * kMinWidthT * 0.9 + sinrad * kMinWidthT * 0.9, // typo?
+						y2 + sinrad * kMinWidthT * 0.9 - cosrad * kMinWidthT * 0.9, true);
+					poly.push(x2 + cosrad * kMinWidthT, y2 + sinrad * kMinWidthT);
+					poly.push(
+						x2 + cosrad * kMinWidthT * 0.9 - sinrad * kMinWidthT * 0.9,
+						y2 + sinrad * kMinWidthT * 0.9 + cosrad * kMinWidthT * 0.9, true);
+					poly.push(x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
 				} else {
-					poly.push(x2 - kMinWidthT, y2);
-					poly.push(x2 - kMinWidthT * 0.6, y2 + kMinWidthT * 0.6);
-					poly.push(x2, y2 + kMinWidthT);
-					poly.push(x2 + kMinWidthT * 0.6, y2 + kMinWidthT * 0.6);
-					poly.push(x2 + kMinWidthT, y2);
+					const r = (x1 === x2 && (a1 === 6 && a2 === 0 || a2 === 1))
+						? 0.6
+						: 0.8; // ?????
+					poly.push(x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
+					poly.push(
+						x2 + cosrad * kMinWidthT * r + sinrad * kMinWidthT * 0.6,
+						y2 + sinrad * kMinWidthT * r - cosrad * kMinWidthT * 0.6);
+					poly.push(x2 + cosrad * kMinWidthT, y2 + sinrad * kMinWidthT);
+					poly.push(
+						x2 + cosrad * kMinWidthT * r - sinrad * kMinWidthT * 0.6,
+						y2 + sinrad * kMinWidthT * r + cosrad * kMinWidthT * 0.6);
+					poly.push(x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
+				}
+				if (x1 === x2 && (a1 === 6 && a2 === 0 || a2 === 1)) {
+					// for backward compatibility
+					poly.reverse();
 				}
 				// poly.reverse(); // for fill-rule
 				polygons.push(poly);
 			}
-		} else if (
-			y1 === y2 && a1 !== 6
-			|| (Math.abs(y2 - y1) < Math.abs(x2 - x1)) && (a1 !== 6) && (a2 !== 6) && !(x1 > x2)) {
-			// for others, use x-axis
-			// ASAI KAUDO
-			const [cosrad, sinrad] = (y1 === y2) ? [1, 0] : normalize([x2 - x1, y2 - y1]);
-			// always same
-			const poly = new Polygon(4);
-			poly.set(0, x1 + sinrad * kage.kMinWidthY, y1 - cosrad * kage.kMinWidthY);
-			poly.set(1, x2 + sinrad * kage.kMinWidthY, y2 - cosrad * kage.kMinWidthY);
-			poly.set(2, x2 - sinrad * kage.kMinWidthY, y2 + cosrad * kage.kMinWidthY);
-			poly.set(3, x1 - sinrad * kage.kMinWidthY, y1 + cosrad * kage.kMinWidthY);
-			polygons.push(poly);
-
-			// UROKO
-			if (a2 === 0) {
-				const poly2 = new Polygon();
-				poly2.push(x2 + sinrad * kage.kMinWidthY, y2 - cosrad * kage.kMinWidthY);
-				poly2.push(x2 - cosrad * kage.kAdjustUrokoX[opt2], y2 - sinrad * kage.kAdjustUrokoX[opt2]);
-				poly2.push(
-					x2 - (cosrad - sinrad) * kage.kAdjustUrokoX[opt2] / 2,
-					y2 - (sinrad + cosrad) * kage.kAdjustUrokoY[opt2]);
-				polygons.push(poly2);
+			if (x1 !== x2 && a1 === 6 && a2 === 5) {
+				// KAGI NO YOKO BOU NO HANE
+				const poly = new Polygon();
+				if (x1 < x2) {
+					poly.push(x2 + (kMinWidthT - 1) * sinrad, y2 - (kMinWidthT - 1) * cosrad);
+					poly.push(
+						x2 + 2 * cosrad + (kMinWidthT + kage.kWidth * 5) * sinrad,
+						y2 + 2 * sinrad - (kMinWidthT + kage.kWidth * 5) * cosrad);
+					poly.push(
+						x2 + (kMinWidthT + kage.kWidth * 5) * sinrad,
+						y2 - (kMinWidthT + kage.kWidth * 5) * cosrad);
+					poly.push(
+						x2 + (kMinWidthT - 1) * sinrad - kMinWidthT * cosrad,
+						y2 - (kMinWidthT - 1) * cosrad - kMinWidthT * sinrad);
+				} else {
+					poly.push(x2 - (kMinWidthT - 1) * sinrad, y2 + (kMinWidthT - 1) * cosrad);
+					poly.push(
+						x2 + 2 * cosrad - (kMinWidthT + kage.kWidth * 5) * sinrad,
+						y2 + 2 * sinrad + (kMinWidthT + kage.kWidth * 5) * cosrad);
+					poly.push(
+						x2 - (kMinWidthT + kage.kWidth * 5) * sinrad,
+						y2 + (kMinWidthT + kage.kWidth * 5) * cosrad);
+					poly.push(
+						x2 + (kMinWidthT - 1) * sinrad - kMinWidthT * cosrad,
+						y2 - (kMinWidthT - 1) * cosrad - kMinWidthT * sinrad);
+				}
+				polygons.push(poly);
 			}
-		} else if (y1 === y2) {
+		} else if (y1 === y2 && a1 === 6) {
 			// if it is YOKO stroke, use x-axis
 			// if it is KAGI's YOKO stroke, get bold
 			// x1 !== x2 && y1 === y2 && a1 === 6
-			const poly0 = new Polygon(4);
-			poly0.set(0, x1, y1 - kMinWidthT);
-			poly0.set(3, x1, y1 + kMinWidthT);
-			poly0.set(1, x2, y2 - kMinWidthT);
-			poly0.set(2, x2, y2 + kMinWidthT);
+			const poly0 = new Polygon();
+			poly0.push(x1, y1 - kMinWidthT);
+			poly0.push(x2, y2 - kMinWidthT);
+			poly0.push(x2, y2 + kMinWidthT);
+			poly0.push(x1, y1 + kMinWidthT);
 			polygons.push(poly0);
 
 			if (a2 === 1 || a2 === 0 || a2 === 5) { // no need a2=1
@@ -806,198 +913,25 @@ export function cdDrawLine(
 			}
 		} else {
 			// for others, use x-axis
-			// KAKUDO GA FUKAI or KAGI NO YOKO BOU
-			const [cosrad, sinrad] = normalize([x2 - x1, y2 - y1]);
-			const poly0 = new Polygon(4);
-			switch (a1) {
-				case 0:
-					poly0.set(0,
-						x1 + sinrad * kMinWidthT + kage.kMinWidthY * cosrad * 0.5,
-						y1 - cosrad * kMinWidthT + kage.kMinWidthY * sinrad * 0.5);
-					poly0.set(3,
-						x1 - sinrad * kMinWidthT - kage.kMinWidthY * cosrad * 0.5,
-						y1 + cosrad * kMinWidthT - kage.kMinWidthY * sinrad * 0.5);
-					break;
-				case 1:
-				case 6:
-					poly0.set(0, x1 + sinrad * kMinWidthT, y1 - cosrad * kMinWidthT);
-					poly0.set(3, x1 - sinrad * kMinWidthT, y1 + cosrad * kMinWidthT);
-					break;
-				case 12:
-					poly0.set(0,
-						x1 + sinrad * kMinWidthT - kage.kMinWidthY * cosrad,
-						y1 - cosrad * kMinWidthT - kage.kMinWidthY * sinrad);
-					poly0.set(3,
-						x1 - sinrad * kMinWidthT - (kMinWidthT + kage.kMinWidthY) * cosrad,
-						y1 + cosrad * kMinWidthT - (kMinWidthT + kage.kMinWidthY) * sinrad);
-					break;
-				case 22: {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 > x2 ? -1 : 1;
-					// TODO: why " + 1" ???
-					poly0.set(0, x1 + (kMinWidthT * v + 1) / Math.sin(rad), y1 + 1);
-					poly0.set(3, x1 - (kMinWidthT * v) / Math.sin(rad), y1);
-					break;
-				}
-				case 32:
-					poly0.set(0, x1 + kMinWidthT / sinrad, y1);
-					poly0.set(3, x1 - kMinWidthT / sinrad, y1);
-					break;
-			}
+			// ASAI KAUDO
+			const [cosrad, sinrad] = (y1 === y2) ? [1, 0] : normalize([x2 - x1, y2 - y1]);
+			// always same
+			const poly = new Polygon();
+			poly.push(x1 + sinrad * kage.kMinWidthY, y1 - cosrad * kage.kMinWidthY);
+			poly.push(x2 + sinrad * kage.kMinWidthY, y2 - cosrad * kage.kMinWidthY);
+			poly.push(x2 - sinrad * kage.kMinWidthY, y2 + cosrad * kage.kMinWidthY);
+			poly.push(x1 - sinrad * kage.kMinWidthY, y1 + cosrad * kage.kMinWidthY);
+			polygons.push(poly);
 
-			switch (a2) {
-				case 0:
-					if (a1 === 6) {
-						poly0.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-						poly0.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
-					} else {
-						poly0.set(1,
-							x2 + sinrad * kMinWidthT - kMinWidthT * 0.5 * cosrad,
-							y2 - cosrad * kMinWidthT - kMinWidthT * 0.5 * sinrad);
-						poly0.set(2,
-							x2 - sinrad * kMinWidthT + kMinWidthT * 0.5 * cosrad,
-							y2 + cosrad * kMinWidthT + kMinWidthT * 0.5 * sinrad);
-					}
-					break;
-				case 1: // is needed?
-				case 5:
-					poly0.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-					poly0.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
-					break;
-				case 13:
-					poly0.set(1,
-						x2 + sinrad * kMinWidthT + kage.kAdjustKakatoL[opt2] * cosrad,
-						y2 - cosrad * kMinWidthT + kage.kAdjustKakatoL[opt2] * sinrad);
-					poly0.set(2,
-						x2 - sinrad * kMinWidthT + (kage.kAdjustKakatoL[opt2] + kMinWidthT) * cosrad,
-						y2 + cosrad * kMinWidthT + (kage.kAdjustKakatoL[opt2] + kMinWidthT) * sinrad);
-					break;
-				case 23:
-					poly0.set(1,
-						x2 + sinrad * kMinWidthT + kage.kAdjustKakatoR[opt2] * cosrad,
-						y2 - cosrad * kMinWidthT + kage.kAdjustKakatoR[opt2] * sinrad);
-					poly0.set(2,
-						x2 - sinrad * kMinWidthT + (kage.kAdjustKakatoR[opt2] + kMinWidthT) * cosrad,
-						y2 + cosrad * kMinWidthT + (kage.kAdjustKakatoR[opt2] + kMinWidthT) * sinrad);
-					break;
-				case 24:
-					poly0.set(1, x2 + kMinWidthT / sinrad, y2);
-					poly0.set(2, x2 - kMinWidthT / sinrad, y2);
-					break;
-				case 32:
-					poly0.set(1, x2 + kMinWidthT / sinrad, y2);
-					poly0.set(2, x2 - kMinWidthT / sinrad, y2);
-					break;
-			}
-
-			polygons.push(poly0);
-
-			if (a2 === 24) { // for T design
-				const poly = new Polygon();
-				poly.push(x2, y2 + kage.kMinWidthY);
-				poly.push(x2 + kMinWidthT * 0.5, y2 - kage.kMinWidthY * 4);
-				poly.push(x2 + kMinWidthT * 2, y2 - kage.kMinWidthY);
-				poly.push(x2 + kMinWidthT * 2, y2 + kage.kMinWidthY);
-				polygons.push(poly);
-			}
-
-			if (a1 === 6) {
-				if (a2 === 0 || a2 === 5) { // KAGI NO YOKO BOU NO SAIGO NO MARU
-					const poly = new Polygon();
-					if (kage.kUseCurve) {
-						poly.push(x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-						poly.push(
-							x2 - cosrad * kMinWidthT * 0.9 + sinrad * kMinWidthT * 0.9,
-							y2 + sinrad * kMinWidthT * 0.9 - cosrad * kMinWidthT * 0.9, true);
-						poly.push(x2 + cosrad * kMinWidthT, y2 + sinrad * kMinWidthT);
-						poly.push(
-							x2 + cosrad * kMinWidthT * 0.9 - sinrad * kMinWidthT * 0.9,
-							y2 + sinrad * kMinWidthT * 0.9 + cosrad * kMinWidthT * 0.9, true);
-						poly.push(x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
-					} else {
-						poly.push(x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-						poly.push(
-							x2 + cosrad * kMinWidthT * 0.8 + sinrad * kMinWidthT * 0.6,
-							y2 + sinrad * kMinWidthT * 0.8 - cosrad * kMinWidthT * 0.6);
-						poly.push(x2 + cosrad * kMinWidthT, y2 + sinrad * kMinWidthT);
-						poly.push(
-							x2 + cosrad * kMinWidthT * 0.8 - sinrad * kMinWidthT * 0.6,
-							y2 + sinrad * kMinWidthT * 0.8 + cosrad * kMinWidthT * 0.6);
-						poly.push(x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
-					}
-					polygons.push(poly);
-				}
-
-				if (a2 === 5) {
-					// KAGI NO YOKO BOU NO HANE
-					const poly = new Polygon();
-					if (x1 < x2) {
-						poly.push(x2 + (kMinWidthT - 1) * sinrad, y2 - (kMinWidthT - 1) * cosrad);
-						poly.push(
-							x2 + 2 * cosrad + (kMinWidthT + kage.kWidth * 5) * sinrad,
-							y2 + 2 * sinrad - (kMinWidthT + kage.kWidth * 5) * cosrad);
-						poly.push(
-							x2 + (kMinWidthT + kage.kWidth * 5) * sinrad,
-							y2 - (kMinWidthT + kage.kWidth * 5) * cosrad);
-						poly.push(
-							x2 + (kMinWidthT - 1) * sinrad - kMinWidthT * cosrad,
-							y2 - (kMinWidthT - 1) * cosrad - kMinWidthT * sinrad);
-					} else {
-						poly.push(x2 - (kMinWidthT - 1) * sinrad, y2 + (kMinWidthT - 1) * cosrad);
-						poly.push(
-							x2 + 2 * cosrad - (kMinWidthT + kage.kWidth * 5) * sinrad,
-							y2 + 2 * sinrad + (kMinWidthT + kage.kWidth * 5) * cosrad);
-						poly.push(
-							x2 - (kMinWidthT + kage.kWidth * 5) * sinrad,
-							y2 + (kMinWidthT + kage.kWidth * 5) * cosrad);
-						poly.push(
-							x2 + (kMinWidthT - 1) * sinrad - kMinWidthT * cosrad,
-							y2 - (kMinWidthT - 1) * cosrad - kMinWidthT * sinrad);
-					}
-					polygons.push(poly);
-				}
-			}
-
-			if (a1 === 22) { // SHIKAKU MIGIUE UROKO NANAME DEMO MASSUGU MUKI
-				const poly = new Polygon();
-				poly.push(x1 - kMinWidthT, y1 - kage.kMinWidthY);
-				poly.push(x1, y1 - kage.kMinWidthY - kage.kWidth);
-				poly.push(x1 + kMinWidthT + kage.kWidth, y1 + kage.kMinWidthY);
-				poly.push(x1 + kMinWidthT, y1 + kMinWidthT - 1);
-				poly.push(x1 - kMinWidthT, y1 + kMinWidthT + 4);
-				polygons.push(poly);
-			}
-
-			if (a2 === 13 && opt2 === 4) { // for new GTH box's left bottom corner MUKI KANKEINASHI
-				const poly = new Polygon();
-				const m = (x1 > x2 && y1 !== y2)
-					? Math.floor((x1 - x2) / (y2 - y1) * 3)
-					: 0;
-				poly.push(x2 + m, y2 - kage.kMinWidthY * 5);
-				poly.push(x2 - kMinWidthT * 2 + m, y2);
-				poly.push(x2 - kage.kMinWidthY + m, y2 + kage.kMinWidthY * 5);
-				poly.push(x2 + kMinWidthT + m, y2 + kage.kMinWidthY);
-				poly.push(x2 + m, y2);
-				polygons.push(poly);
-			}
-
-			if (a1 === 0) { // beginning of the storke
-				const XX = sinrad;
-				const XY = -cosrad;
-				const YX = cosrad;
-				const YY = sinrad;
-
-				const poly = new Polygon();
-				poly.push(
-					x1 + kMinWidthT * XX + (kage.kMinWidthY * 0.5) * YX,
-					y1 + kMinWidthT * XY + (kage.kMinWidthY * 0.5) * YY);
-				poly.push(
-					x1 + (kMinWidthT + kMinWidthT * 0.5) * XX + (kage.kMinWidthY * 0.5 + kage.kMinWidthY) * YX,
-					y1 + (kMinWidthT + kMinWidthT * 0.5) * XY + (kage.kMinWidthY * 0.5 + kage.kMinWidthY) * YY);
-				poly.push(
-					x1 + kMinWidthT * XX + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2) * YX - 2 * XX,
-					y1 + kMinWidthT * XY + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2) * YY + 1 * XY);
-				polygons.push(poly);
+			// UROKO
+			if (a2 === 0) {
+				const poly2 = new Polygon();
+				poly2.push(x2 + sinrad * kage.kMinWidthY, y2 - cosrad * kage.kMinWidthY);
+				poly2.push(x2 - cosrad * kage.kAdjustUrokoX[opt2], y2 - sinrad * kage.kAdjustUrokoX[opt2]);
+				poly2.push(
+					x2 - (cosrad - sinrad) * kage.kAdjustUrokoX[opt2] / 2,
+					y2 - (sinrad + cosrad) * kage.kAdjustUrokoY[opt2]);
+				polygons.push(poly2);
 			}
 		}
 	} else { // gothic
