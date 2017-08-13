@@ -786,7 +786,7 @@ export function cdDrawLine(
 				polygons.push(poly);
 			}
 
-			if (x1 === x2 && a2 === 1 || a1 === 6 && (a2 === 0 || a2 === 5)) {
+			if (x1 === x2 && a2 === 1 || a1 === 6 && (a2 === 0 || x1 !== x2 && a2 === 5)) {
 				// KAGI NO YOKO BOU NO SAIGO NO MARU ... no need only used at 1st=yoko
 				const poly = new Polygon();
 				if (kage.kUseCurve) {
@@ -813,9 +813,14 @@ export function cdDrawLine(
 						y2 + sinrad * kMinWidthT * r + cosrad * kMinWidthT * 0.6);
 					poly.push(x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
 				}
+				if (x1 === x2 && (a1 === 6 && a2 === 0 || a2 === 1)) {
+					// for backward compatibility
+					poly.reverse();
+				}
+				// poly.reverse(); // for fill-rule
 				polygons.push(poly);
 			}
-			if (a1 === 6 && a2 === 5) {
+			if (x1 !== x2 && a1 === 6 && a2 === 5) {
 				// KAGI NO YOKO BOU NO HANE
 				const poly = new Polygon();
 				if (x1 < x2) {
