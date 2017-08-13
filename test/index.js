@@ -15,6 +15,32 @@ function testKage(buhins, name, result, curve = false) {
 	if (polygons.array.length !== result.length) {
 		throw new Error(`Different # of polygons in ${name}`);
 	}
+	polygons.array.sort((poly1, poly2) => {
+		const d = poly2.array.length - poly1.array.length;
+		if (d !== 0) {
+			return d;
+		}
+		for (let j = 0; j < poly1.array.length; j++) {
+			const d2 = poly2.array[j].x - poly1.array[j].x || poly2.array[j].y - poly1.array[j].y;
+			if (d2 !== 0) {
+				return d2;
+			}
+		}
+		return 0;
+	});
+	result.sort((res1, res2) => {
+		const d = res2.length - res1.length;
+		if (d !== 0) {
+			return d;
+		}
+		for (let j = 0; j < res1.length; j++) {
+			const d2 = res2[j][0] - res1[j][0] || res2[j][1] - res1[j][1];
+			if (d2 !== 0) {
+				return d2;
+			}
+		}
+		return 0;
+	});
 	for (let i = 0; i < polygons.array.length; i++) {
 		const polygon = polygons.array[i];
 		const res = result[i];
