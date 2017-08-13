@@ -15,6 +15,12 @@ function testKage(buhins, name, result, curve = false) {
 	if (polygons.array.length !== result.length) {
 		throw new Error(`Different # of polygons in ${name}`);
 	}
+	polygons.array.forEach((poly, i) => {
+		poly.index = i;
+	});
+	result.forEach((res, i) => {
+		res.index = i;
+	});
 	polygons.array.sort((poly1, poly2) => {
 		const d = poly2.array.length - poly1.array.length;
 		if (d !== 0) {
@@ -44,25 +50,28 @@ function testKage(buhins, name, result, curve = false) {
 	for (let i = 0; i < polygons.array.length; i++) {
 		const polygon = polygons.array[i];
 		const res = result[i];
+		const indexStr = polygon.index === res.index
+			? `${polygon.index + 1}`
+			: `${polygon.index + 1}(${res.index + 1})`;
 		if (polygon.array.length !== res.length) {
-			throw new Error(`Different # of points in a polygon ${i + 1} in ${name}`);
+			throw new Error(`Different # of points in a polygon ${indexStr} in ${name}`);
 		}
 		for (let j = 0; j < polygon.array.length; j++) {
 			const point = polygon.array[j];
 			const r = res[j];
 			if (!!point.off !== !!r[2]) {
-				throw new Error(`Different off/on-curve point ${j + 1} in polygon ${i + 1} in ${name}`);
+				throw new Error(`Different off/on-curve point ${j + 1} in polygon ${indexStr} in ${name}`);
 			}
 			const dx = point.x - r[0];
 			const dy = point.y - r[1];
 			if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
-				throw new Error(`Different point ${j + 1} in polygon ${i + 1} in ${name}: dx=${dx}, dy=${dy}`);
+				throw new Error(`Different point ${j + 1} in polygon ${indexStr} in ${name}: dx=${dx}, dy=${dy}`);
 			}
 			if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
-				console.warn(`[warn] Slightly different point ${j + 1} in polygon ${i + 1} in ${name}: dx=${dx}, dy=${dy}`);
+				console.warn(`[warn] Slightly different point ${j + 1} in polygon ${indexStr} in ${name}: dx=${dx}, dy=${dy}`);
 			}
 			if (isNaN(point.x) || isNaN(point.y)) {
-				throw new Error(`NaN point ${j + 1} in polygon ${i + 1} in ${name}`);
+				throw new Error(`NaN point ${j + 1} in polygon ${indexStr} in ${name}`);
 			}
 		}
 	}
