@@ -62,38 +62,27 @@ export function dfDrawFont(
 				break;
 			}
 			case 3: {
+				const [dx1, dy1] = (x1 === x2 && y1 === y2)
+					? [0, kage.kMage] // ?????
+					: normalize([x1 - x2, y1 - y2], kage.kMage);
+				const tx1 = x2 + dx1;
+				const ty1 = y2 + dy1;
+				const [dx2, dy2] = (x2 === x3 && y2 === y3)
+					? [0, -kage.kMage] // ?????
+					: normalize([x3 - x2, y3 - y2], kage.kMage);
+				const tx2 = x2 + dx2;
+				const ty2 = y2 + dy2;
+
+				cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
+				cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment + opt3 * 10, mageAdjustment);
+
 				if (a3_100 === 5 && opt2 === 0) {
-					const [dx1, dy1] = (x1 === x2 && y1 === y2)
-						? [0, kage.kMage] // ?????
-						: normalize([x1 - x2, y1 - y2], kage.kMage);
-					const tx1 = x2 + dx1;
-					const ty1 = y2 + dy1;
-					const [dx2, dy2] = (x2 === x3 && y2 === y3)
-						? [0, -kage.kMage] // ?????
-						: normalize([x3 - x2, y3 - y2], kage.kMage);
-					const tx2 = x2 + dx2;
-					const ty2 = y2 + dy2;
 					const tx3 = x3;
 					const ty3 = y3;
-
-					cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
-					cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment + opt3 * 10, mageAdjustment);
 					if ((x2 < x3 && tx3 - tx2 > 0) || (x2 > x3 && tx2 - tx3 > 0)) { // for closer position
 						cdDrawLine(kage, polygons, tx2, ty2, tx3, ty3, 6, 5, mageAdjustment, 0); // bolder by force
 					}
 				} else {
-					const [dx1, dy1] = (x1 === x2 && y1 === y2)
-						? [0, kage.kMage] // ?????
-						: normalize([x1 - x2, y1 - y2], kage.kMage);
-					const tx1 = x2 + dx1;
-					const ty1 = y2 + dy1;
-					const [dx2, dy2] = (x2 === x3 && y2 === y3)
-						? [0, -kage.kMage] // ?????
-						: normalize([x3 - x2, y3 - y2], kage.kMage);
-					const tx2 = x2 + dx2;
-					const ty2 = y2 + dy2;
-					cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
-					cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment + opt3 * 10, mageAdjustment);
 					cdDrawLine(kage, polygons, tx2, ty2, x3, y3,
 						6, a3_100, mageAdjustment, opt2 + mageAdjustment * 10); // bolder by force
 				}
@@ -111,38 +100,27 @@ export function dfDrawFont(
 				if (rate > 6) {
 					rate = 6;
 				}
+				const [dx1, dy1] = (x1 === x2 && y1 === y2)
+					? [0, kage.kMage * rate] // ?????
+					: normalize([x1 - x2, y1 - y2], kage.kMage * rate);
+				const tx1 = x2 + dx1;
+				const ty1 = y2 + dy1;
+				const [dx2, dy2] = (x2 === x3 && y2 === y3)
+					? [0, -kage.kMage * rate] // ?????
+					: normalize([x3 - x2, y3 - y2], kage.kMage * rate);
+				const tx2 = x2 + dx2;
+				const ty2 = y2 + dy2;
+
+				cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
+				cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
+
 				if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
-					const [dx1, dy1] = (x1 === x2 && y1 === y2)
-						? [0, kage.kMage * rate] // ?????
-						: normalize([x1 - x2, y1 - y2], kage.kMage * rate);
-					const tx1 = x2 + dx1;
-					const ty1 = y2 + dy1;
-					const [dx2, dy2] = (x2 === x3 && y2 === y3)
-						? [0, -kage.kMage * rate] // ?????
-						: normalize([x3 - x2, y3 - y2], kage.kMage * rate);
-					const tx2 = x2 + dx2;
-					const ty2 = y2 + dy2;
 					const tx3 = x3;
 					const ty3 = y3;
-
-					cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
-					cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
 					if (tx3 - tx2 > 0) { // for closer position
 						cdDrawLine(kage, polygons, tx2, ty2, tx3, ty3, 6, 5, 0, 0); // bolder by force
 					}
 				} else {
-					const [dx1, dy1] = (x1 === x2 && y1 === y2)
-						? [0, kage.kMage * rate] // ?????
-						: normalize([x1 - x2, y1 - y2], kage.kMage * rate);
-					const tx1 = x2 + dx1;
-					const ty1 = y2 + dy1;
-					const [dx2, dy2] = (x2 === x3 && y2 === y3)
-						? [0, -kage.kMage * rate] // ?????
-						: normalize([x3 - x2, y3 - y2], kage.kMage * rate);
-					const tx2 = x2 + dx2;
-					const ty2 = y2 + dy2;
-					cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
-					cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
 					cdDrawLine(kage, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, opt2 + mageAdjustment * 10); // bolder by force
 				}
 				break;
@@ -236,40 +214,29 @@ export function dfDrawFont(
 				break;
 			}
 			case 3: {
+				const [dx1, dy1] = (x1 === x2 && y1 === y2)
+					? [0, kage.kMage] // ?????
+					: normalize([x1 - x2, y1 - y2], kage.kMage);
+				const tx1 = x2 + dx1;
+				const ty1 = y2 + dy1;
+				const [dx2, dy2] = (x2 === x3 && y2 === y3)
+					? [0, -kage.kMage] // ?????
+					: normalize([x3 - x2, y3 - y2], kage.kMage);
+				const tx2 = x2 + dx2;
+				const ty2 = y2 + dy2;
+
+				cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
+				cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
+
 				if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
-					const [dx1, dy1] = (x1 === x2 && y1 === y2)
-						? [0, kage.kMage] // ?????
-						: normalize([x1 - x2, y1 - y2], kage.kMage);
-					const tx1 = x2 + dx1;
-					const ty1 = y2 + dy1;
-					const [dx2, dy2] = (x2 === x3 && y2 === y3)
-						? [0, -kage.kMage] // ?????
-						: normalize([x3 - x2, y3 - y2], kage.kMage);
-					const tx2 = x2 + dx2;
-					const ty2 = y2 + dy2;
 					const tx3 = x3 - kage.kMage;
 					const ty3 = y3;
 					const tx4 = x3 + kage.kMage * 0.5;
 					const ty4 = y3 - kage.kMage * 2;
 
-					cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
-					cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
 					cdDrawLine(kage, polygons, tx2, ty2, tx3, ty3, 1, 1, 0, 0);
 					cdDrawCurve(kage, polygons, tx3, ty3, x3, y3, tx4, ty4, 1, 0, 0, 0, 0, 0);
 				} else {
-					const [dx1, dy1] = (x1 === x2 && y1 === y2)
-						? [0, kage.kMage] // ?????
-						: normalize([x1 - x2, y1 - y2], kage.kMage);
-					const tx1 = x2 + dx1;
-					const ty1 = y2 + dy1;
-					const [dx2, dy2] = (x2 === x3 && y2 === y3)
-						? [0, -kage.kMage] // ?????
-						: normalize([x3 - x2, y3 - y2], kage.kMage);
-					const tx2 = x2 + dx2;
-					const ty2 = y2 + dy2;
-
-					cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
-					cdDrawCurve(kage, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
 					cdDrawLine(kage, polygons, tx2, ty2, x3, y3, 1, a3_100, 0, opt2 + mageAdjustment * 10);
 				}
 				break;
