@@ -191,50 +191,48 @@ function cdDrawCurveU(
 
 			// suiheisen ni setsuzoku
 			if (a1 === 132) {
-				let index = 0;
-				for (; index + 1 < poly2.array.length; index++) {
+				for (let index = 0; index + 1 < poly2.array.length; index++) {
 					if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
+						const newx1 = poly2.array[index + 1].x
+							+ (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1)
+							/ (poly2.array[index + 1].y - poly2.array[index].y);
+						const newy1 = y1;
+						const newx2 = poly.array[0].x
+							+ (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1)
+							/ (poly.array[1].y - poly.array[0].y);
+						const newy2 = y1;
+
+						for (let i = 0; i < index; i++) {
+							poly2.shift();
+						}
+						poly2.set(0, newx1, newy1);
+						poly.unshift(newx2, newy2);
 						break;
 					}
 				}
-				const newx1 = poly2.array[index + 1].x
-					+ (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1)
-					/ (poly2.array[index + 1].y - poly2.array[index].y);
-				const newy1 = y1;
-				const newx2 = poly.array[0].x
-					+ (poly.array[0].x - poly.array[1].x) * (poly.array[0].y - y1)
-					/ (poly.array[1].y - poly.array[0].y);
-				const newy2 = y1;
-
-				for (let i = 0; i < index; i++) {
-					poly2.shift();
-				}
-				poly2.set(0, newx1, newy1);
-				poly.unshift(newx2, newy2);
 			}
 
 			// suiheisen ni setsuzoku 2
 			if (a1 === 22 && (sx1 === sx2 && sy1 === sy2 && y1 > y2 || !(sx1 === sx2 && sy1 === sy2) && x1 > sx1)) {
-				let index = 0;
-				for (; index + 1 < poly2.array.length; index++) {
+				for (let index = 0; index + 1 < poly2.array.length; index++) {
 					if (poly2.array[index].y <= y1 && y1 <= poly2.array[index + 1].y) {
+						const newx1 = poly2.array[index + 1].x
+							+ (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1)
+							/ (poly2.array[index + 1].y - poly2.array[index].y);
+						const newy1 = y1;
+						const newx2 = poly.array[0].x
+							+ (poly.array[0].x - poly.array[1].x - 1) * (poly.array[0].y - y1)
+							/ (poly.array[1].y - poly.array[0].y);
+						const newy2 = y1 + 1;
+
+						for (let i = 0; i < index; i++) {
+							poly2.shift();
+						}
+						poly2.set(0, newx1, newy1);
+						poly.unshift(newx2, newy2);
 						break;
 					}
 				}
-				const newx1 = poly2.array[index + 1].x
-					+ (poly2.array[index].x - poly2.array[index + 1].x) * (poly2.array[index + 1].y - y1)
-					/ (poly2.array[index + 1].y - poly2.array[index].y);
-				const newy1 = y1;
-				const newx2 = poly.array[0].x
-					+ (poly.array[0].x - poly.array[1].x - 1) * (poly.array[0].y - y1)
-					/ (poly.array[1].y - poly.array[0].y);
-				const newy2 = y1 + 1;
-
-				for (let i = 0; i < index; i++) {
-					poly2.shift();
-				}
-				poly2.set(0, newx1, newy1);
-				poly.unshift(newx2, newy2);
 			}
 			poly2.reverse();
 			poly.concat(poly2);
