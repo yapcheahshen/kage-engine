@@ -305,26 +305,23 @@ function cdDrawCurveU(
 					? [1, 0] // ?????
 					: normalize([sy1 - y1, -(sx1 - x1)]);
 				const poly = new Polygon();
-				poly.push(-kMinWidthT * XX, -kMinWidthT * XY);
-				poly.push(+kMinWidthT * XX, +kMinWidthT * XY);
-				poly.push(+kMinWidthT * XX - kage.kMinWidthY * -XY, +kMinWidthT * XY - kage.kMinWidthY * XX);
-				poly.translate(x1, y1);
+				poly.push(-kMinWidthT, 0);
+				poly.push(+kMinWidthT, 0);
+				poly.push(+kMinWidthT, -kage.kMinWidthY);
+				poly.transformMatrix2(XX, XY).translate(x1, y1);
 				// if(x1 < x2){
 				//  poly.reverse();
 				// }
 				polygons.push(poly);
 				// beginning of the stroke
 				const poly2 = new Polygon();
-				poly2.push(x1 - kMinWidthT * XX, y1 - kMinWidthT * XY);
-				poly2.push(
-					x1 - kMinWidthT * 1.5 * XX + kage.kMinWidthY * -XY,
-					y1 + kage.kMinWidthY * XX - kMinWidthT * 1.5 * XY);
-				poly2.push(
-					x1 - kMinWidthT * 0.5 * XX + kage.kMinWidthY * 3 * -XY,
-					y1 + kage.kMinWidthY * 3 * XX - kMinWidthT * 0.5 * XY);
+				poly2.push(-kMinWidthT, 0);
+				poly2.push(-kMinWidthT * 1.5, +kage.kMinWidthY);
+				poly2.push(-kMinWidthT * 0.5, +kage.kMinWidthY * 3);
 				// if(x1 < x2){
 				//  poly2.reverse();
 				// }
+				poly2.transformMatrix2(XX, XY).translate(x1, y1);
 				polygons.push(poly2);
 			}
 		}
@@ -344,30 +341,30 @@ function cdDrawCurveU(
 
 		if (a2 === 1 || a2 === 8 || a2 === 15) { // the last filled circle ... it can change 15->5
 			const [dx, dy] = (sx2 === x2)
-				? [0, kMinWidthT2] // ?????
+				? [0, 1] // ?????
 				: (sy2 === y2)
-					? [kMinWidthT2, 0] // ?????
-					: normalize([x2 - sx2, y2 - sy2], kMinWidthT2);
+					? [1, 0] // ?????
+					: normalize([x2 - sx2, y2 - sy2]);
 			const poly = new Polygon();
 			if (kage.kUseCurve) {
 				// by curve path
-				poly.push(+dy, -dx);
-				poly.push(+dx * 0.9 + dy * 0.9, +dy * 0.9 - dx * 0.9, true);
-				poly.push(+dx, +dy);
-				poly.push(+dx * 0.9 - dy * 0.9, +dy * 0.9 + dx * 0.9, true);
-				poly.push(-dy, +dx);
+				poly.push(0, -kMinWidthT2);
+				poly.push(+kMinWidthT2 * 0.9, -kMinWidthT2 * 0.9, true);
+				poly.push(+kMinWidthT2, 0);
+				poly.push(+kMinWidthT2 * 0.9, +kMinWidthT2 * 0.9, true);
+				poly.push(0, +kMinWidthT2);
 			} else {
 				// by polygon
-				poly.push(+dy, -dx);
-				poly.push(+dx * 0.7 + dy * 0.7, +dy * 0.7 - dx * 0.7);
-				poly.push(+dx, +dy);
-				poly.push(+dx * 0.7 - dy * 0.7, +dy * 0.7 + dx * 0.7);
-				poly.push(-dy, +dx);
+				poly.push(0, -kMinWidthT2);
+				poly.push(+kMinWidthT2 * 0.7, -kMinWidthT2 * 0.7);
+				poly.push(+kMinWidthT2, 0);
+				poly.push(+kMinWidthT2 * 0.7, +kMinWidthT2 * 0.7);
+				poly.push(0, +kMinWidthT2);
 			}
 			if (sx2 === x2) {
 				poly.reverse();
 			}
-			poly.translate(x2, y2);
+			poly.transformMatrix2(dx, dy).translate(x2, y2);
 			polygons.push(poly);
 		}
 
@@ -380,15 +377,15 @@ function cdDrawCurveU(
 			}
 			const pm2 = type2 < 0 ? -1 : 1;
 			const [dx, dy] = (sy2 === y2)
-				? [0, kMinWidthT * kage.kL2RDfatten] // ?????
+				? [0, 1] // ?????
 				: (sx2 === x2)
-					? [(y2 > sy2 ? 1 : -1) * kMinWidthT * kage.kL2RDfatten, 0] // for backward compatibility...
-					: normalize([-(y2 - sy2), x2 - sx2], kMinWidthT * kage.kL2RDfatten);
+					? [y2 > sy2 ? 1 : -1, 0] // for backward compatibility...
+					: normalize([-(y2 - sy2), x2 - sx2], 1);
 			const poly = new Polygon();
-			poly.push(+dx, +dy);
-			poly.push(-dx, -dy);
-			poly.push(+Math.abs(type2) * dy + pm2 * dx, -Math.abs(type2) * dx + pm2 * dy);
-			poly.translate(x2, y2);
+			poly.push(+kMinWidthT * kage.kL2RDfatten, 0);
+			poly.push(-kMinWidthT * kage.kL2RDfatten, 0);
+			poly.push(+pm2 * kMinWidthT * kage.kL2RDfatten, -Math.abs(type2) * kMinWidthT * kage.kL2RDfatten);
+			poly.transformMatrix2(dx, dy).translate(x2, y2);
 			polygons.push(poly);
 		}
 
@@ -731,15 +728,12 @@ export function cdDrawLine(
 					const r = (x1 === x2 && (a1 === 6 && a2 === 0 || a2 === 1))
 						? 0.6
 						: 0.8; // ?????
-					poly.push(+sinrad * kMinWidthT, -cosrad * kMinWidthT);
-					poly.push(
-						+cosrad * kMinWidthT * r + sinrad * kMinWidthT * 0.6,
-						+sinrad * kMinWidthT * r - cosrad * kMinWidthT * 0.6);
-					poly.push(+cosrad * kMinWidthT, +sinrad * kMinWidthT);
-					poly.push(
-						+cosrad * kMinWidthT * r - sinrad * kMinWidthT * 0.6,
-						+sinrad * kMinWidthT * r + cosrad * kMinWidthT * 0.6);
-					poly.push(-sinrad * kMinWidthT, +cosrad * kMinWidthT);
+					poly.push(0, -kMinWidthT);
+					poly.push(+kMinWidthT * r, -kMinWidthT * 0.6);
+					poly.push(+kMinWidthT, 0);
+					poly.push(+kMinWidthT * r, +kMinWidthT * 0.6);
+					poly.push(0, +kMinWidthT);
+					poly.transformMatrix2(cosrad, sinrad);
 				}
 				if (x1 === x2 && (a1 === 6 && a2 === 0 || a2 === 1)) {
 					// for backward compatibility
@@ -753,18 +747,11 @@ export function cdDrawLine(
 				// KAGI NO YOKO BOU NO HANE
 				const rv = x1 < x2 ? 1 : -1;
 				const poly = new Polygon();
-				poly.push(+rv * (kMinWidthT - 1) * sinrad, -rv * (kMinWidthT - 1) * cosrad);
-				poly.push(
-					+2 * cosrad + rv * (kMinWidthT + kage.kWidth * 5) * sinrad,
-					+2 * sinrad - rv * (kMinWidthT + kage.kWidth * 5) * cosrad);
-				poly.push(
-					+rv * (kMinWidthT + kage.kWidth * 5) * sinrad,
-					-rv * (kMinWidthT + kage.kWidth * 5) * cosrad);
-				poly.push(
-					+(kMinWidthT - 1) * sinrad - kMinWidthT * cosrad,
-					-(kMinWidthT - 1) * cosrad - kMinWidthT * sinrad);
-				// "rv * "?
-				poly.translate(x2, y2);
+				poly.push(0, +rv * -(kMinWidthT - 1));
+				poly.push(+2, -rv * (kMinWidthT + kage.kWidth * 5));
+				poly.push(0, -rv * (kMinWidthT + kage.kWidth * 5));
+				poly.push(-kMinWidthT, -(kMinWidthT - 1) * cosrad); // "rv * "?
+				poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
 				polygons.push(poly);
 			}
 		} else if (y1 === y2 && a1 === 6) {
@@ -783,34 +770,26 @@ export function cdDrawLine(
 				const [cosrad, sinrad] = (x1 < x2) ? [1, 0] : [-1, 0];
 				const poly = new Polygon();
 				if (kage.kUseCurve) {
-					poly.push(+sinrad * kMinWidthT, -cosrad * kMinWidthT);
-					poly.push(
-						+cosrad * kMinWidthT * 0.9 + sinrad * kMinWidthT * 0.9,
-						+sinrad * kMinWidthT * 0.9 - cosrad * kMinWidthT * 0.9, true);
-					poly.push(+cosrad * kMinWidthT, +sinrad * kMinWidthT);
-					poly.push(
-						+cosrad * kMinWidthT * 0.9 - sinrad * kMinWidthT * 0.9,
-						+sinrad * kMinWidthT * 0.9 + cosrad * kMinWidthT * 0.9, true);
-					poly.push(-sinrad * kMinWidthT, +cosrad * kMinWidthT);
+					poly.push(0, -kMinWidthT);
+					poly.push(+kMinWidthT * 0.9, -kMinWidthT * 0.9, true);
+					poly.push(+kMinWidthT, 0);
+					poly.push(+kMinWidthT * 0.9, +kMinWidthT * 0.9, true);
+					poly.push(0, +kMinWidthT);
 					if (x1 >= x2) {
 						poly.reverse();
 					}
 				} else {
 					const r = 0.6;
-					poly.push(+sinrad * kMinWidthT, -cosrad * kMinWidthT);
-					poly.push(
-						+cosrad * kMinWidthT * r + sinrad * kMinWidthT * 0.6,
-						+sinrad * kMinWidthT * r - cosrad * kMinWidthT * 0.6);
-					poly.push(+cosrad * kMinWidthT, +sinrad * kMinWidthT);
-					poly.push(
-						+cosrad * kMinWidthT * r - sinrad * kMinWidthT * 0.6,
-						+sinrad * kMinWidthT * r + cosrad * kMinWidthT * 0.6);
-					poly.push(-sinrad * kMinWidthT, +cosrad * kMinWidthT);
+					poly.push(0, -kMinWidthT);
+					poly.push(+kMinWidthT * r, -kMinWidthT * 0.6);
+					poly.push(+kMinWidthT, 0);
+					poly.push(+kMinWidthT * r, +kMinWidthT * 0.6);
+					poly.push(0, +kMinWidthT);
 					if (x1 >= x2) {
 						poly.reverse();
 					}
 				}
-				poly.translate(x2, y2);
+				poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
 				polygons.push(poly);
 			}
 
