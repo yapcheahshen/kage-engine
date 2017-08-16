@@ -391,12 +391,14 @@ function cdDrawCurveU(
 
 		if (a2 === 15) { // jump up ... it can change 15->5
 			// anytime same degree
-			const rv = y1 < y2 ? 1 : -1;
 			const poly = new Polygon();
-			poly.push(0, -rv * (kMinWidthT - 1));
-			poly.push(+rv * 2, -rv * (kMinWidthT + kage.kWidth * 5));
-			poly.push(0, -rv * (kMinWidthT + kage.kWidth * 5));
-			poly.push(-rv * kMinWidthT, -rv * (kMinWidthT - 1));
+			poly.push(0, -kMinWidthT + 1);
+			poly.push(+2, -kMinWidthT - kage.kWidth * 5);
+			poly.push(0, -kMinWidthT - kage.kWidth * 5);
+			poly.push(-kMinWidthT, -kMinWidthT + 1);
+			if (y1 >= y2) {
+				poly.rotate180();
+			}
 			poly.translate(x2, y2);
 			polygons.push(poly);
 		}
@@ -662,12 +664,12 @@ export function cdDrawLine(
 						? Math.floor((x1 - x2) / (y2 - y1) * 3)
 						: 0;
 					const poly = new Polygon();
-					poly.push(+m, -kage.kMinWidthY * 5);
-					poly.push(-kMinWidthT * 2 + m, 0);
-					poly.push(-kage.kMinWidthY + m, +kage.kMinWidthY * 5);
-					poly.push(+kMinWidthT + m, +kage.kMinWidthY);
-					poly.push(+m, 0);
-					poly.translate(x2, y2);
+					poly.push(0, -kage.kMinWidthY * 5);
+					poly.push(-kMinWidthT * 2, 0);
+					poly.push(-kage.kMinWidthY, +kage.kMinWidthY * 5);
+					poly.push(+kMinWidthT, +kage.kMinWidthY);
+					poly.push(0, 0);
+					poly.translate(x2 + m, y2);
 					polygons.push(poly);
 				}
 			}
@@ -775,9 +777,6 @@ export function cdDrawLine(
 					poly.push(+kMinWidthT, 0);
 					poly.push(+kMinWidthT * 0.9, +kMinWidthT * 0.9, true);
 					poly.push(0, +kMinWidthT);
-					if (x1 >= x2) {
-						poly.reverse();
-					}
 				} else {
 					const r = 0.6;
 					poly.push(0, -kMinWidthT);
@@ -785,9 +784,9 @@ export function cdDrawLine(
 					poly.push(+kMinWidthT, 0);
 					poly.push(+kMinWidthT * r, +kMinWidthT * 0.6);
 					poly.push(0, +kMinWidthT);
-					if (x1 >= x2) {
-						poly.reverse();
-					}
+				}
+				if (x1 >= x2) {
+					poly.reverse();
 				}
 				poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
 				polygons.push(poly);
@@ -795,13 +794,15 @@ export function cdDrawLine(
 
 			if (a2 === 5) {
 				// KAGI NO YOKO BOU NO HANE
-				const rv = x1 < x2 ? 1 : -1;
 				const poly = new Polygon();
 				poly.push(0, -kMinWidthT + 1);
-				poly.push(+rv * 2, -kMinWidthT - kage.kWidth * (4 * (1 - opt1 / kage.kAdjustMageStep) + 1));
+				poly.push(+2, -kMinWidthT - kage.kWidth * (4 * (1 - opt1 / kage.kAdjustMageStep) + 1));
 				poly.push(0, -kMinWidthT - kage.kWidth * (4 * (1 - opt1 / kage.kAdjustMageStep) + 1));
-				poly.push(-rv * kMinWidthT, -kMinWidthT + 1);
+				poly.push(-kMinWidthT, -kMinWidthT + 1);
 				// poly2.reverse(); // for fill-rule
+				if (x1 >= x2) {
+					poly.reflectX();
+				}
 				poly.translate(x2, y2);
 				polygons.push(poly);
 			}
