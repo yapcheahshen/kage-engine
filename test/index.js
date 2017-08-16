@@ -22,12 +22,14 @@ function testKage(buhins, name, result, curve = false) {
 		res.index = i;
 	});
 	polygons.array.sort((poly1, poly2) => {
-		const d = poly2.array.length - poly1.array.length;
+		const array1 = poly1.array;
+		const array2 = poly2.array;
+		const d = array2.length - array1.length;
 		if (d !== 0) {
 			return d;
 		}
-		for (let j = 0; j < poly1.array.length; j++) {
-			const d2 = poly2.array[j].x - poly1.array[j].x || poly2.array[j].y - poly1.array[j].y;
+		for (let j = 0; j < array1.length; j++) {
+			const d2 = array2[j].x - array1[j].x || array2[j].y - array1[j].y;
 			if (d2 !== 0) {
 				return d2;
 			}
@@ -49,15 +51,16 @@ function testKage(buhins, name, result, curve = false) {
 	});
 	for (let i = 0; i < polygons.array.length; i++) {
 		const polygon = polygons.array[i];
+		const {array} = polygon;
 		const res = result[i];
 		const indexStr = polygon.index === res.index
 			? `${polygon.index + 1}`
 			: `${polygon.index + 1}(${res.index + 1})`;
-		if (polygon.array.length !== res.length) {
+		if (array.length !== res.length) {
 			throw new Error(`Different # of points in a polygon ${indexStr} in ${name}`);
 		}
-		for (let j = 0; j < polygon.array.length; j++) {
-			const point = polygon.array[j];
+		for (let j = 0; j < array.length; j++) {
+			const point = array[j];
 			const r = res[j];
 			if (!!point.off !== !!r[2]) {
 				throw new Error(`Different off/on-curve point ${j + 1} in polygon ${indexStr} in ${name}`);

@@ -19,7 +19,8 @@ export class Polygons {
 		let miny = 200;
 		let maxy = 0;
 		let error = 0;
-		polygon.array.forEach(({ x, y }) => {
+		const arr = polygon.array;
+		arr.forEach(({ x, y }) => {
 			if (x < minx) {
 				minx = x;
 			}
@@ -36,7 +37,7 @@ export class Polygons {
 				error++;
 			}
 		});
-		if (error === 0 && minx !== maxx && miny !== maxy && polygon.array.length >= 3) {
+		if (error === 0 && minx !== maxx && miny !== maxy && arr.length >= 3) {
 			this.array.push(polygon);
 		}
 	}
