@@ -749,10 +749,10 @@ export function cdDrawLine(
 				// KAGI NO YOKO BOU NO HANE
 				const rv = x1 < x2 ? 1 : -1;
 				const poly = new Polygon();
-				poly.push(0, +rv * -(kMinWidthT - 1));
-				poly.push(+2, -rv * (kMinWidthT + kage.kWidth * 5));
-				poly.push(0, -rv * (kMinWidthT + kage.kWidth * 5));
-				poly.push(-kMinWidthT, -(kMinWidthT - 1) * cosrad); // "rv * "?
+				poly.push(0, +rv * (-kMinWidthT + 1));
+				poly.push(+2, +rv * (-kMinWidthT - kage.kWidth * 5));
+				poly.push(0, +rv * (-kMinWidthT - kage.kWidth * 5));
+				poly.push(-kMinWidthT, -kMinWidthT + 1); // "rv * "?
 				poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
 				polygons.push(poly);
 			}
