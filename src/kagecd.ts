@@ -252,24 +252,17 @@ function cdDrawCurveU(
 		// process for head of stroke
 
 		if (a1 === 12) {
-			if (x1 === x2) {
-				const poly = new Polygon([
-					{ x: -kMinWidthT, y: 0 },
-					{ x: +kMinWidthT, y: 0 },
-					{ x: -kMinWidthT, y: -kMinWidthT },
-				]).translate(x1, y1);
-				polygons.push(poly);
-			} else {
-				const [dx, dy] = (sx1 === x1)
+			const [dx, dy] = (x1 === x2)
+				? [1, 0] // ?????
+				: (sx1 === x1)
 					? [sy1 < y1 ? 1 : -1, 0] // for backward compatibility...
 					: normalize([sy1 - y1, -(sx1 - x1)]);
-				const poly = new Polygon([
-					{ x: -kMinWidthT, y: 0 },
-					{ x: +kMinWidthT, y: 0 },
-					{ x: -kMinWidthT, y: -kMinWidthT },
-				]).transformMatrix2(dx, dy).translate(x1, y1);
-				polygons.push(poly);
-			}
+			const poly = new Polygon([
+				{ x: -kMinWidthT, y: 0 },
+				{ x: +kMinWidthT, y: 0 },
+				{ x: -kMinWidthT, y: -kMinWidthT },
+			]).transformMatrix2(dx, dy).translate(x1, y1);
+			polygons.push(poly);
 		}
 
 		if (a1 === 0) {
@@ -728,7 +721,7 @@ export function cdDrawLine(
 						}
 						: {
 							x: +(kMinWidthT - 2) * sinrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2) * cosrad,
-							y: +(kMinWidthT + 1) * -cosrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2) * sinrad,
+							y: +(kMinWidthT + 1) * -cosrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2) * sinrad, // ?????
 						},
 				]);
 				poly.translate(x1, y1);
@@ -739,13 +732,13 @@ export function cdDrawLine(
 				// KAGI NO YOKO BOU NO SAIGO NO MARU ... no need only used at 1st=yoko
 				const poly = new Polygon();
 				if (kage.kUseCurve) {
-					poly.push(+sinrad * kMinWidthT, -cosrad * kMinWidthT);
+					poly.push(-sinrad * -kMinWidthT, +cosrad * -kMinWidthT);
 					poly.push(
-						-cosrad * kMinWidthT * 0.9 + sinrad * kMinWidthT * 0.9,
-						+sinrad * kMinWidthT * 0.9 - cosrad * kMinWidthT * 0.9, true); // typo?
+						-cosrad * kMinWidthT * 0.9 + -sinrad * -kMinWidthT * 0.9, // typo?
+						+sinrad * kMinWidthT * 0.9 + cosrad * -kMinWidthT * 0.9, true);
 					poly.push(+cosrad * kMinWidthT, +sinrad * kMinWidthT);
 					poly.push(
-						+cosrad * kMinWidthT * 0.9 - sinrad * kMinWidthT * 0.9,
+						+cosrad * kMinWidthT * 0.9 + -sinrad * kMinWidthT * 0.9,
 						+sinrad * kMinWidthT * 0.9 + cosrad * kMinWidthT * 0.9, true);
 					poly.push(-sinrad * kMinWidthT, +cosrad * kMinWidthT);
 				} else {
@@ -774,7 +767,7 @@ export function cdDrawLine(
 					{ x: 0, y: +rv * (-kMinWidthT + 1) },
 					{ x: +2, y: +rv * (-kMinWidthT - kage.kWidth * 5) },
 					{ x: 0, y: +rv * (-kMinWidthT - kage.kWidth * 5) },
-					{ x: -kMinWidthT, y: -kMinWidthT + 1 },
+					{ x: -kMinWidthT, y: -kMinWidthT + 1 }, // rv ?????
 				]);
 				poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
 				polygons.push(poly);
