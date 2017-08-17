@@ -1,8 +1,12 @@
 // Reference : http://www.cam.hi-ho.ne.jp/strong_warriors/teacher/chapter0{4,5}.html
 
+export function round(v) {
+	return Math.round(v * 1E8) / 1E8;
+}
+
 function point(x, y) {
-	this.x = x;
-	this.y = y;
+	this.x = round(x);
+	this.y = round(y);
 }
 
 function getCrossPoint(x11, y11, x12, y12, x21, y21, x22, y22) { // point
@@ -14,7 +18,7 @@ function getCrossPoint(x11, y11, x12, y12, x21, y21, x22, y22) { // point
 	var c2 = -1 * a2 * x21 - b2 * y21;
 
 	var temp = b1 * a2 - b2 * a1;
-	if (temp == 0) { // parallel
+	if (round(temp) == 0) { // parallel
 		return false;
 	}
 	return new point((c1 * b2 - c2 * b1) / temp, (a1 * c2 - a2 * c1) / temp);
@@ -25,6 +29,14 @@ function isCross(x11, y11, x12, y12, x21, y21, x22, y22) { // boolean
 	if (!temp) {
 		return false;
 	}
+	x11 = round(x11);
+	y11 = round(y11);
+	x12 = round(x12);
+	y12 = round(y12);
+	x21 = round(x21);
+	y21 = round(y21);
+	x22 = round(x22);
+	y22 = round(y22);
 	if (x11 < x12 && (temp.x < x11 || x12 < temp.x) || x11 > x12 && (temp.x < x12 || x11 < temp.x) || y11 < y12 && (temp.y < y11 || y12 < temp.y) || y11 > y12 && (temp.y < y12 || y11 < temp.y)) {
 		return false;
 	}

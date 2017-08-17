@@ -1,6 +1,7 @@
 import {divide_curve, find_offcurve, get_candidate} from "./curve";
 import {Kage} from "./kage";
 import {Polygon} from "./polygon";
+import {round} from "./2d";
 
 function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, ta2) {
 	var rad,
@@ -191,11 +192,11 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 					iy = (y1 - 2.0 * sy1 + y2) * 2.0 * t + (-2.0 * y1 + 2.0 * sy1);
 
 					// line SUICHOKU by vector
-					if (ix != 0 && iy != 0) {
+					if (round(ix) != 0 && round(iy) != 0) {
 						ir = Math.atan(iy / ix * -1);
 						ia = Math.sin(ir) * (kMinWidthT);
 						ib = Math.cos(ir) * (kMinWidthT);
-					} else if (ix == 0) {
+					} else if (round(ix) == 0) {
 						if (iy < 0) {
 							ia = -kMinWidthT;
 						} else {
@@ -226,7 +227,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 					ib = ib * deltad;
 
 					//reverse if vector is going 2nd/3rd quadrants
-					if (ix <= 0) {
+					if (round(ix) <= 0) {
 						ia = ia * -1;
 						ib = ib * -1;
 					}
@@ -294,11 +295,11 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 				iy = t * t * (-3 * y1 + 9 * sy1 + -9 * sy2 + 3 * y2) + t * (6 * y1 + -12 * sy1 + 6 * sy2) + -3 * y1 + 3 * sy1;
 
 				// line SUICHOKU by vector
-				if (ix != 0 && iy != 0) {
+				if (round(ix) != 0 && round(iy) != 0) {
 					ir = Math.atan(iy / ix * -1);
 					ia = Math.sin(ir) * (kMinWidthT);
 					ib = Math.cos(ir) * (kMinWidthT);
-				} else if (ix == 0) {
+				} else if (round(ix) == 0) {
 					if (iy < 0) {
 						ia = -kMinWidthT;
 					} else {
@@ -328,7 +329,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 				ib = ib * deltad;
 
 				//reverse if vector is going 2nd/3rd quadrants
-				if (ix <= 0) {
+				if (round(ix) <= 0) {
 					ia = ia * -1;
 					ib = ib * -1;
 				}
@@ -760,11 +761,11 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			} else {}
 			//SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
 			if (kage.kShotai == kage.kMincho) { //always false ?
-				if (ix != 0 && iy != 0) {
+				if (round(ix) != 0 && round(iy) != 0) {
 					ir = Math.atan(iy / ix * -1.0);
 					ia = Math.sin(ir) * kage.kMinWidthT;
 					ib = Math.cos(ir) * kage.kMinWidthT;
-				} else if (ix == 0) {
+				} else if (round(ix) == 0) {
 					if (iy < 0) {
 						ia = -kage.kMinWidthT;
 					} else {
@@ -796,7 +797,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			}
 
 			//reverse if vector is going 2nd/3rd quadrants
-			if (ix <= 0) {
+			if (round(ix) <= 0) {
 				ia = ia * -1;
 				ib = ib * -1;
 			}
