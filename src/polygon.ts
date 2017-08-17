@@ -1,11 +1,10 @@
 export class Polygon {
 	// resolution : 0.1
-	public get array(): ReadonlyArray<Readonly<{x: number, y: number, off: boolean}>> {
-		return this._array.map(({ x, y, off }) => ({
-			x: Math.floor(x * 10) / 10, // should be Math.round?
-			y: Math.floor(y * 10) / 10, // should be Math.round?
-			off,
-		}));
+	public get array(): ReadonlyArray<Readonly<{ x: number, y: number, off: boolean }>> {
+		return this._array.map((_, i) => this.get(i));
+	}
+	public get length() {
+		return this._array.length;
 	}
 	private _array: Array<{ x: number; y: number; off: boolean; }>;
 	constructor(number?: number);
@@ -36,6 +35,15 @@ export class Polygon {
 		this._array[index].x = x;
 		this._array[index].y = y;
 		this._array[index].off = off;
+	}
+
+	public get(index: number): Readonly<{ x: number, y: number, off: boolean }> {
+		const { x, y, off } = this._array[index];
+		return {
+			x: Math.floor(x * 10) / 10, // should be Math.round?
+			y: Math.floor(y * 10) / 10, // should be Math.round?
+			off,
+		};
 	}
 
 	public reverse() {
