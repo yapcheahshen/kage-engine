@@ -40,7 +40,7 @@ export function cubicBezierDeriv(p1: number, p2: number, p3: number, p4: number,
 	// const st = s * t;
 	// const tt = t * t;
 	// return (-3 * ss) * p1 + 3 * (ss - 2 * st) * p2 + 3 * (2 * st - tt) * p3 + (3 * tt) * p4;
-	return round(3 * (t * (t * (-p1 + 3 * p2 - 3 * p3 + p4) + 2 * (p1 - 2 * p2 + p3)) - p1 + p2));
+	return 3 * (t * (t * (-p1 + 3 * p2 - 3 * p3 + p4) + 2 * (p1 - 2 * p2 + p3)) - p1 + p2);
 }
 
 /** Find the minimum of a function by ternary search. */
