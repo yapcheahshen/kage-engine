@@ -240,7 +240,8 @@ export function Kage(size) {
 		for (var i = 0; i < strokesArray.length; i++) {
 			if (strokesArray[i][0] == 1 && (strokesArray[i][2] == 13 || strokesArray[i][2] == 23)) {
 				for (var k = 0; k < this.kAdjustKakatoStep; k++) {
-					if (isCrossBoxWithOthers(strokesArray, i, strokesArray[i][5] - this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k], strokesArray[i][5] + this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1]) | strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline | strokesArray[i][6] - strokesArray[i][4] < this.kAdjustKakatoRangeY[k + 1] // for thin box
+					if (isCrossBoxWithOthers(strokesArray, i, strokesArray[i][5] - this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k], strokesArray[i][5] + this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1]) | strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
+						| strokesArray[i][6] - strokesArray[i][4] < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
 						strokesArray[i][2] += (3 - k) * 100;
 						k = Infinity;
