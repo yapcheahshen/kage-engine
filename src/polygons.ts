@@ -18,9 +18,10 @@ export class Polygons {
 		let maxx = 0;
 		let miny = 200;
 		let maxy = 0;
-		let error = 0;
-		const arr = polygon.array;
-		arr.forEach(({ x, y }) => {
+		if (polygon.length < 3) {
+			return;
+		}
+		for (const { x, y } of polygon.array) {
 			if (x < minx) {
 				minx = x;
 			}
@@ -34,10 +35,10 @@ export class Polygons {
 				maxy = y;
 			}
 			if (isNaN(x) || isNaN(y)) {
-				error++;
+				return;
 			}
-		});
-		if (error === 0 && minx !== maxx && miny !== maxy && arr.length >= 3) {
+		}
+		if (minx !== maxx && miny !== maxy) {
 			this.array.push(polygon);
 		}
 	}

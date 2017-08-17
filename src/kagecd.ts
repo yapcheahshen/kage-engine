@@ -191,17 +191,15 @@ function cdDrawCurveU(
 
 			// suiheisen ni setsuzoku
 			if (a1 === 132) {
-				const array1 = poly.array;
-				const array2 = poly2.array;
-				for (let index = 0; index + 1 < array2.length; index++) {
-					if (array2[index].y <= y1 && y1 <= array2[index + 1].y) {
-						const newx1 = array2[index + 1].x
-							+ (array2[index].x - array2[index + 1].x) * (array2[index + 1].y - y1)
-							/ (array2[index + 1].y - array2[index].y);
+				for (let index = 0, length = poly2.length; index + 1 < length; index++) {
+					const point1 = poly2.get(index);
+					const point2 = poly2.get(index + 1);
+					if (point1.y <= y1 && y1 <= point2.y) {
+						const newx1 = point2.x + (y1 - point2.y) * (point1.x - point2.x) / (point1.y - point2.y);
 						const newy1 = y1;
-						const newx2 = array1[0].x
-							+ (array1[0].x - array1[1].x) * (array1[0].y - y1)
-							/ (array1[1].y - array1[0].y);
+						const point3 = poly.get(0);
+						const point4 = poly.get(1);
+						const newx2 = point3.x + (y1 - point3.y) * (point3.x - point4.x) / (point3.y - point4.y);
 						const newy2 = y1;
 
 						for (let i = 0; i < index; i++) {
@@ -216,17 +214,15 @@ function cdDrawCurveU(
 
 			// suiheisen ni setsuzoku 2
 			if (a1 === 22 && (sx1 === sx2 && sy1 === sy2 && y1 > y2 || !(sx1 === sx2 && sy1 === sy2) && x1 > sx1)) {
-				const array1 = poly.array;
-				const array2 = poly2.array;
-				for (let index = 0; index + 1 < array2.length; index++) {
-					if (array2[index].y <= y1 && y1 <= array2[index + 1].y) {
-						const newx1 = array2[index + 1].x
-							+ (array2[index].x - array2[index + 1].x) * (array2[index + 1].y - y1)
-							/ (array2[index + 1].y - array2[index].y);
+				for (let index = 0, length = poly2.length; index + 1 < length; index++) {
+					const point1 = poly2.get(index);
+					const point2 = poly2.get(index + 1);
+					if (point1.y <= y1 && y1 <= point2.y) {
+						const newx1 = point2.x + (point1.x - point2.x) * (point2.y - y1) / (point2.y - point1.y);
 						const newy1 = y1;
-						const newx2 = array1[0].x
-							+ (array1[0].x - array1[1].x - 1) * (array1[0].y - y1)
-							/ (array1[1].y - array1[0].y);
+						const point3 = poly.get(0);
+						const point4 = poly.get(1);
+						const newx2 = point3.x + (point3.x - point4.x - 1) * (point3.y - y1) / (point4.y - point3.y);
 						const newy2 = y1 + 1;
 
 						for (let i = 0; i < index; i++) {
