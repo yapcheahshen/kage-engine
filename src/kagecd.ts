@@ -814,10 +814,12 @@ export function cdDrawLine(
 			if (a2 === 5) {
 				// KAGI NO YOKO BOU NO HANE
 				const poly = new Polygon([
-					{ x: 0, y: -kMinWidthT + 1 },
+					// { x: 0, y: -kMinWidthT + 1 },
+					{ x: 0, y: -kMinWidthT },
 					{ x: +2, y: -kMinWidthT - kage.kWidth * (4 * (1 - opt1 / kage.kAdjustMageStep) + 1) },
 					{ x: 0, y: -kMinWidthT - kage.kWidth * (4 * (1 - opt1 / kage.kAdjustMageStep) + 1) },
-					{ x: -kMinWidthT, y: -kMinWidthT + 1 },
+					// { x: -kMinWidthT, y: -kMinWidthT + 1 },
+					{ x: -kMinWidthT, y: -kMinWidthT },
 				]);
 				// poly2.reverse(); // for fill-rule
 				if (x1 >= x2) {
