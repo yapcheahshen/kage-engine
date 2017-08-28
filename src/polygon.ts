@@ -6,7 +6,7 @@ export class Polygon {
 	public get length() {
 		return this._array.length;
 	}
-	private _array: Array<{ x: number; y: number; off: boolean; }>;
+	protected _array: Array<{ x: number; y: number; off: boolean; }>;
 	constructor(number?: number);
 	constructor(array: Array<{ x: number; y: number; off?: boolean; }>);
 	constructor(param?: number | Array<{ x: number; y: number; off?: boolean; }>) {

@@ -1,6 +1,6 @@
 export class Buhin {
 	public push: typeof Buhin.prototype.set;
-	private hash: { [name: string]: string };
+	protected hash: { [name: string]: string };
 
 	constructor() {
 		// initialize
