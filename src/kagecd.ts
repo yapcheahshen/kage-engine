@@ -156,7 +156,7 @@ function cdDrawCurveU(
 					}
 
 					// line SUICHOKU by vector
-					const [ia, ib] = (round(ix) === 0)
+					const [ia, ib] = (round(ix) === 0 && round(iy) === 0)
 						? [-kMinWidthT * deltad, 0] // ?????
 						: normalize([-iy, ix], kMinWidthT * deltad);
 
@@ -189,7 +189,7 @@ function cdDrawCurveU(
 					}
 
 					// line SUICHOKU by vector
-					const [ia, ib] = (round(ix) === 0)
+					const [ia, ib] = (round(ix) === 0 && round(iy) === 0)
 						? [-kMinWidthT * deltad, 0] // ?????
 						: normalize([-iy, ix], kMinWidthT * deltad);
 
@@ -486,7 +486,7 @@ function cdDrawCurveU(
 				iy = cubicBezierDeriv(y1, sy1, sy2, y2, t);
 			}
 			// SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
-			const [ia, ib] = (round(ix) === 0)
+			const [ia, ib] = (round(ix) === 0 && round(iy) === 0)
 				? [-kage.kWidth, 0] // ?????
 				: normalize([-iy, ix], kage.kWidth);
 
