@@ -683,7 +683,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
                         deltad = 0.15;
                     }
                     // line SUICHOKU by vector
-                    var _h = (util_1.round(ix) === 0)
+                    var _h = (util_1.round(ix) === 0 && util_1.round(iy) === 0)
                         ? [-kMinWidthT * deltad, 0] // ?????
                         : util_1.normalize([-iy, ix], kMinWidthT * deltad), ia = _h[0], ib = _h[1];
                     // copy to polygon structure
@@ -711,7 +711,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
                         deltad = 0.15;
                     }
                     // line SUICHOKU by vector
-                    var _j = (util_1.round(ix) === 0)
+                    var _j = (util_1.round(ix) === 0 && util_1.round(iy) === 0)
                         ? [-kMinWidthT * deltad, 0] // ?????
                         : util_1.normalize([-iy, ix], kMinWidthT * deltad), ia = _j[0], ib = _j[1];
                     // copy to polygon structure
@@ -992,7 +992,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
                 iy = util_1.cubicBezierDeriv(y1, sy1, sy2, y2, t);
             }
             // SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
-            var _u = (util_1.round(ix) === 0)
+            var _u = (util_1.round(ix) === 0 && util_1.round(iy) === 0)
                 ? [-kage.kWidth, 0] // ?????
                 : util_1.normalize([-iy, ix], kage.kWidth), ia = _u[0], ib = _u[1];
             // save to polygon
@@ -1278,10 +1278,12 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
             if (a2 === 5) {
                 // KAGI NO YOKO BOU NO HANE
                 var poly = new polygon_1.Polygon([
-                    { x: 0, y: -kMinWidthT + 1 },
+                    // { x: 0, y: -kMinWidthT + 1 },
+                    { x: 0, y: -kMinWidthT },
                     { x: +2, y: -kMinWidthT - kage.kWidth * (4 * (1 - opt1 / kage.kAdjustMageStep) + 1) },
                     { x: 0, y: -kMinWidthT - kage.kWidth * (4 * (1 - opt1 / kage.kAdjustMageStep) + 1) },
-                    { x: -kMinWidthT, y: -kMinWidthT + 1 },
+                    // { x: -kMinWidthT, y: -kMinWidthT + 1 },
+                    { x: -kMinWidthT, y: -kMinWidthT },
                 ]);
                 // poly2.reverse(); // for fill-rule
                 if (x1 >= x2) {
