@@ -3,7 +3,7 @@ import { Buhin } from "./buhin";
 import { dfDrawFont } from "./kagedf";
 import { Polygons } from "./polygons";
 import { stretch, Stroke } from "./stroke";
-import { hypot, normalize } from "./util";
+import { hypot, normalize, round } from "./util";
 
 export enum KShotai {
 	kMincho = 0,
@@ -285,12 +285,12 @@ export class Kage {
 							stroke2.a1 === 1
 							&& stroke2.y1 === stroke2.y2
 							&& !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
-							&& Math.abs(stroke.y2 - stroke2.y1) < this.kMinWidthT * this.kAdjustMageStep
+							&& round(Math.abs(stroke.y2 - stroke2.y1)) < this.kMinWidthT * this.kAdjustMageStep
 						) || (
 							stroke2.a1 === 3
 							&& stroke2.y2 === stroke2.y3
 							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
-							&& Math.abs(stroke.y2 - stroke2.y2) < this.kMinWidthT * this.kAdjustMageStep
+							&& round(Math.abs(stroke.y2 - stroke2.y2)) < this.kMinWidthT * this.kAdjustMageStep
 						))) {
 						stroke.mageAdjustment += this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT);
 						if (stroke.mageAdjustment > this.kAdjustMageStep) {
@@ -312,7 +312,7 @@ export class Kage {
 						&& (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
 						&& stroke2.x1 === stroke2.x2
 						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
-						&& Math.abs(stroke.x1 - stroke2.x1) < this.kMinWidthT * this.kAdjustTateStep) {
+						&& round(Math.abs(stroke.x1 - stroke2.x1)) < this.kMinWidthT * this.kAdjustTateStep) {
 						stroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT);
 						if (stroke.tateAdjustment > this.kAdjustTateStep) {
 							stroke.tateAdjustment = this.kAdjustTateStep;
@@ -335,8 +335,8 @@ export class Kage {
 						stroke.y2 + this.kAdjustKakatoRangeY[k],
 						stroke.x2 + this.kAdjustKakatoRangeX / 2,
 						stroke.y2 + this.kAdjustKakatoRangeY[k + 1])
-						|| stroke.y2 + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
-						|| stroke.y2 - stroke.y1 < this.kAdjustKakatoRangeY[k + 1] // for thin box
+						|| round(stroke.y2 + this.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
+						|| round(stroke.y2 - stroke.y1) < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
 						stroke.opt2 += 3 - k;
 						break;
@@ -369,7 +369,7 @@ export class Kage {
 						ty = stroke.y2 - this.kAdjustUrokoLine[k] * sinrad - 0.5 * cosrad;
 						tlen = hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
 					}
-					if (tlen < this.kAdjustUrokoLength[k]
+					if (round(tlen) < this.kAdjustUrokoLength[k]
 						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
 						stroke.opt2 += this.kAdjustUrokoLengthStep - k;
 						break;
@@ -391,12 +391,12 @@ export class Kage {
 							stroke2.a1 === 1
 							&& stroke2.y1 === stroke2.y2
 							&& !(stroke.x1 + 1 > stroke2.x2 || stroke.x2 - 1 < stroke2.x1)
-							&& Math.abs(stroke.y1 - stroke2.y1) < this.kAdjustUroko2Length
+							&& round(Math.abs(stroke.y1 - stroke2.y1)) < this.kAdjustUroko2Length
 						) || (
 							stroke2.a1 === 3
 							&& stroke2.y2 === stroke2.y3
 							&& !(stroke.x1 + 1 > stroke2.x3 || stroke.x2 - 1 < stroke2.x2)
-							&& Math.abs(stroke.y1 - stroke2.y2) < this.kAdjustUroko2Length
+							&& round(Math.abs(stroke.y1 - stroke2.y2)) < this.kAdjustUroko2Length
 						))) {
 						pressure += (this.kAdjustUroko2Length - Math.abs(stroke.y1 - stroke2.y2)) ** 1.1;
 					}
