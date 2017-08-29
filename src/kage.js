@@ -1,4 +1,4 @@
-import {isCrossBoxWithOthers, isCrossWithOthers} from "./2d";
+import {isCrossBoxWithOthers, isCrossWithOthers, round} from "./2d";
 import {Buhin} from "./buhin";
 import {Polygons} from "./polygons";
 import {dfDrawFont} from "./kagedf";
@@ -157,7 +157,7 @@ export function Kage(size) {
 						ty = strokesArray[i][6] - this.kAdjustUrokoLine[k] * Math.sin(rad) - 0.5 * Math.cos(rad);
 						tlen = Math.sqrt((strokesArray[i][6] - strokesArray[i][4]) * (strokesArray[i][6] - strokesArray[i][4]) + (strokesArray[i][5] - strokesArray[i][3]) * (strokesArray[i][5] - strokesArray[i][3]));
 					}
-					if (tlen < this.kAdjustUrokoLength[k] || isCrossWithOthers(strokesArray, i, tx, ty, strokesArray[i][5], strokesArray[i][6])) {
+					if (round(tlen) < this.kAdjustUrokoLength[k] || isCrossWithOthers(strokesArray, i, tx, ty, strokesArray[i][5], strokesArray[i][6])) {
 						strokesArray[i][2] += (this.kAdjustUrokoLengthStep - k) * 100;
 						k = Infinity;
 					}
@@ -173,7 +173,7 @@ export function Kage(size) {
 			if (strokesArray[i][0] == 1 && strokesArray[i][2] == 0 && strokesArray[i][4] == strokesArray[i][6]) {
 				var pressure = 0;
 				for (var j = 0; j < strokesArray.length; j++) {
-					if (i != j && ((strokesArray[j][0] == 1 && strokesArray[j][4] == strokesArray[j][6] && !(strokesArray[i][3] + 1 > strokesArray[j][5] || strokesArray[i][5] - 1 < strokesArray[j][3]) && Math.abs(strokesArray[i][4] - strokesArray[j][4]) < this.kAdjustUroko2Length) || (strokesArray[j][0] == 3 && strokesArray[j][6] == strokesArray[j][8] && !(strokesArray[i][3] + 1 > strokesArray[j][7] || strokesArray[i][5] - 1 < strokesArray[j][5]) && Math.abs(strokesArray[i][4] - strokesArray[j][6]) < this.kAdjustUroko2Length))) {
+					if (i != j && ((strokesArray[j][0] == 1 && strokesArray[j][4] == strokesArray[j][6] && !(strokesArray[i][3] + 1 > strokesArray[j][5] || strokesArray[i][5] - 1 < strokesArray[j][3]) && round(Math.abs(strokesArray[i][4] - strokesArray[j][4])) < this.kAdjustUroko2Length) || (strokesArray[j][0] == 3 && strokesArray[j][6] == strokesArray[j][8] && !(strokesArray[i][3] + 1 > strokesArray[j][7] || strokesArray[i][5] - 1 < strokesArray[j][5]) && round(Math.abs(strokesArray[i][4] - strokesArray[j][6])) < this.kAdjustUroko2Length))) {
 						pressure += Math.pow(this.kAdjustUroko2Length - Math.abs(strokesArray[i][4] - strokesArray[j][6]), 1.1);
 					}
 				}
@@ -191,7 +191,7 @@ export function Kage(size) {
 		for (var i = 0; i < strokesArray.length; i++) {
 			if ((strokesArray[i][0] == 1 || strokesArray[i][0] == 3 || strokesArray[i][0] == 7) && strokesArray[i][3] == strokesArray[i][5]) {
 				for (var j = 0; j < strokesArray.length; j++) {
-					if (i != j && (strokesArray[j][0] == 1 || strokesArray[j][0] == 3 || strokesArray[j][0] == 7) && strokesArray[j][3] == strokesArray[j][5] && !(strokesArray[i][4] + 1 > strokesArray[j][6] || strokesArray[i][6] - 1 < strokesArray[j][4]) && Math.abs(strokesArray[i][3] - strokesArray[j][3]) < this.kMinWidthT * this.kAdjustTateStep) {
+					if (i != j && (strokesArray[j][0] == 1 || strokesArray[j][0] == 3 || strokesArray[j][0] == 7) && strokesArray[j][3] == strokesArray[j][5] && !(strokesArray[i][4] + 1 > strokesArray[j][6] || strokesArray[i][6] - 1 < strokesArray[j][4]) && round(Math.abs(strokesArray[i][3] - strokesArray[j][3])) < this.kMinWidthT * this.kAdjustTateStep) {
 						strokesArray[i][1] += (this.kAdjustTateStep - Math.floor(Math.abs(strokesArray[i][3] - strokesArray[j][3]) / this.kMinWidthT)) * 1000;
 						if (strokesArray[i][1] > this.kAdjustTateStep * 1000) {
 							strokesArray[i][1] = strokesArray[i][1] % 1000 + this.kAdjustTateStep * 1000;
@@ -208,7 +208,7 @@ export function Kage(size) {
 		for (var i = 0; i < strokesArray.length; i++) {
 			if ((strokesArray[i][0] == 3) && strokesArray[i][6] == strokesArray[i][8]) {
 				for (var j = 0; j < strokesArray.length; j++) {
-					if (i != j && ((strokesArray[j][0] == 1 && strokesArray[j][4] == strokesArray[j][6] && !(strokesArray[i][5] + 1 > strokesArray[j][5] || strokesArray[i][7] - 1 < strokesArray[j][3]) && Math.abs(strokesArray[i][6] - strokesArray[j][4]) < this.kMinWidthT * this.kAdjustMageStep) || (strokesArray[j][0] == 3 && strokesArray[j][6] == strokesArray[j][8] && !(strokesArray[i][5] + 1 > strokesArray[j][7] || strokesArray[i][7] - 1 < strokesArray[j][5]) && Math.abs(strokesArray[i][6] - strokesArray[j][6]) < this.kMinWidthT * this.kAdjustMageStep))) {
+					if (i != j && ((strokesArray[j][0] == 1 && strokesArray[j][4] == strokesArray[j][6] && !(strokesArray[i][5] + 1 > strokesArray[j][5] || strokesArray[i][7] - 1 < strokesArray[j][3]) && round(Math.abs(strokesArray[i][6] - strokesArray[j][4])) < this.kMinWidthT * this.kAdjustMageStep) || (strokesArray[j][0] == 3 && strokesArray[j][6] == strokesArray[j][8] && !(strokesArray[i][5] + 1 > strokesArray[j][7] || strokesArray[i][7] - 1 < strokesArray[j][5]) && round(Math.abs(strokesArray[i][6] - strokesArray[j][6])) < this.kMinWidthT * this.kAdjustMageStep))) {
 						strokesArray[i][2] += (this.kAdjustMageStep - Math.floor(Math.abs(strokesArray[i][6] - strokesArray[j][6]) / this.kMinWidthT)) * 1000;
 						if (strokesArray[i][2] > this.kAdjustMageStep * 1000) {
 							strokesArray[i][2] = strokesArray[i][2] % 1000 + this.kAdjustMageStep * 1000;
@@ -240,8 +240,8 @@ export function Kage(size) {
 		for (var i = 0; i < strokesArray.length; i++) {
 			if (strokesArray[i][0] == 1 && (strokesArray[i][2] == 13 || strokesArray[i][2] == 23)) {
 				for (var k = 0; k < this.kAdjustKakatoStep; k++) {
-					if (isCrossBoxWithOthers(strokesArray, i, strokesArray[i][5] - this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k], strokesArray[i][5] + this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1]) | strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
-						| strokesArray[i][6] - strokesArray[i][4] < this.kAdjustKakatoRangeY[k + 1] // for thin box
+					if (isCrossBoxWithOthers(strokesArray, i, strokesArray[i][5] - this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k], strokesArray[i][5] + this.kAdjustKakatoRangeX / 2, strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1]) | round(strokesArray[i][6] + this.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
+						| round(strokesArray[i][6] - strokesArray[i][4]) < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
 						strokesArray[i][2] += (3 - k) * 100;
 						k = Infinity;
