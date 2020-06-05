@@ -3,12 +3,10 @@ export class Polygon {
 	public get array(): ReadonlyArray<Readonly<{ x: number, y: number, off: boolean }>> {
 		return this._array.map((_, i) => this.get(i));
 	}
-	public get length() {
+	public get length(): number {
 		return this._array.length;
 	}
 	protected _array: { x: number; y: number; off: boolean; }[];
-	constructor(number?: number);
-	constructor(array: { x: number; y: number; off?: boolean; }[]);
 	constructor(param?: number | { x: number; y: number; off?: boolean; }[]) {
 		// property
 		this._array = [];
@@ -27,11 +25,11 @@ export class Polygon {
 	}
 
 	// method
-	public push(x: number, y: number, off: boolean = false) {
+	public push(x: number, y: number, off: boolean = false): void {
 		this._array.push({ x, y, off });
 	}
 
-	public set(index: number, x: number, y: number, off: boolean = false) {
+	public set(index: number, x: number, y: number, off: boolean = false): void {
 		this._array[index].x = x;
 		this._array[index].y = y;
 		this._array[index].off = off;
@@ -46,23 +44,23 @@ export class Polygon {
 		};
 	}
 
-	public reverse() {
+	public reverse(): void {
 		this._array.reverse();
 	}
 
-	public concat(poly: Polygon) {
+	public concat(poly: Polygon): void {
 		this._array = this._array.concat(poly._array);
 	}
 
-	public shift() {
+	public shift(): void {
 		this._array.shift();
 	}
 
-	public unshift(x: number, y: number, off: boolean = false) {
+	public unshift(x: number, y: number, off: boolean = false): void {
 		this._array.unshift({ x, y, off });
 	}
 
-	public clone() {
+	public clone(): Polygon {
 		const newpolygon = new Polygon();
 		this._array.forEach(({ x, y, off }) => {
 			newpolygon.push(x, y, off);
@@ -70,7 +68,7 @@ export class Polygon {
 		return newpolygon;
 	}
 
-	public translate(dx: number, dy: number) {
+	public translate(dx: number, dy: number): this {
 		this._array.forEach((point) => {
 			point.x += dx;
 			point.y += dy;
@@ -78,7 +76,7 @@ export class Polygon {
 		return this; // for chaining
 	}
 
-	public transformMatrix(a: number, b: number, c: number, d: number) {
+	public transformMatrix(a: number, b: number, c: number, d: number): this {
 		this._array.forEach((point) => {
 			const { x, y } = point;
 			point.x = a * x + b * y;
@@ -90,25 +88,25 @@ export class Polygon {
 	/**
 	 * Scales by hypot(x, y) and rotates by atan2(y, x). Corresponds to multiplying x+yi on complex plane.
 	 */
-	public transformMatrix2(x: number, y: number) {
+	public transformMatrix2(x: number, y: number): this {
 		return this.transformMatrix(x, -y, y, x);
 	}
 
-	public reflectX() {
+	public reflectX(): this {
 		this._array.forEach((point) => {
 			point.x *= -1;
 		});
 		return this; // for chaining
 	}
 
-	public reflectY() {
+	public reflectY(): this {
 		this._array.forEach((point) => {
 			point.y *= -1;
 		});
 		return this; // for chaining
 	}
 
-	public rotate180() {
+	public rotate180(): this {
 		return this.reflectX().reflectY(); // for chaining
 	}
 

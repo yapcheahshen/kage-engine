@@ -1,7 +1,9 @@
+// eslint-disable-next-line no-var
 declare var Math: Math & {
 	hypot?(...args: number[]): number;
 };
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
 export const hypot: (x: number, y: number) => number = Math.hypot || ((x, y) => Math.sqrt(x * x + y * y));
 
 /** Calculates a new vector with the same angle and a new magnitude. */
@@ -14,26 +16,26 @@ export function normalize([x, y]: [number, number], magnitude: number = 1): [num
 	return [x * k, y * k];
 }
 
-export function quadraticBezier(p1: number, p2: number, p3: number, t: number) {
+export function quadraticBezier(p1: number, p2: number, p3: number, t: number): number {
 	const s = 1 - t;
 	return (s * s) * p1 + 2 * (s * t) * p2 + (t * t) * p3;
 }
 
 /** Returns d/dt(quadraticBezier) */
-export function quadraticBezierDeriv(p1: number, p2: number, p3: number, t: number) {
+export function quadraticBezierDeriv(p1: number, p2: number, p3: number, t: number): number {
 	// const s = 1 - t;
 	// ds/dt = -1
 	// return (-2 * s) * p1 + 2 * (s - t) * p2 + (2 * t) * p3;
 	return 2 * (t * (p1 - 2 * p2 + p3) - p1 + p2);
 }
 
-export function cubicBezier(p1: number, p2: number, p3: number, p4: number, t: number) {
+export function cubicBezier(p1: number, p2: number, p3: number, p4: number, t: number): number {
 	const s = 1 - t;
 	return (s * s * s) * p1 + 3 * (s * s * t) * p2 + 3 * (s * t * t) * p3 + (t * t * t) * p4;
 }
 
 /** Returns d/dt(cubicBezier) */
-export function cubicBezierDeriv(p1: number, p2: number, p3: number, p4: number, t: number) {
+export function cubicBezierDeriv(p1: number, p2: number, p3: number, p4: number, t: number): number {
 	// const s = 1 - t;
 	// ds/dt = -1
 	// const ss = s * s;
@@ -44,7 +46,7 @@ export function cubicBezierDeriv(p1: number, p2: number, p3: number, p4: number,
 }
 
 /** Find the minimum of a function by ternary search. */
-export function ternarySearchMin(func: (x: number) => number, left: number, right: number, eps: number = 1E-5) {
+export function ternarySearchMin(func: (x: number) => number, left: number, right: number, eps: number = 1E-5): number {
 	while (left + eps < right) {
 		const x1 = left + (right - left) / 3;
 		const x2 = right - (right - left) / 3;
@@ -60,10 +62,10 @@ export function ternarySearchMin(func: (x: number) => number, left: number, righ
 }
 
 /** Find the maximum of a function by ternary search. */
-export function ternarySearchMax(func: (x: number) => number, left: number, right: number, eps?: number) {
+export function ternarySearchMax(func: (x: number) => number, left: number, right: number, eps?: number): number {
 	return ternarySearchMin((x) => -func(x), left, right, eps);
 }
 
-export function round(v: number, rate: number = 1E8) {
+export function round(v: number, rate: number = 1E8): number {
 	return Math.round(v * rate) / rate;
 }

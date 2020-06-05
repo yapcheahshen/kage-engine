@@ -111,12 +111,12 @@ export class Kage {
 
 	}
 	// method
-	public makeGlyph(polygons: Polygons, buhin: string) {
+	public makeGlyph(polygons: Polygons, buhin: string): void {
 		const glyphData = this.kBuhin.search(buhin);
 		this.makeGlyph2(polygons, glyphData);
 	}
 
-	public makeGlyph2(polygons: Polygons, data: string) {
+	public makeGlyph2(polygons: Polygons, data: string): void {
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
 			this.adjustStrokes(strokesArray);
@@ -126,7 +126,7 @@ export class Kage {
 		}
 	}
 
-	public makeGlyph3(data: string) {
+	public makeGlyph3(data: string): Polygons[] {
 		const result: Polygons[] = [];
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
@@ -140,7 +140,7 @@ export class Kage {
 		return result;
 	}
 
-	protected getEachStrokes(glyphData: string) {
+	protected getEachStrokes(glyphData: string): Stroke[] {
 		let strokesArray: Stroke[] = [];
 		const strokes = glyphData.split("$");
 		strokes.forEach((stroke) => {
@@ -179,7 +179,7 @@ export class Kage {
 		x1: number, y1: number,
 		x2: number, y2: number,
 		sx: number, sy: number,
-		sx2: number, sy2: number) {
+		sx2: number, sy2: number): Stroke[] {
 		const strokes = this.getEachStrokes(buhin);
 		const box = this.getBox(strokes);
 		if (sx !== 0 || sy !== 0) {
@@ -206,7 +206,7 @@ export class Kage {
 		return strokes;
 	}
 
-	protected getBox(strokes: Stroke[]) {
+	protected getBox(strokes: Stroke[]): { minX: number, maxX: number, minY: number, maxY: number } {
 		let minX = 200;
 		let minY = 200;
 		let maxX = 0;
@@ -227,7 +227,7 @@ export class Kage {
 		return { minX, maxX, minY, maxY };
 	}
 
-	protected adjustStrokes(strokesArray: Stroke[]) {
+	protected adjustStrokes(strokesArray: Stroke[]): Stroke[] {
 		this.adjustHane(strokesArray);
 		this.adjustMage(strokesArray);
 		this.adjustTate(strokesArray);
@@ -238,7 +238,7 @@ export class Kage {
 		return strokesArray;
 	}
 
-	private adjustHane(strokesArray: Stroke[]) {
+	private adjustHane(strokesArray: Stroke[]): Stroke[] {
 		strokesArray.forEach((stroke, i) => {
 			if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6)
 				&& stroke.a3_100 === 4 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {

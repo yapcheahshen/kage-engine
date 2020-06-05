@@ -26,29 +26,25 @@ export function divide_curve(
 // ------------------------------------------------------------------
 export function find_offcurve(
 	_kage: Kage,
-	curve: [number, number][], sx: number, sy: number) {
+	curve: [number, number][], sx: number, sy: number): number[] {
 	const [nx1, ny1] = curve[0];
 	const [nx2, ny2] = curve[curve.length - 1];
 
 	const area = 8;
 
-	const minx = ternarySearchMin((tx) => {
-		return curve.reduce((diff, p, i) => {
-			const t = i / curve.length;
-			const x = quadraticBezier(nx1, tx, nx2, t);
+	const minx = ternarySearchMin((tx) => curve.reduce((diff, p, i) => {
+		const t = i / curve.length;
+		const x = quadraticBezier(nx1, tx, nx2, t);
 
-			return diff + (p[0] - x) ** 2;
-		}, 0);
-	}, sx - area, sx + area);
+		return diff + (p[0] - x) ** 2;
+	}, 0), sx - area, sx + area);
 
-	const miny = ternarySearchMin((ty) => {
-		return curve.reduce((diff, p, i) => {
-			const t = i / curve.length;
-			const y = quadraticBezier(ny1, ty, ny2, t);
+	const miny = ternarySearchMin((ty) => curve.reduce((diff, p, i) => {
+		const t = i / curve.length;
+		const y = quadraticBezier(ny1, ty, ny2, t);
 
-			return diff + (p[1] - y) ** 2;
-		}, 0);
-	}, sy - area, sy + area);
+		return diff + (p[1] - y) ** 2;
+	}, 0), sy - area, sy + area);
 
 	return [nx1, ny1, minx, miny, nx2, ny2];
 }
@@ -58,7 +54,7 @@ export function get_candidate(
 	kage: Kage,
 	a1: number, a2: number,
 	x1: number, y1: number, sx1: number, sy1: number, x2: number, y2: number,
-	opt3: number, opt4: number) {
+	opt3: number, opt4: number): [[number, number][], [number, number][]] {
 	const curve: [[number, number][], [number, number][]] = [[], []];
 
 	for (let tt = 0; tt <= 1000; tt += kage.kRate) {
