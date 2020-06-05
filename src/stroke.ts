@@ -1,4 +1,4 @@
-export function stretch(dp: number, sp: number, p: number, min: number, max: number) {
+export function stretch(dp: number, sp: number, p: number, min: number, max: number): number {
 	let p1;
 	let p2;
 	let p3;
@@ -80,8 +80,8 @@ export class Stroke {
 		this.a3_100 %= 100;
 	}
 
-	public getControlSegments() {
-		const res: Array<[number, number, number, number]> = [];
+	public getControlSegments(): [number, number, number, number][] {
+		const res: [number, number, number, number][] = [];
 		switch (this.a1) {
 			case 0:
 			case 8:
@@ -104,7 +104,7 @@ export class Stroke {
 
 	public stretch(
 		sx: number, sx2: number, sy: number, sy2: number,
-		bminX: number, bmaxX: number, bminY: number, bmaxY: number) {
+		bminX: number, bmaxX: number, bminY: number, bmaxY: number): void {
 		this.x1 = stretch(sx, sx2, this.x1, bminX, bmaxX);
 		this.y1 = stretch(sy, sy2, this.y1, bminY, bmaxY);
 		this.x2 = stretch(sx, sx2, this.x2, bminX, bmaxX);
@@ -117,7 +117,7 @@ export class Stroke {
 		}
 	}
 
-	public getBox() {
+	public getBox(): { minX: number, maxX: number, minY: number, maxY: number } {
 		let minX = Infinity;
 		let minY = Infinity;
 		let maxX = -Infinity;

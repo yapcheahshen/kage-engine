@@ -1,5 +1,4 @@
 export class Buhin {
-	public push: typeof Buhin.prototype.set;
 	protected hash: { [name: string]: string };
 
 	constructor() {
@@ -9,16 +8,19 @@ export class Buhin {
 	}
 
 	// method
-	public set(name: string, data: string) {
+	public set(name: string, data: string): void {
 		this.hash[name] = data;
 	}
 
-	public search(name: string) {
+	public search(name: string): string {
 		if (this.hash[name]) {
 			return this.hash[name];
 		}
 		return ""; // no data
 	}
+
+	public push(name: string, data: string): void {
+		this.set(name, data);
+	}
 }
 
-Buhin.prototype.push = Buhin.prototype.set;

@@ -506,7 +506,7 @@ export function cdDrawBezier(
 	x1: number, y1: number, x2: number, y2: number,
 	x3: number, y3: number, x4: number, y4: number,
 	a1: number, a2: number,
-	opt1: number, opt2: number, opt3: number, opt4: number) {
+	opt1: number, opt2: number, opt3: number, opt4: number): void {
 	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, opt2, opt3, opt4);
 }
 
@@ -514,14 +514,14 @@ export function cdDrawCurve(
 	kage: Kage, polygons: Polygons,
 	x1: number, y1: number, x2: number, y2: number, x3: number, y3: number,
 	a1: number, a2: number,
-	opt1: number, opt2: number, opt3: number, opt4: number) {
+	opt1: number, opt2: number, opt3: number, opt4: number): void {
 	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2, opt1, opt2, opt3, opt4);
 }
 
 export function cdDrawLine(
 	kage: Kage, polygons: Polygons,
 	tx1: number, ty1: number, tx2: number, ty2: number,
-	ta1: number, ta2: number, opt1: number, opt2: number) {
+	ta1: number, ta2: number, opt1: number, opt2: number): void {
 
 	if (kage.kShotai === kage.kMincho) { // mincho
 		const x1 = tx1;

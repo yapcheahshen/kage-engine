@@ -70,7 +70,7 @@ function isCrossBox(
 
 export function isCrossBoxWithOthers(
 	strokesArray: Stroke[], i: number,
-	bx1: number, by1: number, bx2: number, by2: number) {
+	bx1: number, by1: number, bx2: number, by2: number): boolean {
 	return strokesArray.some((stroke, j) => (
 		i !== j
 		&& stroke.getControlSegments().some(([x1, y1, x2, y2]) => (
@@ -81,7 +81,7 @@ export function isCrossBoxWithOthers(
 
 export function isCrossWithOthers(
 	strokesArray: Stroke[], i: number,
-	bx1: number, by1: number, bx2: number, by2: number) {
+	bx1: number, by1: number, bx2: number, by2: number): boolean {
 	return strokesArray.some((stroke, j) => (
 		i !== j
 		&& stroke.getControlSegments().some(([x1, y1, x2, y2]) => (

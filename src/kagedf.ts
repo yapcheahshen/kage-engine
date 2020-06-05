@@ -10,7 +10,7 @@ export function dfDrawFont(
 		a1, x1, y1, x2, y2, x3, y3, x4, y4,
 		a2_100, kirikuchiAdjustment, tateAdjustment, opt3,
 		a3_100, opt2, mageAdjustment,
-	}: Stroke) {
+	}: Stroke): void {
 
 	if (kage.kShotai === kage.kMincho) {
 		switch (a1 % 100) { // ... no need to divide

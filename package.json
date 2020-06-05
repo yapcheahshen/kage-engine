@@ -1,17 +1,20 @@
 {
-  "name": "kage-engine",
-  "version": "1.0.0",
+  "name": "@kurgm/kage-engine",
+  "version": "0.1.0",
   "description": "An engine that generates glyph image file from KAGE data",
   "directories": {
     "doc": "docs"
   },
   "main": "lib/index.js",
+  "files": [
+    "lib/"
+  ],
   "scripts": {
     "build": "npm run build:ts && npm run build:browser",
     "build:ts": "tsc",
     "build:browser": "mkdir -p dist && browserify lib/browser.js -o dist/kage.js",
     "clean": "rm lib/* dist/*",
-    "lint": "tslint -p . && eslint test",
+    "lint": "eslint 'src/**/*.ts'",
     "test": "node test/index.js"
   },
   "repository": {
@@ -25,13 +28,10 @@
   },
   "homepage": "https://github.com/kurgm/kage-engine#readme",
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-eslint": "^7.2.3",
-    "babel-preset-es2015": "^6.24.1",
-    "babelify": "^7.3.0",
-    "browserify": "^14.4.0",
-    "eslint": "^4.3.0",
-    "tslint": "^5.5.0",
-    "typescript": "^2.4.2"
+    "@typescript-eslint/eslint-plugin": "^3.1.0",
+    "@typescript-eslint/parser": "^3.1.0",
+    "browserify": "^16.5.1",
+    "eslint": "^7.1.0",
+    "typescript": "^3.9.5"
   }
 }
