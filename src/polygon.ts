@@ -106,8 +106,26 @@ export class Polygon {
 		return this; // for chaining
 	}
 
+	public rotate90(): this {
+		this._array.forEach((point) => {
+			const { x, y } = point;
+			point.x = -y;
+			point.y = x;
+		});
+		return this;
+	}
+
 	public rotate180(): this {
 		return this.reflectX().reflectY(); // for chaining
+	}
+
+	public rotate270(): this {
+		this._array.forEach((point) => {
+			const { x, y } = point;
+			point.x = y;
+			point.y = -x;
+		});
+		return this;
 	}
 
 }
