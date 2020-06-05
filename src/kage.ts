@@ -140,6 +140,18 @@ export class Kage {
 		return result;
 	}
 
+	public makeGlyphSeparated(data: string[]): Polygons[] {
+		const strokesArrays = data.map((subdata) => this.getEachStrokes(subdata));
+		this.adjustStrokes(strokesArrays.reduce((left, right) => left.concat(right), []));
+		return strokesArrays.map((strokesArray) => {
+			const polygons = new Polygons();
+			strokesArray.forEach((stroke) => {
+				dfDrawFont(this, polygons, stroke);
+			});
+			return polygons;
+		});
+	}
+
 	protected getEachStrokes(glyphData: string): Stroke[] {
 		let strokesArray: Stroke[] = [];
 		const strokes = glyphData.split("$");
