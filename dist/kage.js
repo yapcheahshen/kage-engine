@@ -1,6 +1,7 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isCrossWithOthers = exports.isCrossBoxWithOthers = void 0;
 var util_1 = require("./util");
 // Reference : http://www.cam.hi-ho.ne.jp/strong_warriors/teacher/chapter0{4,5}.html
 /** Cross product of two vectors */
@@ -84,7 +85,8 @@ window.Polygons = _1.Polygons;
 },{"./":5}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Buhin = (function () {
+exports.Buhin = void 0;
+var Buhin = /** @class */ (function () {
     function Buhin() {
         // initialize
         // no operation
@@ -100,14 +102,17 @@ var Buhin = (function () {
         }
         return ""; // no data
     };
+    Buhin.prototype.push = function (name, data) {
+        this.set(name, data);
+    };
     return Buhin;
 }());
 exports.Buhin = Buhin;
-Buhin.prototype.push = Buhin.prototype.set;
 
 },{}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.get_candidate = exports.find_offcurve = exports.divide_curve = void 0;
 var util_1 = require("./util");
 function divide_curve(_kage, x1, y1, sx1, sy1, x2, y2, curve) {
     var rate = 0.5;
@@ -131,20 +136,16 @@ function find_offcurve(_kage, curve, sx, sy) {
     var _a = curve[0], nx1 = _a[0], ny1 = _a[1];
     var _b = curve[curve.length - 1], nx2 = _b[0], ny2 = _b[1];
     var area = 8;
-    var minx = util_1.ternarySearchMin(function (tx) {
-        return curve.reduce(function (diff, p, i) {
-            var t = i / curve.length;
-            var x = util_1.quadraticBezier(nx1, tx, nx2, t);
-            return diff + Math.pow((p[0] - x), 2);
-        }, 0);
-    }, sx - area, sx + area);
-    var miny = util_1.ternarySearchMin(function (ty) {
-        return curve.reduce(function (diff, p, i) {
-            var t = i / curve.length;
-            var y = util_1.quadraticBezier(ny1, ty, ny2, t);
-            return diff + Math.pow((p[1] - y), 2);
-        }, 0);
-    }, sy - area, sy + area);
+    var minx = util_1.ternarySearchMin(function (tx) { return curve.reduce(function (diff, p, i) {
+        var t = i / curve.length;
+        var x = util_1.quadraticBezier(nx1, tx, nx2, t);
+        return diff + Math.pow((p[0] - x), 2);
+    }, 0); }, sx - area, sx + area);
+    var miny = util_1.ternarySearchMin(function (ty) { return curve.reduce(function (diff, p, i) {
+        var t = i / curve.length;
+        var y = util_1.quadraticBezier(ny1, ty, ny2, t);
+        return diff + Math.pow((p[1] - y), 2);
+    }, 0); }, sy - area, sy + area);
     return [nx1, ny1, minx, miny, nx2, ny2];
 }
 exports.find_offcurve = find_offcurve;
@@ -186,14 +187,16 @@ exports.get_candidate = get_candidate;
 },{"./util":12}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Polygons = exports.Kage = void 0;
 var kage_1 = require("./kage");
-exports.Kage = kage_1.Kage;
+Object.defineProperty(exports, "Kage", { enumerable: true, get: function () { return kage_1.Kage; } });
 var polygons_1 = require("./polygons");
-exports.Polygons = polygons_1.Polygons;
+Object.defineProperty(exports, "Polygons", { enumerable: true, get: function () { return polygons_1.Polygons; } });
 
 },{"./kage":6,"./polygons":10}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Kage = exports.KShotai = void 0;
 var _2d_1 = require("./2d");
 var buhin_1 = require("./buhin");
 var kagedf_1 = require("./kagedf");
@@ -205,7 +208,7 @@ var KShotai;
     KShotai[KShotai["kMincho"] = 0] = "kMincho";
     KShotai[KShotai["kGothic"] = 1] = "kGothic";
 })(KShotai = exports.KShotai || (exports.KShotai = {}));
-var Kage = (function () {
+var Kage = /** @class */ (function () {
     function Kage(size) {
         // TODO: should be static
         this.kMincho = KShotai.kMincho;
@@ -415,10 +418,10 @@ var Kage = (function () {
                     if (i !== j && ((stroke2.a1 === 1
                         && stroke2.y1 === stroke2.y2
                         && !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
-                        && Math.abs(stroke.y2 - stroke2.y1) < _this.kMinWidthT * _this.kAdjustMageStep) || (stroke2.a1 === 3
+                        && util_1.round(Math.abs(stroke.y2 - stroke2.y1)) < _this.kMinWidthT * _this.kAdjustMageStep) || (stroke2.a1 === 3
                         && stroke2.y2 === stroke2.y3
                         && !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
-                        && Math.abs(stroke.y2 - stroke2.y2) < _this.kMinWidthT * _this.kAdjustMageStep))) {
+                        && util_1.round(Math.abs(stroke.y2 - stroke2.y2)) < _this.kMinWidthT * _this.kAdjustMageStep))) {
                         stroke.mageAdjustment += _this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / _this.kMinWidthT);
                         if (stroke.mageAdjustment > _this.kAdjustMageStep) {
                             stroke.mageAdjustment = _this.kAdjustMageStep;
@@ -439,7 +442,7 @@ var Kage = (function () {
                         && (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
                         && stroke2.x1 === stroke2.x2
                         && !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
-                        && Math.abs(stroke.x1 - stroke2.x1) < _this.kMinWidthT * _this.kAdjustTateStep) {
+                        && util_1.round(Math.abs(stroke.x1 - stroke2.x1)) < _this.kMinWidthT * _this.kAdjustTateStep) {
                         stroke.tateAdjustment += _this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / _this.kMinWidthT);
                         if (stroke.tateAdjustment > _this.kAdjustTateStep) {
                             stroke.tateAdjustment = _this.kAdjustTateStep;
@@ -457,8 +460,8 @@ var Kage = (function () {
                 && (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
                 for (var k = 0; k < _this.kAdjustKakatoStep; k++) {
                     if (_2d_1.isCrossBoxWithOthers(strokesArray, i, stroke.x2 - _this.kAdjustKakatoRangeX / 2, stroke.y2 + _this.kAdjustKakatoRangeY[k], stroke.x2 + _this.kAdjustKakatoRangeX / 2, stroke.y2 + _this.kAdjustKakatoRangeY[k + 1])
-                        || stroke.y2 + _this.kAdjustKakatoRangeY[k + 1] > 200 // adjust for baseline
-                        || stroke.y2 - stroke.y1 < _this.kAdjustKakatoRangeY[k + 1] // for thin box
+                        || util_1.round(stroke.y2 + _this.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
+                        || util_1.round(stroke.y2 - stroke.y1) < _this.kAdjustKakatoRangeY[k + 1] // for thin box
                     ) {
                         stroke.opt2 += 3 - k;
                         break;
@@ -472,12 +475,12 @@ var Kage = (function () {
         var _this = this;
         strokesArray.forEach(function (stroke, i) {
             if (stroke.a1 === 1
-                && stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
+                && stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) { // no operation for TATE
                 for (var k = 0; k < _this.kAdjustUrokoLengthStep; k++) {
                     var tx = void 0;
                     var ty = void 0;
                     var tlen = void 0;
-                    if (stroke.y1 === stroke.y2) {
+                    if (stroke.y1 === stroke.y2) { // YOKO
                         tx = stroke.x2 - _this.kAdjustUrokoLine[k];
                         ty = stroke.y2 - 0.5;
                         tlen = stroke.x2 - stroke.x1; // should be Math.abs(...)?
@@ -492,7 +495,7 @@ var Kage = (function () {
                         ty = stroke.y2 - _this.kAdjustUrokoLine[k] * sinrad - 0.5 * cosrad;
                         tlen = util_1.hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
                     }
-                    if (tlen < _this.kAdjustUrokoLength[k]
+                    if (util_1.round(tlen) < _this.kAdjustUrokoLength[k]
                         || _2d_1.isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
                         stroke.opt2 += _this.kAdjustUrokoLengthStep - k;
                         break;
@@ -512,10 +515,10 @@ var Kage = (function () {
                     if (i !== j && ((stroke2.a1 === 1
                         && stroke2.y1 === stroke2.y2
                         && !(stroke.x1 + 1 > stroke2.x2 || stroke.x2 - 1 < stroke2.x1)
-                        && Math.abs(stroke.y1 - stroke2.y1) < _this.kAdjustUroko2Length) || (stroke2.a1 === 3
+                        && util_1.round(Math.abs(stroke.y1 - stroke2.y1)) < _this.kAdjustUroko2Length) || (stroke2.a1 === 3
                         && stroke2.y2 === stroke2.y3
                         && !(stroke.x1 + 1 > stroke2.x3 || stroke.x2 - 1 < stroke2.x2)
-                        && Math.abs(stroke.y1 - stroke2.y2) < _this.kAdjustUroko2Length))) {
+                        && util_1.round(Math.abs(stroke.y1 - stroke2.y2)) < _this.kAdjustUroko2Length))) {
                         pressure_1 += Math.pow((_this.kAdjustUroko2Length - Math.abs(stroke.y1 - stroke2.y2)), 1.1);
                     }
                 });
@@ -532,7 +535,7 @@ var Kage = (function () {
             if (stroke.a1 === 2
                 && stroke.a2_100 === 32 && stroke.kirikuchiAdjustment === 0 && stroke.tateAdjustment === 0 && stroke.opt3 === 0
                 && stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
-                for (var _i = 0, strokesArray_1 = strokesArray; _i < strokesArray_1.length; _i++) {
+                for (var _i = 0, strokesArray_1 = strokesArray; _i < strokesArray_1.length; _i++) { // no need to skip when i == j
                     var stroke2 = strokesArray_1[_i];
                     if (stroke2.a1 === 1
                         && stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1 && stroke2.y1 === stroke.y1
@@ -552,12 +555,13 @@ exports.Kage = Kage;
 },{"./2d":1,"./buhin":3,"./kagedf":8,"./polygons":10,"./stroke":11,"./util":12}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.cdDrawLine = exports.cdDrawCurve = exports.cdDrawBezier = void 0;
 var curve_1 = require("./curve");
 var kage_1 = require("./kage");
 var polygon_1 = require("./polygon");
 var util_1 = require("./util");
 function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, ta2, opt1, opt2, opt3, opt4) {
-    if (kage.kShotai === kage.kMincho) {
+    if (kage.kShotai === kage.kMincho) { // mincho
         var a1 = ta1;
         var a2 = ta2;
         var kMinWidthT = kage.kMinWidthT - opt1 / 2;
@@ -572,7 +576,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
             case 2: // ... must be 32
             case 6:
             case 22:
-            case 32:// changed
+            case 32: // changed
                 delta = 0;
                 break;
             case 12:
@@ -598,7 +602,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
             case 5:
                 delta = 0;
                 break;
-            case 8:// get shorten for tail's circle
+            case 8: // get shorten for tail's circle
                 delta = -1 * kMinWidthT * 0.5;
                 break;
             default:
@@ -691,7 +695,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
                     poly2.push(x + ia, y + ib);
                 }
             }
-            else {
+            else { // Bezier
                 for (var tt = 0; tt <= 1000; tt += kage.kRate) {
                     var t = tt / 1000;
                     // calculate a dot
@@ -780,7 +784,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
             polygons.push(poly);
         }
         if (a1 === 0) {
-            if (y1 <= y2) {
+            if (y1 <= y2) { // from up to bottom
                 var type = Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4;
                 if (type > 0) {
                     type *= 2;
@@ -805,7 +809,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
                 // beginning of the stroke
                 var poly2 = new polygon_1.Polygon();
                 poly2.push(kMinWidthT, -move);
-                if (x1 === sx1 && y1 === sy1) {
+                if (x1 === sx1 && y1 === sy1) { // ?????
                     // type === -6.4 && pm === -1 && move === 6.4 * kage.kMinWidthY
                     poly2.push(kMinWidthT * 1.5, kage.kMinWidthY - move);
                     poly2.push(kMinWidthT - 2, kage.kMinWidthY * 2 + 1);
@@ -820,7 +824,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
                 poly2.transformMatrix2(XX, XY).translate(x1, y1);
                 polygons.push(poly2);
             }
-            else {
+            else { // bottom to up
                 var _m = (x1 === sx1)
                     ? [1, 0] // ?????
                     : util_1.normalize([sy1 - y1, -(sx1 - x1)]), XX = _m[0], XY = _m[1];
@@ -847,7 +851,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
                 polygons.push(poly2);
             }
         }
-        if (a1 === 22) {
+        if (a1 === 22) { // box's up-right corner, any time same degree
             var poly = new polygon_1.Polygon([
                 { x: -kMinWidthT, y: -kage.kMinWidthY },
                 { x: 0, y: -kage.kMinWidthY - kage.kWidth },
@@ -859,14 +863,14 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
             polygons.push(poly);
         }
         // process for tail
-        if (a2 === 1 || a2 === 8 || a2 === 15) {
+        if (a2 === 1 || a2 === 8 || a2 === 15) { // the last filled circle ... it can change 15->5
             var _o = (sx2 === x2)
                 ? [0, 1] // ?????
                 : (sy2 === y2)
                     ? [1, 0] // ?????
                     : util_1.normalize([x2 - sx2, y2 - sy2]), dx = _o[0], dy = _o[1];
             var poly = new polygon_1.Polygon((kage.kUseCurve)
-                ?
+                ? // by curve path
                     [
                         { x: 0, y: -kMinWidthT2 },
                         { x: +kMinWidthT2 * 0.9, y: -kMinWidthT2 * 0.9, off: true },
@@ -874,7 +878,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
                         { x: +kMinWidthT2 * 0.9, y: +kMinWidthT2 * 0.9, off: true },
                         { x: 0, y: +kMinWidthT2 },
                     ]
-                :
+                : // by polygon
                     [
                         { x: 0, y: -kMinWidthT2 },
                         { x: +kMinWidthT2 * 0.7, y: -kMinWidthT2 * 0.7 },
@@ -888,7 +892,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
             poly.transformMatrix2(dx, dy).translate(x2, y2);
             polygons.push(poly);
         }
-        if (a2 === 9 || (a1 === 7 && a2 === 0)) {
+        if (a2 === 9 || (a1 === 7 && a2 === 0)) { // Math.sinnyu & L2RD Harai ... no need for a2=9
             var type2 = (Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6);
             if (type2 > 0) {
                 type2 *= 8;
@@ -910,7 +914,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
             poly.transformMatrix2(dx, dy).translate(x2, y2);
             polygons.push(poly);
         }
-        if (a2 === 15) {
+        if (a2 === 15) { // jump up ... it can change 15->5
             // anytime same degree
             var poly = new polygon_1.Polygon([
                 { x: 0, y: -kMinWidthT + 1 },
@@ -924,7 +928,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
             poly.translate(x2, y2);
             polygons.push(poly);
         }
-        if (a2 === 14) {
+        if (a2 === 14) { // jump to left, allways go left
             var poly = new polygon_1.Polygon([
                 { x: 0, y: 0 },
                 { x: 0, y: -kMinWidthT },
@@ -936,7 +940,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
             polygons.push(poly);
         }
     }
-    else {
+    else { // gothic
         var a1 = ta1;
         var a2 = ta2;
         if (a1 % 10 === 2) {
@@ -1013,7 +1017,7 @@ function cdDrawCurve(kage, polygons, x1, y1, x2, y2, x3, y3, a1, a2, opt1, opt2,
 }
 exports.cdDrawCurve = cdDrawCurve;
 function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
-    if (kage.kShotai === kage.kMincho) {
+    if (kage.kShotai === kage.kMincho) { // mincho
         var x1 = tx1;
         var y1 = ty1;
         var x2 = tx2;
@@ -1035,7 +1039,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
                     poly0.set(3, x1 - sinrad * kMinWidthT - cosrad * kage.kMinWidthY / 2, y1 + cosrad * kMinWidthT - sinrad * kage.kMinWidthY / 2);
                     break;
                 case 1:
-                case 6:// ... no need
+                case 6: // ... no need
                     poly0.set(0, x1 + sinrad * kMinWidthT, y1 - cosrad * kMinWidthT);
                     poly0.set(3, x1 - sinrad * kMinWidthT, y1 + cosrad * kMinWidthT);
                     break;
@@ -1069,7 +1073,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
             }
             switch (a2) {
                 case 0:
-                    if (a1 === 6) {
+                    if (a1 === 6) { // KAGI's tail ... no need
                         poly0.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
                         poly0.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
                     }
@@ -1083,7 +1087,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
                         break;
                     }
                 // falls through
-                case 1:// is needed?
+                case 1: // is needed?
                     poly0.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
                     poly0.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
                     break;
@@ -1095,7 +1099,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
                     poly0.set(1, x2 + sinrad * kMinWidthT + cosrad * kage.kAdjustKakatoR[opt2], y2 - cosrad * kMinWidthT + sinrad * kage.kAdjustKakatoR[opt2]);
                     poly0.set(2, x2 - sinrad * kMinWidthT + cosrad * (kage.kAdjustKakatoR[opt2] + kMinWidthT), y2 + cosrad * kMinWidthT + sinrad * (kage.kAdjustKakatoR[opt2] + kMinWidthT));
                     break;
-                case 24:// for T/H design
+                case 24: // for T/H design
                     if (x1 === x2) {
                         poly0.set(1, x2 + kMinWidthT, y2 + kage.kMinWidthY);
                         poly0.set(2, x2 - kMinWidthT, y2 + kage.kMinWidthY);
@@ -1117,7 +1121,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
                     break;
             }
             polygons.push(poly0);
-            if (a2 === 24) {
+            if (a2 === 24) { // for T design
                 var poly = new polygon_1.Polygon([
                     { x: 0, y: +kage.kMinWidthY },
                     (x1 === x2) // ?????
@@ -1129,7 +1133,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
                 poly.translate(x2, y2);
                 polygons.push(poly);
             }
-            if (a2 === 13 && opt2 === 4) {
+            if (a2 === 13 && opt2 === 4) { // for new GTH box's left bottom corner
                 if (x1 === x2) {
                     var poly = new polygon_1.Polygon([
                         { x: -kMinWidthT, y: -kage.kMinWidthY * 3 },
@@ -1140,7 +1144,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
                     poly.translate(x2, y2);
                     polygons.push(poly);
                 }
-                else {
+                else { // MUKI KANKEINASHI
                     var m = (x1 > x2 && y1 !== y2)
                         ? Math.floor((x1 - x2) / (y2 - y1) * 3)
                         : 0;
@@ -1173,7 +1177,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
                 poly.translate(x1, y1);
                 polygons.push(poly);
             }
-            if (a1 === 0) {
+            if (a1 === 0) { // beginning of the stroke
                 var poly = new polygon_1.Polygon([
                     {
                         x: +kMinWidthT * sinrad + kage.kMinWidthY * 0.5 * cosrad,
@@ -1250,7 +1254,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
                 { x: x1, y: y1 + kMinWidthT },
             ]);
             polygons.push(poly0);
-            if (a2 === 1 || a2 === 0 || a2 === 5) {
+            if (a2 === 1 || a2 === 0 || a2 === 5) { // no need a2=1
                 // KAGI NO YOKO BOU NO SAIGO NO MARU
                 var _b = (x1 < x2) ? [1, 0] : [-1, 0], cosrad = _b[0], sinrad = _b[1];
                 var r = 0.6;
@@ -1317,7 +1321,7 @@ function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, opt2) {
             }
         }
     }
-    else {
+    else { // gothic
         var x1 = void 0;
         var y1 = void 0;
         var x2 = void 0;
@@ -1375,12 +1379,13 @@ exports.cdDrawLine = cdDrawLine;
 },{"./curve":4,"./kage":6,"./polygon":9,"./util":12}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.dfDrawFont = void 0;
 var kagecd_1 = require("./kagecd");
 var util_1 = require("./util");
 function dfDrawFont(kage, polygons, _a) {
     var a1 = _a.a1, x1 = _a.x1, y1 = _a.y1, x2 = _a.x2, y2 = _a.y2, x3 = _a.x3, y3 = _a.y3, x4 = _a.x4, y4 = _a.y4, a2_100 = _a.a2_100, kirikuchiAdjustment = _a.kirikuchiAdjustment, tateAdjustment = _a.tateAdjustment, opt3 = _a.opt3, a3_100 = _a.a3_100, opt2 = _a.opt2, mageAdjustment = _a.mageAdjustment;
     if (kage.kShotai === kage.kMincho) {
-        switch (a1 % 100) {
+        switch (a1 % 100) { // ... no need to divide
             case 0:
                 break;
             case 1: {
@@ -1435,7 +1440,7 @@ function dfDrawFont(kage, polygons, _a) {
                 if (a3_100 === 5 && opt2 === 0) {
                     var tx3 = x3;
                     var ty3 = y3;
-                    if ((x2 < x3 && tx3 - tx2 > 0) || (x2 > x3 && tx2 - tx3 > 0)) {
+                    if ((x2 < x3 && tx3 - tx2 > 0) || (x2 > x3 && tx2 - tx3 > 0)) { // for closer position
                         kagecd_1.cdDrawLine(kage, polygons, tx2, ty2, tx3, ty3, 6, 5, mageAdjustment, 0); // bolder by force
                     }
                 }
@@ -1469,7 +1474,7 @@ function dfDrawFont(kage, polygons, _a) {
                 if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
                     var tx3 = x3;
                     var ty3 = y3;
-                    if (tx3 - tx2 > 0) {
+                    if (tx3 - tx2 > 0) { // for closer position
                         kagecd_1.cdDrawLine(kage, polygons, tx2, ty2, tx3, ty3, 6, 5, 0, 0); // bolder by force
                     }
                 }
@@ -1503,7 +1508,7 @@ function dfDrawFont(kage, polygons, _a) {
                 kagecd_1.cdDrawCurve(kage, polygons, x2, y2, x3, y3, x4, y4, 1, a3_100, tateAdjustment, opt2, opt3, mageAdjustment);
                 break;
             }
-            case 9:// may not be exist ... no need
+            case 9: // may not be exist ... no need
                 // kageCanvas[y1][x1] = 0;
                 // kageCanvas[y2][x2] = 0;
                 break;
@@ -1511,7 +1516,7 @@ function dfDrawFont(kage, polygons, _a) {
                 break;
         }
     }
-    else {
+    else { // gothic
         switch (a1 % 100) {
             case 0:
                 break;
@@ -1609,7 +1614,7 @@ function dfDrawFont(kage, polygons, _a) {
                 kagecd_1.cdDrawCurve(kage, polygons, x2, y2, x3, y3, x4, y4, 1, a3_100, 0, opt2, 0, mageAdjustment);
                 break;
             }
-            case 9:// may not be exist
+            case 9: // may not be exist
                 // kageCanvas[y1][x1] = 0;
                 // kageCanvas[y2][x2] = 0;
                 break;
@@ -1623,7 +1628,8 @@ exports.dfDrawFont = dfDrawFont;
 },{"./kagecd":7,"./util":12}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Polygon = (function () {
+exports.Polygon = void 0;
+var Polygon = /** @class */ (function () {
     function Polygon(param) {
         var _this = this;
         // property
@@ -1649,14 +1655,14 @@ var Polygon = (function () {
             var _this = this;
             return this._array.map(function (_, i) { return _this.get(i); });
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Polygon.prototype, "length", {
         get: function () {
             return this._array.length;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     // method
@@ -1742,7 +1748,8 @@ exports.Polygon = Polygon;
 },{}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Polygons = (function () {
+exports.Polygons = void 0;
+var Polygons = /** @class */ (function () {
     function Polygons() {
         // property
         this.array = [];
@@ -1825,11 +1832,11 @@ var Polygons = (function () {
     };
     Polygons.prototype.generateEPS = function () {
         var buffer = "";
-        buffer += "%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 -208 1024 816\n%%Pages: 0\n%%Title: Kanji glyph\n%%Creator: GlyphWiki powered by KAGE system\n%%CreationDate: " + new Date() + "\n%%EndComments\n%%EndProlog\n";
+        buffer += "%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 -208 1024 816\n%%Pages: 0\n%%Title: Kanji glyph\n%%Creator: GlyphWiki powered by KAGE system\n%%CreationDate: " + new Date().toString() + "\n%%EndComments\n%%EndProlog\n";
         this.array.forEach(function (_a) {
             var array = _a.array;
             for (var j = 0; j < array.length; j++) {
-                buffer += (array[j].x * 5) + " " + (1000 - array[j].y * 5 - 200) + " ";
+                buffer += array[j].x * 5 + " " + (1000 - array[j].y * 5 - 200) + " ";
                 if (j === 0) {
                     buffer += "newpath\nmoveto\n";
                 }
@@ -1849,6 +1856,7 @@ exports.Polygons = Polygons;
 },{}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Stroke = exports.stretch = void 0;
 function stretch(dp, sp, p, min, max) {
     var p1;
     var p2;
@@ -1869,7 +1877,7 @@ function stretch(dp, sp, p, min, max) {
     return Math.floor(((p - p1) / (p2 - p1)) * (p4 - p3) + p3);
 }
 exports.stretch = stretch;
-var Stroke = (function () {
+var Stroke = /** @class */ (function () {
     function Stroke(data) {
         this.a1 = data[0], this.a2_100 = data[1], this.a3_100 = data[2], this.x1 = data[3], this.y1 = data[4], this.x2 = data[5], this.y2 = data[6], this.x3 = data[7], this.y3 = data[8], this.x4 = data[9], this.y4 = data[10];
         this.kirikuchiAdjustment = Math.floor(this.a2_100 / 100) % 10;
@@ -1906,7 +1914,7 @@ var Stroke = (function () {
         this.y1 = stretch(sy, sy2, this.y1, bminY, bmaxY);
         this.x2 = stretch(sx, sx2, this.x2, bminX, bmaxX);
         this.y2 = stretch(sy, sy2, this.y2, bminY, bmaxY);
-        if (this.a1 !== 99) {
+        if (this.a1 !== 99) { // always true
             this.x3 = stretch(sx, sx2, this.x3, bminX, bmaxX);
             this.y3 = stretch(sy, sy2, this.y3, bminY, bmaxY);
             this.x4 = stretch(sx, sx2, this.x4, bminX, bmaxX);
@@ -1934,7 +1942,7 @@ var Stroke = (function () {
                 maxY = Math.max(maxY, this.y3);
             // falls through
             case 1:
-            case 99:// unnecessary?
+            case 99: // unnecessary?
                 minX = Math.min(minX, this.x1, this.x2);
                 maxX = Math.max(maxX, this.x1, this.x2);
                 minY = Math.min(minY, this.y1, this.y2);
@@ -1951,6 +1959,8 @@ exports.Stroke = Stroke;
 },{}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.round = exports.ternarySearchMax = exports.ternarySearchMin = exports.cubicBezierDeriv = exports.cubicBezier = exports.quadraticBezierDeriv = exports.quadraticBezier = exports.normalize = exports.hypot = void 0;
+// eslint-disable-next-line @typescript-eslint/unbound-method
 exports.hypot = Math.hypot || (function (x, y) { return Math.sqrt(x * x + y * y); });
 /** Calculates a new vector with the same angle and a new magnitude. */
 function normalize(_a, magnitude) {
