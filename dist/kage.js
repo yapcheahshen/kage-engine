@@ -1387,12 +1387,74 @@ function dfDrawFont(kage, polygons, _a) {
     if (kage.kShotai === kage.kMincho) {
         switch (a1 % 100) { // ... no need to divide
             case 0:
+                if (a2_100 === 98 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+                    for (var _i = 0, _b = polygons.array; _i < _b.length; _i++) {
+                        var polygon = _b[_i];
+                        var inside = polygon.array.every(function (_a) {
+                            var x = _a.x, y = _a.y;
+                            return x1 <= x && x <= x2 && y1 <= y && y <= y2;
+                        });
+                        if (inside) {
+                            polygon.reflectX().translate(x1 + x2, 0);
+                        }
+                    }
+                }
+                else if (a2_100 === 97 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+                    for (var _c = 0, _d = polygons.array; _c < _d.length; _c++) {
+                        var polygon = _d[_c];
+                        var inside = polygon.array.every(function (_a) {
+                            var x = _a.x, y = _a.y;
+                            return x1 <= x && x <= x2 && y1 <= y && y <= y2;
+                        });
+                        if (inside) {
+                            polygon.reflectY().translate(y1 + y2, 0);
+                        }
+                    }
+                }
+                else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 1 && opt2 === 0 && mageAdjustment === 0) {
+                    for (var _e = 0, _f = polygons.array; _e < _f.length; _e++) {
+                        var polygon = _f[_e];
+                        var inside = polygon.array.every(function (_a) {
+                            var x = _a.x, y = _a.y;
+                            return x1 <= x && x <= x2 && y1 <= y && y <= y2;
+                        });
+                        if (inside) {
+                            // polygon.translate(-x1, -y2).rotate90().translate(x1, y1);
+                            polygon.rotate90().translate(x1 + y2, y1 - x1);
+                        }
+                    }
+                }
+                else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 2 && opt2 === 0 && mageAdjustment === 0) {
+                    for (var _g = 0, _h = polygons.array; _g < _h.length; _g++) {
+                        var polygon = _h[_g];
+                        var inside = polygon.array.every(function (_a) {
+                            var x = _a.x, y = _a.y;
+                            return x1 <= x && x <= x2 && y1 <= y && y <= y2;
+                        });
+                        if (inside) {
+                            polygon.rotate180().translate(x1 + x2, y1 + y2);
+                        }
+                    }
+                }
+                else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 3 && opt2 === 0 && mageAdjustment === 0) {
+                    for (var _j = 0, _k = polygons.array; _j < _k.length; _j++) {
+                        var polygon = _k[_j];
+                        var inside = polygon.array.every(function (_a) {
+                            var x = _a.x, y = _a.y;
+                            return x1 <= x && x <= x2 && y1 <= y && y <= y2;
+                        });
+                        if (inside) {
+                            // polygon.translate(-x1, -y1).rotate270().translate(x1, y2);
+                            polygon.rotate270().translate(x1 - y1, y2 + x1);
+                        }
+                    }
+                }
                 break;
             case 1: {
                 if (a3_100 === 4) {
-                    var _b = (x1 === x2 && y1 === y2)
+                    var _l = (x1 === x2 && y1 === y2)
                         ? [0, kage.kMage] // ?????
-                        : util_1.normalize([x1 - x2, y1 - y2], kage.kMage), dx1 = _b[0], dy1 = _b[1];
+                        : util_1.normalize([x1 - x2, y1 - y2], kage.kMage), dx1 = _l[0], dy1 = _l[1];
                     var tx1 = x2 + dx1;
                     var ty1 = y2 + dy1;
                     kagecd_1.cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
@@ -1406,11 +1468,11 @@ function dfDrawFont(kage, polygons, _a) {
             case 2: {
                 // case 12: // ... no need
                 if (a3_100 === 4) {
-                    var _c = (x2 === x3)
+                    var _m = (x2 === x3)
                         ? [0, -kage.kMage] // ?????
                         : (y2 === y3)
                             ? [-kage.kMage, 0] // ?????
-                            : util_1.normalize([x2 - x3, y2 - y3], kage.kMage), dx1 = _c[0], dy1 = _c[1];
+                            : util_1.normalize([x2 - x3, y2 - y3], kage.kMage), dx1 = _m[0], dy1 = _m[1];
                     var tx1 = x3 + dx1;
                     var ty1 = y3 + dy1;
                     kagecd_1.cdDrawCurve(kage, polygons, x1, y1, x2, y2, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
@@ -1425,14 +1487,14 @@ function dfDrawFont(kage, polygons, _a) {
                 break;
             }
             case 3: {
-                var _d = (x1 === x2 && y1 === y2)
+                var _o = (x1 === x2 && y1 === y2)
                     ? [0, kage.kMage] // ?????
-                    : util_1.normalize([x1 - x2, y1 - y2], kage.kMage), dx1 = _d[0], dy1 = _d[1];
+                    : util_1.normalize([x1 - x2, y1 - y2], kage.kMage), dx1 = _o[0], dy1 = _o[1];
                 var tx1 = x2 + dx1;
                 var ty1 = y2 + dy1;
-                var _e = (x2 === x3 && y2 === y3)
+                var _p = (x2 === x3 && y2 === y3)
                     ? [0, -kage.kMage] // ?????
-                    : util_1.normalize([x3 - x2, y3 - y2], kage.kMage), dx2 = _e[0], dy2 = _e[1];
+                    : util_1.normalize([x3 - x2, y3 - y2], kage.kMage), dx2 = _p[0], dy2 = _p[1];
                 var tx2 = x2 + dx2;
                 var ty2 = y2 + dy2;
                 kagecd_1.cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
@@ -1459,14 +1521,14 @@ function dfDrawFont(kage, polygons, _a) {
                 if (rate > 6) {
                     rate = 6;
                 }
-                var _f = (x1 === x2 && y1 === y2)
+                var _q = (x1 === x2 && y1 === y2)
                     ? [0, kage.kMage * rate] // ?????
-                    : util_1.normalize([x1 - x2, y1 - y2], kage.kMage * rate), dx1 = _f[0], dy1 = _f[1];
+                    : util_1.normalize([x1 - x2, y1 - y2], kage.kMage * rate), dx1 = _q[0], dy1 = _q[1];
                 var tx1 = x2 + dx1;
                 var ty1 = y2 + dy1;
-                var _g = (x2 === x3 && y2 === y3)
+                var _r = (x2 === x3 && y2 === y3)
                     ? [0, -kage.kMage * rate] // ?????
-                    : util_1.normalize([x3 - x2, y3 - y2], kage.kMage * rate), dx2 = _g[0], dy2 = _g[1];
+                    : util_1.normalize([x3 - x2, y3 - y2], kage.kMage * rate), dx2 = _r[0], dy2 = _r[1];
                 var tx2 = x2 + dx2;
                 var ty2 = y2 + dy2;
                 kagecd_1.cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
@@ -1485,11 +1547,11 @@ function dfDrawFont(kage, polygons, _a) {
             }
             case 6: {
                 if (a3_100 === 4) {
-                    var _h = (x3 === x4)
+                    var _s = (x3 === x4)
                         ? [0, -kage.kMage] // ?????
                         : (y3 === y4)
                             ? [-kage.kMage, 0] // ?????
-                            : util_1.normalize([x3 - x4, y3 - y4], kage.kMage), dx1 = _h[0], dy1 = _h[1];
+                            : util_1.normalize([x3 - x4, y3 - y4], kage.kMage), dx1 = _s[0], dy1 = _s[1];
                     var tx1 = x4 + dx1;
                     var ty1 = y4 + dy1;
                     kagecd_1.cdDrawBezier(kage, polygons, x1, y1, x2, y2, x3, y3, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
@@ -1522,9 +1584,9 @@ function dfDrawFont(kage, polygons, _a) {
                 break;
             case 1: {
                 if (a3_100 === 4 && opt2 === 0 && mageAdjustment === 0) {
-                    var _j = (x1 === x2 && y1 === y2)
+                    var _t = (x1 === x2 && y1 === y2)
                         ? [0, kage.kMage] // ?????
-                        : util_1.normalize([x1 - x2, y1 - y2], kage.kMage), dx1 = _j[0], dy1 = _j[1];
+                        : util_1.normalize([x1 - x2, y1 - y2], kage.kMage), dx1 = _t[0], dy1 = _t[1];
                     var tx1 = x2 + dx1;
                     var ty1 = y2 + dy1;
                     kagecd_1.cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
@@ -1538,11 +1600,11 @@ function dfDrawFont(kage, polygons, _a) {
             case 2:
             case 12: {
                 if (a3_100 === 4 && opt2 === 0 && mageAdjustment === 0) {
-                    var _k = (x2 === x3)
+                    var _u = (x2 === x3)
                         ? [0, -kage.kMage] // ?????
                         : (y2 === y3)
                             ? [-kage.kMage, 0] // ?????
-                            : util_1.normalize([x2 - x3, y2 - y3], kage.kMage), dx1 = _k[0], dy1 = _k[1];
+                            : util_1.normalize([x2 - x3, y2 - y3], kage.kMage), dx1 = _u[0], dy1 = _u[1];
                     var tx1 = x3 + dx1;
                     var ty1 = y3 + dy1;
                     kagecd_1.cdDrawCurve(kage, polygons, x1, y1, x2, y2, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
@@ -1562,14 +1624,14 @@ function dfDrawFont(kage, polygons, _a) {
                 break;
             }
             case 3: {
-                var _l = (x1 === x2 && y1 === y2)
+                var _v = (x1 === x2 && y1 === y2)
                     ? [0, kage.kMage] // ?????
-                    : util_1.normalize([x1 - x2, y1 - y2], kage.kMage), dx1 = _l[0], dy1 = _l[1];
+                    : util_1.normalize([x1 - x2, y1 - y2], kage.kMage), dx1 = _v[0], dy1 = _v[1];
                 var tx1 = x2 + dx1;
                 var ty1 = y2 + dy1;
-                var _m = (x2 === x3 && y2 === y3)
+                var _w = (x2 === x3 && y2 === y3)
                     ? [0, -kage.kMage] // ?????
-                    : util_1.normalize([x3 - x2, y3 - y2], kage.kMage), dx2 = _m[0], dy2 = _m[1];
+                    : util_1.normalize([x3 - x2, y3 - y2], kage.kMage), dx2 = _w[0], dy2 = _w[1];
                 var tx2 = x2 + dx2;
                 var ty2 = y2 + dy2;
                 kagecd_1.cdDrawLine(kage, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
@@ -1738,8 +1800,24 @@ var Polygon = /** @class */ (function () {
         });
         return this; // for chaining
     };
+    Polygon.prototype.rotate90 = function () {
+        this._array.forEach(function (point) {
+            var x = point.x, y = point.y;
+            point.x = -y;
+            point.y = x;
+        });
+        return this;
+    };
     Polygon.prototype.rotate180 = function () {
         return this.reflectX().reflectY(); // for chaining
+    };
+    Polygon.prototype.rotate270 = function () {
+        this._array.forEach(function (point) {
+            var x = point.x, y = point.y;
+            point.x = y;
+            point.y = -x;
+        });
+        return this;
     };
     return Polygon;
 }());
