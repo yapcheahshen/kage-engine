@@ -81,7 +81,7 @@ export class Stroke {
 	}
 
 	public getControlSegments() {
-		const res: Array<[number, number, number, number]> = [];
+		const res: [number, number, number, number][] = [];
 		switch (this.a1) {
 			case 0:
 			case 8:

@@ -5,7 +5,7 @@ export function divide_curve(
 	_kage: Kage,
 	x1: number, y1: number,
 	sx1: number, sy1: number,
-	x2: number, y2: number, curve: Array<[number, number]>): { index: number, off: [number[], number[]] } {
+	x2: number, y2: number, curve: [number, number][]): { index: number, off: [number[], number[]] } {
 	const rate = 0.5;
 	const cut = Math.floor(curve.length * rate);
 	const cut_rate = cut / curve.length;
@@ -26,7 +26,7 @@ export function divide_curve(
 // ------------------------------------------------------------------
 export function find_offcurve(
 	_kage: Kage,
-	curve: Array<[number, number]>, sx: number, sy: number) {
+	curve: [number, number][], sx: number, sy: number) {
 	const [nx1, ny1] = curve[0];
 	const [nx2, ny2] = curve[curve.length - 1];
 
@@ -59,7 +59,7 @@ export function get_candidate(
 	a1: number, a2: number,
 	x1: number, y1: number, sx1: number, sy1: number, x2: number, y2: number,
 	opt3: number, opt4: number) {
-	const curve: [Array<[number, number]>, Array<[number, number]>] = [[], []];
+	const curve: [[number, number][], [number, number][]] = [[], []];
 
 	for (let tt = 0; tt <= 1000; tt += kage.kRate) {
 		const t = tt / 1000;

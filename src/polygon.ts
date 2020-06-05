@@ -6,10 +6,10 @@ export class Polygon {
 	public get length() {
 		return this._array.length;
 	}
-	protected _array: Array<{ x: number; y: number; off: boolean; }>;
+	protected _array: { x: number; y: number; off: boolean; }[];
 	constructor(number?: number);
-	constructor(array: Array<{ x: number; y: number; off?: boolean; }>);
-	constructor(param?: number | Array<{ x: number; y: number; off?: boolean; }>) {
+	constructor(array: { x: number; y: number; off?: boolean; }[]);
+	constructor(param?: number | { x: number; y: number; off?: boolean; }[]) {
 		// property
 		this._array = [];
 		// initialize
