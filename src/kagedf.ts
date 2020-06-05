@@ -15,6 +15,44 @@ export function dfDrawFont(
 	if (kage.kShotai === kage.kMincho) {
 		switch (a1 % 100) { // ... no need to divide
 			case 0:
+				if (a2_100 === 98 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+					for (const polygon of polygons.array) {
+						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
+						if (inside) {
+							polygon.reflectX().translate(x1 + x2, 0);
+						}
+					}
+				} else if (a2_100 === 97 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+					for (const polygon of polygons.array) {
+						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
+						if (inside) {
+							polygon.reflectY().translate(y1 + y2, 0);
+						}
+					}
+				} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 1 && opt2 === 0 && mageAdjustment === 0) {
+					for (const polygon of polygons.array) {
+						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
+						if (inside) {
+							// polygon.translate(-x1, -y2).rotate90().translate(x1, y1);
+							polygon.rotate90().translate(x1 + y2, y1 - x1);
+						}
+					}
+				} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 2 && opt2 === 0 && mageAdjustment === 0) {
+					for (const polygon of polygons.array) {
+						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
+						if (inside) {
+							polygon.rotate180().translate(x1 + x2, y1 + y2);
+						}
+					}
+				} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 3 && opt2 === 0 && mageAdjustment === 0) {
+					for (const polygon of polygons.array) {
+						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
+						if (inside) {
+							// polygon.translate(-x1, -y1).rotate270().translate(x1, y2);
+							polygon.rotate270().translate(x1 - y1, y2 + x1);
+						}
+					}
+				}
 				break;
 			case 1: {
 				if (a3_100 === 4) {
