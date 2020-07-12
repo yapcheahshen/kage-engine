@@ -5,7 +5,9 @@
 		"es6": true,
 		"node": true
 	},
-	"parser": "babel-eslint",
+	"parserOptions": {
+		"sourceType": "module"
+	},
 	"extends": "eslint:recommended",
 	"rules": {
 		"accessor-pairs": "error",
@@ -119,6 +121,7 @@
 		"no-div-regex": "error",
 		"no-duplicate-imports": "error",
 		"no-else-return": "error",
+		"no-empty": "off",
 		"no-empty-function": "error",
 		"no-eq-null": "error",
 		"no-eval": "error",
@@ -126,6 +129,7 @@
 		"no-extra-bind": "error",
 		"no-extra-label": "error",
 		"no-extra-parens": "off",
+		"no-fallthrough": "off",
 		"no-floating-decimal": "error",
 		"no-implicit-globals": "error",
 		"no-implied-eval": "error",
@@ -165,6 +169,7 @@
 		"no-process-exit": "error",
 		"no-proto": "error",
 		"no-prototype-builtins": "error",
+		"no-redeclare": "off",
 		"no-restricted-globals": "error",
 		"no-restricted-imports": "error",
 		"no-restricted-modules": "error",
@@ -189,6 +194,7 @@
 		"no-underscore-dangle": "error",
 		"no-unmodified-loop-condition": "error",
 		"no-unneeded-ternary": "error",
+		"no-unused-vars": "off",
 		"no-unused-expressions": "error",
 		"no-use-before-define": "off",
 		"no-useless-call": "error",

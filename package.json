@@ -22,9 +22,9 @@
   },
   "homepage": "https://github.com/kurgm/kage-engine#readme",
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-eslint": "^7.2.3",
-    "babel-preset-es2015": "^6.24.1",
-    "eslint": "^4.3.0"
+    "@babel/cli": "^7.10.4",
+    "@babel/core": "^7.10.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+    "eslint": "^7.4.0"
   }
 }
