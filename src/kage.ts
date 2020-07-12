@@ -143,12 +143,15 @@ export class Kage {
 	public makeGlyphSeparated(data: string[]): Polygons[] {
 		const strokesArrays = data.map((subdata) => this.getEachStrokes(subdata));
 		this.adjustStrokes(strokesArrays.reduce((left, right) => left.concat(right), []));
+		const polygons = new Polygons();
 		return strokesArrays.map((strokesArray) => {
-			const polygons = new Polygons();
+			const startIndex = polygons.array.length;
 			strokesArray.forEach((stroke) => {
 				dfDrawFont(this, polygons, stroke);
 			});
-			return polygons;
+			const result = new Polygons();
+			result.array = polygons.array.slice(startIndex);
+			return result;
 		});
 	}
 
