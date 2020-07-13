@@ -1,4 +1,5 @@
 import {cdDrawBezier, cdDrawCurve, cdDrawLine} from "./kagecd";
+import {round} from "./2d";
 
 export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x4, y4) {
 	var tx1,
@@ -26,7 +27,7 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 						}
 						if (inside) {
 							for (var j = 0; j < polygons.array[i].array.length; j++) {
-								polygons.array[i].array[j].x = x2 - (polygons.array[i].array[j].x - x1);
+								polygons.array[i].array[j].x = round(x2 - (polygons.array[i].array[j].x - x1));
 								polygons.array[i].array[j].x = Math.floor(polygons.array[i].array[j].x * 10) / 10;
 							}
 						}
@@ -42,7 +43,7 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 						}
 						if (inside) {
 							for (var j = 0; j < polygons.array[i].array.length; j++) {
-								polygons.array[i].array[j].y = y2 - (polygons.array[i].array[j].y - y1);
+								polygons.array[i].array[j].y = round(y2 - (polygons.array[i].array[j].y - y1));
 								polygons.array[i].array[j].y = Math.floor(polygons.array[i].array[j].y * 10) / 10;
 							}
 						}
@@ -60,8 +61,8 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 							for (var j = 0; j < polygons.array[i].array.length; j++) {
 								var x = polygons.array[i].array[j].x;
 								var y = polygons.array[i].array[j].y;
-								polygons.array[i].array[j].x = x1 + (y2 - y);
-								polygons.array[i].array[j].y = y1 + (x - x1);
+								polygons.array[i].array[j].x = round(x1 + (y2 - y));
+								polygons.array[i].array[j].y = round(y1 + (x - x1));
 								polygons.array[i].array[j].x = Math.floor(polygons.array[i].array[j].x * 10) / 10;
 								polygons.array[i].array[j].y = Math.floor(polygons.array[i].array[j].y * 10) / 10;
 							}
@@ -80,8 +81,8 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 							for (var j = 0; j < polygons.array[i].array.length; j++) {
 								var x = polygons.array[i].array[j].x;
 								var y = polygons.array[i].array[j].y;
-								polygons.array[i].array[j].x = x2 - (x - x1);
-								polygons.array[i].array[j].y = y2 - (y - y1);
+								polygons.array[i].array[j].x = round(x2 - (x - x1));
+								polygons.array[i].array[j].y = round(y2 - (y - y1));
 								polygons.array[i].array[j].x = Math.floor(polygons.array[i].array[j].x * 10) / 10;
 								polygons.array[i].array[j].y = Math.floor(polygons.array[i].array[j].y * 10) / 10;
 							}
@@ -100,8 +101,8 @@ export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x
 							for (var j = 0; j < polygons.array[i].array.length; j++) {
 								var x = polygons.array[i].array[j].x;
 								var y = polygons.array[i].array[j].y;
-								polygons.array[i].array[j].x = x1 + (y - y1);
-								polygons.array[i].array[j].y = y2 - (x - x1);
+								polygons.array[i].array[j].x = round(x1 + (y - y1));
+								polygons.array[i].array[j].y = round(y2 - (x - x1));
 								polygons.array[i].array[j].x = Math.floor(polygons.array[i].array[j].x * 10) / 10;
 								polygons.array[i].array[j].y = Math.floor(polygons.array[i].array[j].y * 10) / 10;
 							}
