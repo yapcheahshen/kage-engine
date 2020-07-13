@@ -68,14 +68,11 @@ function cdDrawCurveU(
 	x2 += dx2;
 	y2 += dy2;
 
-	let hosomi = 0.5;
-	if (hypot(x2 - x1, y2 - y1) < 50) {
-		hosomi += 0.4 * (1 - hypot(x2 - x1, y2 - y1) / 50);
-	}
+	const isQuadratic = sx1 === sx2 && sy1 === sy2;
 
 	// ---------------------------------------------------------------
 
-	if (sx1 === sx2 && sy1 === sy2 && kage.kUseCurve) {
+	if (isQuadratic && kage.kUseCurve) {
 		// Spline
 		// generating fatten curve -- begin
 		const kage2 = new Kage();
@@ -124,22 +121,32 @@ function cdDrawCurveU(
 		polygons.push(poly);
 		// generating fatten curve -- end
 	} else {
+		let hosomi = 0.5;
+		if (hypot(x2 - x1, y2 - y1) < 50) {
+			hosomi += 0.4 * (1 - hypot(x2 - x1, y2 - y1) / 50);
+		}
+	
 		const poly = new Polygon();
 		const poly2 = new Polygon();
-		if (sx1 === sx2 && sy1 === sy2) {
-			// Spline
-			for (let tt = 0; tt <= 1000; tt += kage.kRate) {
-				const t = tt / 1000;
+		for (let tt = 0; tt <= 1000; tt += kage.kRate) {
+			const t = tt / 1000;
 
+			let x;
+			let y;
+			let ix;
+			let iy;
+			let deltad;
+			if (isQuadratic) {
+				// Spline
 				// calculate a dot
-				const x = quadraticBezier(x1, sx1, x2, t);
-				const y = quadraticBezier(y1, sy1, y2, t);
+				x = quadraticBezier(x1, sx1, x2, t);
+				y = quadraticBezier(y1, sy1, y2, t);
 
 				// KATAMUKI of vector by BIBUN
-				const ix = quadraticBezierDeriv(x1, sx1, x2, t);
-				const iy = quadraticBezierDeriv(y1, sy1, y2, t);
+				ix = quadraticBezierDeriv(x1, sx1, x2, t);
+				iy = quadraticBezierDeriv(y1, sy1, y2, t);
 
-				let deltad
+				deltad
 					= a1 === 7 && a2 === 0 // L2RD: fatten
 						? t ** hosomi * kage.kL2RDfatten
 						: a1 === 7
@@ -149,32 +156,15 @@ function cdDrawCurveU(
 								: opt3 > 0 || opt4 > 0
 									? ((kage.kMinWidthT - opt3 / 2) - (opt4 - opt3) / 2 * t) / kage.kMinWidthT
 									: 1;
-
-				if (deltad < 0.15) {
-					deltad = 0.15;
-				}
-
-				// line SUICHOKU by vector
-				const [ia, ib] = (round(ix) === 0 && round(iy) === 0)
-					? [-kMinWidthT * deltad, 0] // ?????
-					: normalize([-iy, ix], kMinWidthT * deltad);
-
-				// copy to polygon structure
-				poly.push(x - ia, y - ib);
-				poly2.push(x + ia, y + ib);
-			}
-		} else { // Bezier
-			for (let tt = 0; tt <= 1000; tt += kage.kRate) {
-				const t = tt / 1000;
-
+			} else { // Bezier
 				// calculate a dot
-				const x = cubicBezier(x1, sx1, sx2, x2, t);
-				const y = cubicBezier(y1, sy1, sy2, y2, t);
+				x = cubicBezier(x1, sx1, sx2, x2, t);
+				y = cubicBezier(y1, sy1, sy2, y2, t);
 				// KATAMUKI of vector by BIBUN
-				const ix = cubicBezierDeriv(x1, sx1, sx2, x2, t);
-				const iy = cubicBezierDeriv(y1, sy1, sy2, y2, t);
+				ix = cubicBezierDeriv(x1, sx1, sx2, x2, t);
+				iy = cubicBezierDeriv(y1, sy1, sy2, y2, t);
 
-				let deltad
+				deltad
 					= a1 === 7 && a2 === 0 // L2RD: fatten
 						? t ** hosomi * kage.kL2RDfatten
 						: a1 === 7
@@ -182,34 +172,40 @@ function cdDrawCurveU(
 							: a2 === 7
 								? (1 - t) ** hosomi
 								: 1;
-
-				if (deltad < 0.15) {
-					deltad = 0.15;
-				}
-
-				// line SUICHOKU by vector
-				const [ia, ib] = (round(ix) === 0 && round(iy) === 0)
-					? [-kMinWidthT * deltad, 0] // ?????
-					: normalize([-iy, ix], kMinWidthT * deltad);
-
-				// copy to polygon structure
-				poly.push(x - ia, y - ib);
-				poly2.push(x + ia, y + ib);
 			}
+
+			if (deltad < 0.15) {
+				deltad = 0.15;
+			}
+
+			// line SUICHOKU by vector
+			const [ia, ib] = (round(ix) === 0 && round(iy) === 0)
+				? [-kMinWidthT * deltad, 0] // ?????
+				: normalize([-iy, ix], kMinWidthT * deltad);
+
+			// copy to polygon structure
+			poly.push(x - ia, y - ib);
+			poly2.push(x + ia, y + ib);
 		}
 
 		// suiheisen ni setsuzoku
-		if (a1 === 132) {
+		if (a1 === 132 || a1 === 22 && (isQuadratic ? (y1 > y2) : (x1 > sx1))) {
 			for (let index = 0, length = poly2.length; index + 1 < length; index++) {
 				const point1 = poly2.get(index);
 				const point2 = poly2.get(index + 1);
 				if (point1.y <= y1 && y1 <= point2.y) {
-					const newx1 = point2.x + (y1 - point2.y) * (point1.x - point2.x) / (point1.y - point2.y);
+					const newx1 = point2.x + (point1.x - point2.x) * (y1 - point2.y) / (point1.y - point2.y);
 					const newy1 = y1;
 					const point3 = poly.get(0);
 					const point4 = poly.get(1);
-					const newx2 = point3.x + (y1 - point3.y) * (point3.x - point4.x) / (point3.y - point4.y);
-					const newy2 = y1;
+					const newx2 =
+						(a1 === 132) // ?????
+							? point3.x + (point4.x - point3.x) * (y1 - point3.y) / (point4.y - point3.y)
+							: point3.x + (point4.x - point3.x + 1) * (y1 - point3.y) / (point4.y - point3.y); // "+ 1"?????
+					const newy2 =
+						(a1 === 132) // ?????
+							? y1
+							: y1 + 1; // "+ 1"?????
 
 					for (let i = 0; i < index; i++) {
 						poly2.shift();
@@ -221,28 +217,6 @@ function cdDrawCurveU(
 			}
 		}
 
-		// suiheisen ni setsuzoku 2
-		if (a1 === 22 && (sx1 === sx2 && sy1 === sy2 && y1 > y2 || !(sx1 === sx2 && sy1 === sy2) && x1 > sx1)) {
-			for (let index = 0, length = poly2.length; index + 1 < length; index++) {
-				const point1 = poly2.get(index);
-				const point2 = poly2.get(index + 1);
-				if (point1.y <= y1 && y1 <= point2.y) {
-					const newx1 = point2.x + (point1.x - point2.x) * (point2.y - y1) / (point2.y - point1.y);
-					const newy1 = y1;
-					const point3 = poly.get(0);
-					const point4 = poly.get(1);
-					const newx2 = point3.x + (point3.x - point4.x - 1) * (point3.y - y1) / (point4.y - point3.y);
-					const newy2 = y1 + 1;
-
-					for (let i = 0; i < index; i++) {
-						poly2.shift();
-					}
-					poly2.set(0, newx1, newy1);
-					poly.unshift(newx2, newy2);
-					break;
-				}
-			}
-		}
 		poly2.reverse();
 		poly.concat(poly2);
 		polygons.push(poly);
@@ -549,14 +523,6 @@ export function cdDrawLine(
 					y2 + cosrad * kMinWidthT + sinrad * (kage.kAdjustKakatoR[opt2] + kMinWidthT));
 				break;
 			case 24: // for T/H design
-				if (x1 === x2) {
-					poly0.set(1, x2 + kMinWidthT, y2 + kage.kMinWidthY);
-					poly0.set(2, x2 - kMinWidthT, y2 + kage.kMinWidthY);
-				} else {
-					poly0.set(1, x2 + kMinWidthT / sinrad, y2);
-					poly0.set(2, x2 - kMinWidthT / sinrad, y2);
-				}
-				break;
 			case 32:
 				if (x1 === x2) {
 					poly0.set(1, x2 + kMinWidthT, y2 + kage.kMinWidthY);

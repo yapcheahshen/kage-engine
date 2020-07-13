@@ -17,9 +17,7 @@ function cdDrawCurveU(
 			: normalize([x1 - sx1, y1 - sy1], kage.kWidth);
 		x1 += dx1;
 		y1 += dy1;
-	}
-
-	if (a1 % 10 === 3) {
+	} else if (a1 % 10 === 3) {
 		const [dx1, dy1] = (x1 === sx1 && y1 === sy1)
 			? [0, kage.kWidth * kage.kKakato] // ?????
 			: normalize([x1 - sx1, y1 - sy1], kage.kWidth * kage.kKakato);
@@ -33,15 +31,15 @@ function cdDrawCurveU(
 			: normalize([x2 - sx2, y2 - sy2], kage.kWidth);
 		x2 += dx2;
 		y2 += dy2;
-	}
-
-	if (a2 % 10 === 3) {
+	} else if (a2 % 10 === 3) {
 		const [dx2, dy2] = (sx2 === x2 && sy2 === y2)
 			? [0, -kage.kWidth * kage.kKakato] // ?????
 			: normalize([x2 - sx2, y2 - sy2], kage.kWidth * kage.kKakato);
 		x2 += dx2;
 		y2 += dy2;
 	}
+
+	const isQuadratic = sx1 === sx2 && sy1 === sy2;
 
 	const poly = new Polygon();
 	const poly2 = new Polygon();
@@ -53,7 +51,7 @@ function cdDrawCurveU(
 		let y;
 		let ix;
 		let iy;
-		if (sx1 === sx2 && sy1 === sy2) {
+		if (isQuadratic) {
 			// calculating each point
 			x = quadraticBezier(x1, sx1, x2, t);
 			y = quadraticBezier(y1, sy1, y2, t);
@@ -125,20 +123,22 @@ export function cdDrawLine(
 		a1 = ta1;
 		a2 = ta2;
 	}
-	const [dx, dy] = (x1 === x2 && y1 === y2) ? [0, kage.kWidth] : normalize([x2 - x1, y2 - y1], kage.kWidth);
+	const [dx, dy] = (x1 === x2 && y1 === y2)
+		? [0, kage.kWidth] // ?????
+		: normalize([x2 - x1, y2 - y1], kage.kWidth);
+
 	if (a1 % 10 === 2) {
 		x1 -= dx;
 		y1 -= dy;
-	}
-	if (a2 % 10 === 2) {
-		x2 += dx;
-		y2 += dy;
-	}
-	if (a1 % 10 === 3) {
+	} else if (a1 % 10 === 3) {
 		x1 -= dx * kage.kKakato;
 		y1 -= dy * kage.kKakato;
 	}
-	if (a2 % 10 === 3) {
+
+	if (a2 % 10 === 2) {
+		x2 += dx;
+		y2 += dy;
+	} else if (a2 % 10 === 3) {
 		x2 += dx * kage.kKakato;
 		y2 += dy * kage.kKakato;
 	}
