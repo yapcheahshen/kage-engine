@@ -92,6 +92,14 @@ export class Polygon {
 		return this.transformMatrix(x, -y, y, x);
 	}
 
+	public scale(factor: number): this {
+		this._array.forEach((point) => {
+			point.x *= factor;
+			point.y *= factor;
+		});
+		return this; // for chaining
+	}
+
 	public reflectX(): this {
 		this._array.forEach((point) => {
 			point.x *= -1;
@@ -116,7 +124,7 @@ export class Polygon {
 	}
 
 	public rotate180(): this {
-		return this.reflectX().reflectY(); // for chaining
+		return this.scale(-1); // for chaining
 	}
 
 	public rotate270(): this {
@@ -128,4 +136,13 @@ export class Polygon {
 		return this;
 	}
 
+	// for backward compatibility...
+	public floor(): this {
+		this._array.forEach((point) => {
+			const { x, y } = point;
+			point.x = Math.floor(x);
+			point.y = Math.floor(y);
+		});
+		return this;
+	}
 }

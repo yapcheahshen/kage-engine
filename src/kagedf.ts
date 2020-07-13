@@ -19,14 +19,16 @@ export function dfDrawFont(
 					for (const polygon of polygons.array) {
 						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
 						if (inside) {
-							polygon.reflectX().translate(x1 + x2, 0);
+							const dx = x1 + x2, dy = 0;
+							polygon.scale(10).floor().reflectX().translate(dx * 10, dy * 10).scale(0.1);
 						}
 					}
 				} else if (a2_100 === 97 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
 					for (const polygon of polygons.array) {
 						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
 						if (inside) {
-							polygon.reflectY().translate(0, y1 + y2);
+							const dx = 0, dy = y1 + y2;
+							polygon.scale(10).floor().reflectY().translate(dx * 10, dy * 10).scale(0.1);
 						}
 					}
 				} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 1 && opt2 === 0 && mageAdjustment === 0) {
@@ -34,14 +36,16 @@ export function dfDrawFont(
 						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
 						if (inside) {
 							// polygon.translate(-x1, -y2).rotate90().translate(x1, y1);
-							polygon.rotate90().translate(x1 + y2, y1 - x1);
+							const dx = x1 + y2, dy = y1 - x1;
+							polygon.scale(10).floor().rotate90().translate(dx * 10, dy * 10).scale(0.1);
 						}
 					}
 				} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 2 && opt2 === 0 && mageAdjustment === 0) {
 					for (const polygon of polygons.array) {
 						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
 						if (inside) {
-							polygon.rotate180().translate(x1 + x2, y1 + y2);
+							const dx = x1 + x2, dy = y1 + y2;
+							polygon.scale(10).floor().rotate180().translate(dx * 10, dy * 10).scale(0.1);
 						}
 					}
 				} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 3 && opt2 === 0 && mageAdjustment === 0) {
@@ -49,7 +53,8 @@ export function dfDrawFont(
 						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
 						if (inside) {
 							// polygon.translate(-x1, -y1).rotate270().translate(x1, y2);
-							polygon.rotate270().translate(x1 - y1, y2 + x1);
+							const dx = x1 - y1, dy = y2 + x1;
+							polygon.scale(10).floor().rotate270().translate(dx * 10, dy * 10).scale(0.1);
 						}
 					}
 				}
