@@ -1,9 +1,9 @@
 import { isCrossBoxWithOthers, isCrossWithOthers } from "./2d";
 import { Buhin } from "./buhin";
-import { dfDrawFont } from "./kagedf";
 import { Polygons } from "./polygons";
 import { stretch, Stroke } from "./stroke";
 import { hypot, normalize, round } from "./util";
+import { Font, select as selectFont } from "./font";
 
 export enum KShotai {
 	kMincho = 0,
@@ -15,8 +15,15 @@ export class Kage {
 	public kMincho = KShotai.kMincho;
 	public kGothic = KShotai.kGothic;
 
+	public kFont: Font;
+
 	// properties
-	public kShotai: KShotai = KShotai.kMincho;
+	public get kShotai(): KShotai {
+		return this.kFont.shotai;
+	}
+	public set kShotai(shotai: KShotai) {
+		this.kFont = selectFont(shotai);
+	}
 	public kRate: number = 100; // must divide 1000
 	public kMinWidthY: number;
 	public kMinWidthT: number;
@@ -58,6 +65,7 @@ export class Kage {
 	public stretch = stretch;
 
 	constructor(size?: number) {
+		this.kShotai = KShotai.kMincho;
 		if (size === 1) {
 			this.kMinWidthY = 1.2;
 			this.kMinWidthT = 3.6;
@@ -121,7 +129,7 @@ export class Kage {
 			const strokesArray = this.getEachStrokes(data);
 			this.adjustStrokes(strokesArray);
 			strokesArray.forEach((stroke) => {
-				dfDrawFont(this, polygons, stroke);
+				this.kFont.draw(this, polygons, stroke);
 			});
 		}
 	}
@@ -133,7 +141,7 @@ export class Kage {
 			this.adjustStrokes(strokesArray);
 			strokesArray.forEach((stroke) => {
 				const polygons = new Polygons();
-				dfDrawFont(this, polygons, stroke);
+				this.kFont.draw(this, polygons, stroke);
 				result.push(polygons);
 			});
 		}
@@ -147,7 +155,7 @@ export class Kage {
 		return strokesArrays.map((strokesArray) => {
 			const startIndex = polygons.array.length;
 			strokesArray.forEach((stroke) => {
-				dfDrawFont(this, polygons, stroke);
+				this.kFont.draw(this, polygons, stroke);
 			});
 			const result = new Polygons();
 			result.array = polygons.array.slice(startIndex);

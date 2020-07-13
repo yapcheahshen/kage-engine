@@ -1,8 +1,8 @@
-import { divide_curve, find_offcurve, get_candidate } from "./curve";
-import { Kage } from "./kage";
-import { Polygon } from "./polygon";
-import { Polygons } from "./polygons";
-import { cubicBezier, cubicBezierDeriv, hypot, normalize, quadraticBezier, quadraticBezierDeriv, round } from "./util";
+import { divide_curve, find_offcurve, get_candidate } from "../../curve";
+import { Kage } from "../../kage";
+import { Polygon } from "../../polygon";
+import { Polygons } from "../../polygons";
+import { cubicBezier, cubicBezierDeriv, hypot, normalize, quadraticBezier, quadraticBezierDeriv, round } from "../../util";
 
 function cdDrawCurveU(
 	kage: Kage, polygons: Polygons,

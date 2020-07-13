@@ -1,10 +1,12 @@
-import { Kage } from "./kage";
-import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./kagecd";
-import { Polygons } from "./polygons";
-import { Stroke } from "./stroke";
-import { hypot, normalize } from "./util";
+import { Kage, KShotai } from "../../kage";
+import { Polygons } from "../../polygons";
+import { Stroke } from "../../stroke";
+import { hypot, normalize } from "../../util";
+import { Font } from "..";
 
-export function dfDrawFont(
+import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
+
+function dfDrawFont(
 	kage: Kage, polygons: Polygons,
 	{
 		a1, x1, y1, x2, y2, x3, y3, x4, y4,
@@ -323,3 +325,12 @@ export function dfDrawFont(
 		}
 	}
 }
+
+class Mincho implements Font {
+	public shotai = KShotai.kMincho;
+	public draw(kage: Kage, polygons: Polygons, stroke: Stroke): void {
+		dfDrawFont(kage, polygons, stroke);
+	}
+}
+
+export default Mincho;
