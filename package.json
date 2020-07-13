@@ -13,7 +13,7 @@
     "build": "npm run build:ts && npm run build:browser",
     "build:ts": "tsc",
     "build:browser": "mkdir -p dist && browserify lib/browser.js -o dist/kage.js",
-    "clean": "rm lib/* dist/*",
+    "clean": "rm -r lib dist",
     "lint": "eslint 'src/**/*.ts'",
     "test": "node test/index.js"
   },
