@@ -26,7 +26,7 @@ export function dfDrawFont(
 					for (const polygon of polygons.array) {
 						const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
 						if (inside) {
-							polygon.reflectY().translate(y1 + y2, 0);
+							polygon.reflectY().translate(0, y1 + y2);
 						}
 					}
 				} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 1 && opt2 === 0 && mageAdjustment === 0) {
