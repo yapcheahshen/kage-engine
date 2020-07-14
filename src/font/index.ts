@@ -7,6 +7,7 @@ import Gothic from "./gothic";
 export interface Font {
 	shotai: KShotai;
 	draw(kage: Kage, polygons: Polygons, stroke: Stroke): void;
+	adjustStrokes(kage: Kage, strokes: Stroke[]): Stroke[];
 }
 
 export { default as Mincho } from "./mincho";

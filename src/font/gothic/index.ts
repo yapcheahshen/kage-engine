@@ -5,6 +5,7 @@ import { normalize } from "../../util";
 import { Font } from "..";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
+import Mincho from "../mincho";
 
 function dfDrawFont(
 	kage: Kage, polygons: Polygons,
@@ -118,7 +119,7 @@ function dfDrawFont(
 	}
 }
 
-class Gothic implements Font {
+class Gothic extends Mincho implements Font {
 	public shotai = KShotai.kGothic;
 	public draw(kage: Kage, polygons: Polygons, stroke: Stroke): void {
 		dfDrawFont(kage, polygons, stroke);

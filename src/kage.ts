@@ -1,8 +1,6 @@
-import { isCrossBoxWithOthers, isCrossWithOthers } from "./2d";
 import { Buhin } from "./buhin";
 import { Polygons } from "./polygons";
 import { stretch, Stroke } from "./stroke";
-import { hypot, normalize, round } from "./util";
 import { Font, select as selectFont } from "./font";
 
 export enum KShotai {
@@ -127,7 +125,7 @@ export class Kage {
 	public makeGlyph2(polygons: Polygons, data: string): void {
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
-			this.adjustStrokes(strokesArray);
+			this.kFont.adjustStrokes(this, strokesArray);
 			strokesArray.forEach((stroke) => {
 				this.kFont.draw(this, polygons, stroke);
 			});
@@ -138,7 +136,7 @@ export class Kage {
 		const result: Polygons[] = [];
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
-			this.adjustStrokes(strokesArray);
+			this.kFont.adjustStrokes(this, strokesArray);
 			strokesArray.forEach((stroke) => {
 				const polygons = new Polygons();
 				this.kFont.draw(this, polygons, stroke);
@@ -150,7 +148,7 @@ export class Kage {
 
 	public makeGlyphSeparated(data: string[]): Polygons[] {
 		const strokesArrays = data.map((subdata) => this.getEachStrokes(subdata));
-		this.adjustStrokes(strokesArrays.reduce((left, right) => left.concat(right), []));
+		this.kFont.adjustStrokes(this, strokesArrays.reduce((left, right) => left.concat(right), []));
 		const polygons = new Polygons();
 		return strokesArrays.map((strokesArray) => {
 			const startIndex = polygons.array.length;
@@ -248,206 +246,5 @@ export class Kage {
 			maxY = Math.max(maxY, smaxY);
 		});
 		return { minX, maxX, minY, maxY };
-	}
-
-	protected adjustStrokes(strokesArray: Stroke[]): Stroke[] {
-		this.adjustHane(strokesArray);
-		this.adjustMage(strokesArray);
-		this.adjustTate(strokesArray);
-		this.adjustKakato(strokesArray);
-		this.adjustUroko(strokesArray);
-		this.adjustUroko2(strokesArray);
-		this.adjustKirikuchi(strokesArray);
-		return strokesArray;
-	}
-
-	private adjustHane(strokesArray: Stroke[]): Stroke[] {
-		strokesArray.forEach((stroke, i) => {
-			if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6)
-				&& stroke.a3_100 === 4 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
-				let lpx: number; // lastPointX
-				let lpy: number; // lastPointY
-				if (stroke.a1 === 1) {
-					lpx = stroke.x2;
-					lpy = stroke.y2;
-				} else if (stroke.a1 === 2) {
-					lpx = stroke.x3;
-					lpy = stroke.y3;
-				} else {
-					lpx = stroke.x4;
-					lpy = stroke.y4;
-				}
-				let mn = Infinity; // mostNear
-				if (lpx + 18 < 100) {
-					mn = lpx + 18;
-				}
-				strokesArray.forEach((stroke2, j) => {
-					if (i !== j
-						&& stroke2.a1 === 1
-						&& stroke2.x1 === stroke2.x2 && stroke2.x1 < lpx
-						&& stroke2.y1 <= lpy && stroke2.y2 >= lpy) {
-						if (lpx - stroke2.x1 < 100) {
-							mn = Math.min(mn, lpx - stroke2.x1);
-						}
-					}
-				});
-				if (mn !== Infinity) {
-					stroke.opt2 += 7 - Math.floor(mn / 15);
-				}
-			}
-		});
-		return strokesArray;
-	}
-
-	private adjustMage(strokesArray: Stroke[]) {
-		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 3 && stroke.y2 === stroke.y3) {
-				strokesArray.forEach((stroke2, j) => {
-					if (i !== j && (
-						(
-							stroke2.a1 === 1
-							&& stroke2.y1 === stroke2.y2
-							&& !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
-							&& round(Math.abs(stroke.y2 - stroke2.y1)) < this.kMinWidthT * this.kAdjustMageStep
-						) || (
-							stroke2.a1 === 3
-							&& stroke2.y2 === stroke2.y3
-							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
-							&& round(Math.abs(stroke.y2 - stroke2.y2)) < this.kMinWidthT * this.kAdjustMageStep
-						))) {
-						stroke.mageAdjustment += this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT);
-						if (stroke.mageAdjustment > this.kAdjustMageStep) {
-							stroke.mageAdjustment = this.kAdjustMageStep;
-						}
-					}
-				});
-			}
-		});
-		return strokesArray;
-	}
-
-	private adjustTate(strokesArray: Stroke[]) {
-		strokesArray.forEach((stroke, i) => {
-			if ((stroke.a1 === 1 || stroke.a1 === 3 || stroke.a1 === 7)
-				&& stroke.x1 === stroke.x2) {
-				strokesArray.forEach((stroke2, j) => {
-					if (i !== j
-						&& (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
-						&& stroke2.x1 === stroke2.x2
-						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
-						&& round(Math.abs(stroke.x1 - stroke2.x1)) < this.kMinWidthT * this.kAdjustTateStep) {
-						stroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT);
-						if (stroke.tateAdjustment > this.kAdjustTateStep) {
-							stroke.tateAdjustment = this.kAdjustTateStep;
-						}
-					}
-				});
-			}
-		});
-		return strokesArray;
-	}
-
-	private adjustKakato(strokesArray: Stroke[]) {
-		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 1
-				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
-				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
-					if (isCrossBoxWithOthers(
-						strokesArray, i,
-						stroke.x2 - this.kAdjustKakatoRangeX / 2,
-						stroke.y2 + this.kAdjustKakatoRangeY[k],
-						stroke.x2 + this.kAdjustKakatoRangeX / 2,
-						stroke.y2 + this.kAdjustKakatoRangeY[k + 1])
-						|| round(stroke.y2 + this.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
-						|| round(stroke.y2 - stroke.y1) < this.kAdjustKakatoRangeY[k + 1] // for thin box
-					) {
-						stroke.opt2 += 3 - k;
-						break;
-					}
-				}
-			}
-		});
-		return strokesArray;
-	}
-
-	private adjustUroko(strokesArray: Stroke[]) {
-		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 1
-				&& stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) { // no operation for TATE
-				for (let k = 0; k < this.kAdjustUrokoLengthStep; k++) {
-					let tx;
-					let ty;
-					let tlen;
-					if (stroke.y1 === stroke.y2) { // YOKO
-						tx = stroke.x2 - this.kAdjustUrokoLine[k];
-						ty = stroke.y2 - 0.5;
-						tlen = stroke.x2 - stroke.x1; // should be Math.abs(...)?
-					} else {
-						const [cosrad, sinrad] = (stroke.x1 === stroke.x2)
-							? [0, (stroke.y2 - stroke.y1) / (stroke.x2 - stroke.x1) > 0 ? 1 : -1] // maybe unnecessary?
-							: (stroke.x2 - stroke.x1 < 0)
-								? normalize([stroke.x1 - stroke.x2, stroke.y1 - stroke.y2]) // for backward compatibility...
-								: normalize([stroke.x2 - stroke.x1, stroke.y2 - stroke.y1]);
-						tx = stroke.x2 - this.kAdjustUrokoLine[k] * cosrad - 0.5 * sinrad;
-						ty = stroke.y2 - this.kAdjustUrokoLine[k] * sinrad - 0.5 * cosrad;
-						tlen = hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
-					}
-					if (round(tlen) < this.kAdjustUrokoLength[k]
-						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
-						stroke.opt2 += this.kAdjustUrokoLengthStep - k;
-						break;
-					}
-				}
-			}
-		});
-		return strokesArray;
-	}
-
-	private adjustUroko2(strokesArray: Stroke[]) {
-		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 1 && stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0
-				&& stroke.y1 === stroke.y2) {
-				let pressure = 0;
-				strokesArray.forEach((stroke2, j) => {
-					if (i !== j && (
-						(
-							stroke2.a1 === 1
-							&& stroke2.y1 === stroke2.y2
-							&& !(stroke.x1 + 1 > stroke2.x2 || stroke.x2 - 1 < stroke2.x1)
-							&& round(Math.abs(stroke.y1 - stroke2.y1)) < this.kAdjustUroko2Length
-						) || (
-							stroke2.a1 === 3
-							&& stroke2.y2 === stroke2.y3
-							&& !(stroke.x1 + 1 > stroke2.x3 || stroke.x2 - 1 < stroke2.x2)
-							&& round(Math.abs(stroke.y1 - stroke2.y2)) < this.kAdjustUroko2Length
-						))) {
-						pressure += (this.kAdjustUroko2Length - Math.abs(stroke.y1 - stroke2.y2)) ** 1.1;
-					}
-				});
-				// const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
-				// if (stroke.a3 < result) {
-				stroke.opt2 = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
-				// }
-			}
-		});
-		return strokesArray;
-	}
-
-	private adjustKirikuchi(strokesArray: Stroke[]) {
-		strokesArray.forEach((stroke) => {
-			if (stroke.a1 === 2
-				&& stroke.a2_100 === 32 && stroke.kirikuchiAdjustment === 0 && stroke.tateAdjustment === 0 && stroke.opt3 === 0
-				&& stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
-				for (const stroke2 of strokesArray) { // no need to skip when i == j
-					if (stroke2.a1 === 1
-						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1 && stroke2.y1 === stroke.y1
-						&& stroke2.y1 === stroke2.y2) {
-						stroke.kirikuchiAdjustment = 1;
-						break;
-					}
-				}
-			}
-		});
-		return strokesArray;
 	}
 }

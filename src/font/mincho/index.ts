@@ -1,7 +1,8 @@
 import { Kage, KShotai } from "../../kage";
 import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
-import { hypot, normalize } from "../../util";
+import { hypot, normalize, round } from "../../util";
+import { isCrossBoxWithOthers, isCrossWithOthers } from "../../2d";
 import { Font } from "..";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
@@ -211,8 +212,210 @@ function dfDrawFont(
 
 class Mincho implements Font {
 	public shotai = KShotai.kMincho;
+
 	public draw(kage: Kage, polygons: Polygons, stroke: Stroke): void {
 		dfDrawFont(kage, polygons, stroke);
+	}
+
+	public adjustStrokes(kage: Kage, strokesArray: Stroke[]): Stroke[] {
+		this.adjustHane(kage, strokesArray);
+		this.adjustMage(kage, strokesArray);
+		this.adjustTate(kage, strokesArray);
+		this.adjustKakato(kage, strokesArray);
+		this.adjustUroko(kage, strokesArray);
+		this.adjustUroko2(kage, strokesArray);
+		this.adjustKirikuchi(kage, strokesArray);
+		return strokesArray;
+	}
+
+	protected adjustHane(_kage: Kage, strokesArray: Stroke[]): Stroke[] {
+		strokesArray.forEach((stroke, i) => {
+			if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6)
+				&& stroke.a3_100 === 4 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
+				let lpx: number; // lastPointX
+				let lpy: number; // lastPointY
+				if (stroke.a1 === 1) {
+					lpx = stroke.x2;
+					lpy = stroke.y2;
+				} else if (stroke.a1 === 2) {
+					lpx = stroke.x3;
+					lpy = stroke.y3;
+				} else {
+					lpx = stroke.x4;
+					lpy = stroke.y4;
+				}
+				let mn = Infinity; // mostNear
+				if (lpx + 18 < 100) {
+					mn = lpx + 18;
+				}
+				strokesArray.forEach((stroke2, j) => {
+					if (i !== j
+						&& stroke2.a1 === 1
+						&& stroke2.x1 === stroke2.x2 && stroke2.x1 < lpx
+						&& stroke2.y1 <= lpy && stroke2.y2 >= lpy) {
+						if (lpx - stroke2.x1 < 100) {
+							mn = Math.min(mn, lpx - stroke2.x1);
+						}
+					}
+				});
+				if (mn !== Infinity) {
+					stroke.opt2 += 7 - Math.floor(mn / 15);
+				}
+			}
+		});
+		return strokesArray;
+	}
+
+	protected adjustMage(kage: Kage, strokesArray: Stroke[]): Stroke[] {
+		strokesArray.forEach((stroke, i) => {
+			if (stroke.a1 === 3 && stroke.y2 === stroke.y3) {
+				strokesArray.forEach((stroke2, j) => {
+					if (i !== j && (
+						(
+							stroke2.a1 === 1
+							&& stroke2.y1 === stroke2.y2
+							&& !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
+							&& round(Math.abs(stroke.y2 - stroke2.y1)) < kage.kMinWidthT * kage.kAdjustMageStep
+						) || (
+							stroke2.a1 === 3
+							&& stroke2.y2 === stroke2.y3
+							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
+							&& round(Math.abs(stroke.y2 - stroke2.y2)) < kage.kMinWidthT * kage.kAdjustMageStep
+						))) {
+						stroke.mageAdjustment += kage.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / kage.kMinWidthT);
+						if (stroke.mageAdjustment > kage.kAdjustMageStep) {
+							stroke.mageAdjustment = kage.kAdjustMageStep;
+						}
+					}
+				});
+			}
+		});
+		return strokesArray;
+	}
+
+	protected adjustTate(kage: Kage, strokesArray: Stroke[]): Stroke[] {
+		strokesArray.forEach((stroke, i) => {
+			if ((stroke.a1 === 1 || stroke.a1 === 3 || stroke.a1 === 7)
+				&& stroke.x1 === stroke.x2) {
+				strokesArray.forEach((stroke2, j) => {
+					if (i !== j
+						&& (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
+						&& stroke2.x1 === stroke2.x2
+						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
+						&& round(Math.abs(stroke.x1 - stroke2.x1)) < kage.kMinWidthT * kage.kAdjustTateStep) {
+						stroke.tateAdjustment += kage.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / kage.kMinWidthT);
+						if (stroke.tateAdjustment > kage.kAdjustTateStep) {
+							stroke.tateAdjustment = kage.kAdjustTateStep;
+						}
+					}
+				});
+			}
+		});
+		return strokesArray;
+	}
+
+	protected adjustKakato(kage: Kage, strokesArray: Stroke[]): Stroke[] {
+		strokesArray.forEach((stroke, i) => {
+			if (stroke.a1 === 1
+				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
+				for (let k = 0; k < kage.kAdjustKakatoStep; k++) {
+					if (isCrossBoxWithOthers(
+						strokesArray, i,
+						stroke.x2 - kage.kAdjustKakatoRangeX / 2,
+						stroke.y2 + kage.kAdjustKakatoRangeY[k],
+						stroke.x2 + kage.kAdjustKakatoRangeX / 2,
+						stroke.y2 + kage.kAdjustKakatoRangeY[k + 1])
+						|| round(stroke.y2 + kage.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
+						|| round(stroke.y2 - stroke.y1) < kage.kAdjustKakatoRangeY[k + 1] // for thin box
+					) {
+						stroke.opt2 += 3 - k;
+						break;
+					}
+				}
+			}
+		});
+		return strokesArray;
+	}
+
+	protected adjustUroko(kage: Kage, strokesArray: Stroke[]): Stroke[] {
+		strokesArray.forEach((stroke, i) => {
+			if (stroke.a1 === 1
+				&& stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) { // no operation for TATE
+				for (let k = 0; k < kage.kAdjustUrokoLengthStep; k++) {
+					let tx;
+					let ty;
+					let tlen;
+					if (stroke.y1 === stroke.y2) { // YOKO
+						tx = stroke.x2 - kage.kAdjustUrokoLine[k];
+						ty = stroke.y2 - 0.5;
+						tlen = stroke.x2 - stroke.x1; // should be Math.abs(...)?
+					} else {
+						const [cosrad, sinrad] = (stroke.x1 === stroke.x2)
+							? [0, (stroke.y2 - stroke.y1) / (stroke.x2 - stroke.x1) > 0 ? 1 : -1] // maybe unnecessary?
+							: (stroke.x2 - stroke.x1 < 0)
+								? normalize([stroke.x1 - stroke.x2, stroke.y1 - stroke.y2]) // for backward compatibility...
+								: normalize([stroke.x2 - stroke.x1, stroke.y2 - stroke.y1]);
+						tx = stroke.x2 - kage.kAdjustUrokoLine[k] * cosrad - 0.5 * sinrad;
+						ty = stroke.y2 - kage.kAdjustUrokoLine[k] * sinrad - 0.5 * cosrad;
+						tlen = hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
+					}
+					if (round(tlen) < kage.kAdjustUrokoLength[k]
+						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
+						stroke.opt2 += kage.kAdjustUrokoLengthStep - k;
+						break;
+					}
+				}
+			}
+		});
+		return strokesArray;
+	}
+
+	protected adjustUroko2(kage: Kage, strokesArray: Stroke[]): Stroke[] {
+		strokesArray.forEach((stroke, i) => {
+			if (stroke.a1 === 1 && stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0
+				&& stroke.y1 === stroke.y2) {
+				let pressure = 0;
+				strokesArray.forEach((stroke2, j) => {
+					if (i !== j && (
+						(
+							stroke2.a1 === 1
+							&& stroke2.y1 === stroke2.y2
+							&& !(stroke.x1 + 1 > stroke2.x2 || stroke.x2 - 1 < stroke2.x1)
+							&& round(Math.abs(stroke.y1 - stroke2.y1)) < kage.kAdjustUroko2Length
+						) || (
+							stroke2.a1 === 3
+							&& stroke2.y2 === stroke2.y3
+							&& !(stroke.x1 + 1 > stroke2.x3 || stroke.x2 - 1 < stroke2.x2)
+							&& round(Math.abs(stroke.y1 - stroke2.y2)) < kage.kAdjustUroko2Length
+						))) {
+						pressure += (kage.kAdjustUroko2Length - Math.abs(stroke.y1 - stroke2.y2)) ** 1.1;
+					}
+				});
+				// const result = Math.min(Math.floor(pressure / kage.kAdjustUroko2Length), kage.kAdjustUroko2Step) * 100;
+				// if (stroke.a3 < result) {
+				stroke.opt2 = Math.min(Math.floor(pressure / kage.kAdjustUroko2Length), kage.kAdjustUroko2Step);
+				// }
+			}
+		});
+		return strokesArray;
+	}
+
+	protected adjustKirikuchi(_kage: Kage, strokesArray: Stroke[]): Stroke[] {
+		strokesArray.forEach((stroke) => {
+			if (stroke.a1 === 2
+				&& stroke.a2_100 === 32 && stroke.kirikuchiAdjustment === 0 && stroke.tateAdjustment === 0 && stroke.opt3 === 0
+				&& stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
+				for (const stroke2 of strokesArray) { // no need to skip when i == j
+					if (stroke2.a1 === 1
+						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1 && stroke2.y1 === stroke.y1
+						&& stroke2.y1 === stroke2.y2) {
+						stroke.kirikuchiAdjustment = 1;
+						break;
+					}
+				}
+			}
+		});
+		return strokesArray;
 	}
 }
 
