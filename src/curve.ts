@@ -1,4 +1,4 @@
-import { normalize, quadraticBezier, quadraticBezierDeriv, ternarySearchMin } from "./util";
+import { normalize, quadraticBezier, quadraticBezierDeriv, cubicBezier, cubicBezierDeriv, ternarySearchMin } from "./util";
 import { Mincho } from "./font";
 
 export function divide_curve(
@@ -48,47 +48,80 @@ export function find_offcurve(
 }
 
 // ------------------------------------------------------------------
+export function generateFattenCurve(
+	x1: number, y1: number, sx1: number, sy1: number,
+	sx2: number, sy2: number, x2: number, y2: number,
+	kRate: number, widthFunc: (t: number) => number,
+	normalize_: ([x, y]: [number, number], mag: number) => [number, number] = normalize
+): { left: [number, number][]; right: [number, number][] } {
+	const curve: { left: [number, number][]; right: [number, number][] } = { left: [], right: [] };
+
+	const isQuadratic = sx1 === sx2 && sy1 === sy2;
+	let xFunc, yFunc, ixFunc, iyFunc;
+	if (isQuadratic) {
+		// Spline
+		xFunc = (t: number) => quadraticBezier(x1, sx1, x2, t);
+		yFunc = (t: number) => quadraticBezier(y1, sy1, y2, t);
+		ixFunc = (t: number) => quadraticBezierDeriv(x1, sx1, x2, t);
+		iyFunc = (t: number) => quadraticBezierDeriv(y1, sy1, y2, t);
+	} else { // Bezier
+		xFunc = (t: number) => cubicBezier(x1, sx1, sx2, x2, t);
+		yFunc = (t: number) => cubicBezier(y1, sy1, sy2, y2, t);
+		ixFunc = (t: number) => cubicBezierDeriv(x1, sx1, sx2, x2, t);
+		iyFunc = (t: number) => cubicBezierDeriv(y1, sy1, sy2, y2, t);
+	}
+
+	for (let tt = 0; tt <= 1000; tt += kRate) {
+		const t = tt / 1000;
+
+		// calculate a dot
+		const x = xFunc(t);
+		const y = yFunc(t);
+
+		// KATAMUKI of vector by BIBUN
+		const ix = ixFunc(t);
+		const iy = iyFunc(t);
+
+		const width = widthFunc(t);
+
+		// line SUICHOKU by vector
+		const [ia, ib] = normalize_([-iy, ix], width);
+
+		curve.left.push([x - ia, y - ib]);
+		curve.right.push([x + ia, y + ib]);
+	}
+	return curve;
+}
+
 export function get_candidate(
 	font: Mincho,
 	a1: number, a2: number,
 	x1: number, y1: number, sx1: number, sy1: number, x2: number, y2: number,
-	opt3: number, opt4: number): [[number, number][], [number, number][]] {
-	const curve: [[number, number][], [number, number][]] = [[], []];
+	opt3: number, opt4: number): { left: [number, number][]; right: [number, number][] } {
 
-	for (let tt = 0; tt <= 1000; tt += font.kRate) {
-		const t = tt / 1000;
+	return generateFattenCurve(
+		x1, y1, sx1, sy1, sx1, sy1, x2, y2,
+		font.kRate,
+		(t) => {
+			const hosomi = 0.5;
+			let deltad
+				= (a1 === 7 && a2 === 0) // L2RD: fatten
+					? t ** hosomi * font.kL2RDfatten
+					: (a1 === 7)
+						? t ** hosomi
+						: (a2 === 7)
+							? (1 - t) ** hosomi
+							: (opt3 > 0)
+								? 1 - opt3 / 2 / (font.kMinWidthT - opt4 / 2) + opt3 / 2 / (font.kMinWidthT - opt4) * t
+								: 1;
 
-		// calculate a dot
-		const x = quadraticBezier(x1, sx1, x2, t);
-		const y = quadraticBezier(y1, sy1, y2, t);
-
-		// KATAMUKI of vector by BIBUN
-		const ix = quadraticBezierDeriv(x1, sx1, x2, t);
-		const iy = quadraticBezierDeriv(y1, sy1, y2, t);
-
-		const hosomi = 0.5;
-		let deltad
-			= (a1 === 7 && a2 === 0) // L2RD: fatten
-				? t ** hosomi * font.kL2RDfatten
-				: (a1 === 7)
-					? t ** hosomi
-					: (a2 === 7)
-						? (1 - t) ** hosomi
-						: (opt3 > 0)
-							? 1 - opt3 / 2 / (font.kMinWidthT - opt4 / 2) + opt3 / 2 / (font.kMinWidthT - opt4) * t
-							: 1;
-
-		if (deltad < 0.15) {
-			deltad = 0.15;
-		}
-
-		// line SUICHOKU by vector
-		const [ia, ib] = (ix === 0)
-			? [-font.kMinWidthT * deltad, 0] // ?????
-			: normalize([-iy, ix], font.kMinWidthT * deltad);
-
-		curve[0].push([x - ia, y - ib]);
-		curve[1].push([x + ia, y + ib]);
-	}
-	return curve;
+			if (deltad < 0.15) {
+				deltad = 0.15;
+			}
+			return font.kMinWidthT * deltad;
+		},
+		([x, y], mag) => (y === 0)
+			? [-mag, 0] // ?????
+			: normalize([x, y], mag)
+	);
 }

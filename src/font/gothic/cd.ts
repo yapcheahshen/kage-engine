@@ -1,6 +1,7 @@
+import { generateFattenCurve } from "../../curve";
 import { Polygon } from "../../polygon";
 import { Polygons } from "../../polygons";
-import { cubicBezier, cubicBezierDeriv, normalize, quadraticBezier, quadraticBezierDeriv, round } from "../../util";
+import { normalize, round } from "../../util";
 import Gothic from ".";
 
 function cdDrawCurveU(
@@ -39,42 +40,23 @@ function cdDrawCurveU(
 		y2 += dy2;
 	}
 
-	const isQuadratic = sx1 === sx2 && sy1 === sy2;
+	const { left, right } = generateFattenCurve(
+		x1, y1, sx1, sy1, sx2, sy2, x2, y2,
+		font.kRate,
+		() => font.kWidth,
+		([x, y], mag) => (round(x) === 0 && round(y) === 0)
+			? [-mag, 0] // ?????
+			: normalize([x, y], mag)
+	);
 
 	const poly = new Polygon();
 	const poly2 = new Polygon();
-
-	for (let tt = 0; tt <= 1000; tt += font.kRate) {
-		const t = tt / 1000;
-
-		let x;
-		let y;
-		let ix;
-		let iy;
-		if (isQuadratic) {
-			// calculating each point
-			x = quadraticBezier(x1, sx1, x2, t);
-			y = quadraticBezier(y1, sy1, y2, t);
-
-			// SESSEN NO KATAMUKI NO KEISAN(BIBUN)
-			ix = quadraticBezierDeriv(x1, sx1, x2, t);
-			iy = quadraticBezierDeriv(y1, sy1, y2, t);
-		} else {
-			// calculate a dot
-			x = cubicBezier(x1, sx1, sx2, x2, t);
-			y = cubicBezier(y1, sy1, sy2, y2, t);
-			// KATAMUKI of vector by BIBUN
-			ix = cubicBezierDeriv(x1, sx1, sx2, x2, t);
-			iy = cubicBezierDeriv(y1, sy1, sy2, y2, t);
-		}
-		// SESSEN NI SUICHOKU NA CHOKUSEN NO KEISAN
-		const [ia, ib] = (round(ix) === 0 && round(iy) === 0)
-			? [-font.kWidth, 0] // ?????
-			: normalize([-iy, ix], font.kWidth);
-
-		// save to polygon
-		poly.push(x - ia, y - ib);
-		poly2.push(x + ia, y + ib);
+	// save to polygon
+	for (const [x, y] of left) {
+		poly.push(x, y);
+	}
+	for (const [x, y] of right) {
+		poly2.push(x, y);
 	}
 
 	poly2.reverse();

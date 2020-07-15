@@ -1,7 +1,7 @@
-import { divide_curve, find_offcurve, get_candidate } from "../../curve";
+import { divide_curve, find_offcurve, get_candidate, generateFattenCurve } from "../../curve";
 import { Polygon } from "../../polygon";
 import { Polygons } from "../../polygons";
-import { cubicBezier, cubicBezierDeriv, hypot, normalize, quadraticBezier, quadraticBezierDeriv, round } from "../../util";
+import { hypot, normalize, round } from "../../util";
 import Mincho from ".";
 
 function cdDrawCurveU(
@@ -82,7 +82,7 @@ function cdDrawCurveU(
 		font2.kKakato = font.kKakato;
 		font2.kRate = 10;
 
-		const [curveL, curveR] = get_candidate(font2, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4); // L and R
+		const { left: curveL, right: curveR } = get_candidate(font2, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4); // L and R
 
 		const { off: [offL1, offL2], index: indexL } = divide_curve(x1, y1, sx1, sy1, x2, y2, curveL);
 		const curveL1 = curveL.slice(0, indexL + 1);
@@ -125,67 +125,54 @@ function cdDrawCurveU(
 		if (hypot(x2 - x1, y2 - y1) < 50) {
 			hosomi += 0.4 * (1 - hypot(x2 - x1, y2 - y1) / 50);
 		}
-	
+
+		const { left, right } = generateFattenCurve(
+			x1, y1, sx1, sy1, sx2, sy2, x2, y2,
+			font.kRate,
+			(t) => {
+				let deltad;
+				if (isQuadratic) {
+					// Spline
+					deltad
+						= a1 === 7 && a2 === 0 // L2RD: fatten
+							? t ** hosomi * font.kL2RDfatten
+							: a1 === 7
+								? t ** hosomi
+								: a2 === 7
+									? (1 - t) ** hosomi
+									: opt3 > 0 || opt4 > 0
+										? ((font.kMinWidthT - opt3 / 2) - (opt4 - opt3) / 2 * t) / font.kMinWidthT
+										: 1;
+				} else { // Bezier
+					deltad
+						= a1 === 7 && a2 === 0 // L2RD: fatten
+							? t ** hosomi * font.kL2RDfatten
+							: a1 === 7
+								? (t ** hosomi) ** 0.7 // make fatten
+								: a2 === 7
+									? (1 - t) ** hosomi
+									: 1;
+				}
+
+				if (deltad < 0.15) {
+					deltad = 0.15;
+				}
+
+				return kMinWidthT * deltad;
+			},
+			([x, y], mag) => (round(x) === 0 && round(y) === 0)
+				? [-mag, 0] // ?????
+				: normalize([x, y], mag)
+		);
+
 		const poly = new Polygon();
 		const poly2 = new Polygon();
-		for (let tt = 0; tt <= 1000; tt += font.kRate) {
-			const t = tt / 1000;
-
-			let x;
-			let y;
-			let ix;
-			let iy;
-			let deltad;
-			if (isQuadratic) {
-				// Spline
-				// calculate a dot
-				x = quadraticBezier(x1, sx1, x2, t);
-				y = quadraticBezier(y1, sy1, y2, t);
-
-				// KATAMUKI of vector by BIBUN
-				ix = quadraticBezierDeriv(x1, sx1, x2, t);
-				iy = quadraticBezierDeriv(y1, sy1, y2, t);
-
-				deltad
-					= a1 === 7 && a2 === 0 // L2RD: fatten
-						? t ** hosomi * font.kL2RDfatten
-						: a1 === 7
-							? t ** hosomi
-							: a2 === 7
-								? (1 - t) ** hosomi
-								: opt3 > 0 || opt4 > 0
-									? ((font.kMinWidthT - opt3 / 2) - (opt4 - opt3) / 2 * t) / font.kMinWidthT
-									: 1;
-			} else { // Bezier
-				// calculate a dot
-				x = cubicBezier(x1, sx1, sx2, x2, t);
-				y = cubicBezier(y1, sy1, sy2, y2, t);
-				// KATAMUKI of vector by BIBUN
-				ix = cubicBezierDeriv(x1, sx1, sx2, x2, t);
-				iy = cubicBezierDeriv(y1, sy1, sy2, y2, t);
-
-				deltad
-					= a1 === 7 && a2 === 0 // L2RD: fatten
-						? t ** hosomi * font.kL2RDfatten
-						: a1 === 7
-							? (t ** hosomi) ** 0.7 // make fatten
-							: a2 === 7
-								? (1 - t) ** hosomi
-								: 1;
-			}
-
-			if (deltad < 0.15) {
-				deltad = 0.15;
-			}
-
-			// line SUICHOKU by vector
-			const [ia, ib] = (round(ix) === 0 && round(iy) === 0)
-				? [-kMinWidthT * deltad, 0] // ?????
-				: normalize([-iy, ix], kMinWidthT * deltad);
-
-			// copy to polygon structure
-			poly.push(x - ia, y - ib);
-			poly2.push(x + ia, y + ib);
+		// copy to polygon structure
+		for (const [x, y] of left) {
+			poly.push(x, y);
+		}
+		for (const [x, y] of right) {
+			poly2.push(x, y);
 		}
 
 		// suiheisen ni setsuzoku
