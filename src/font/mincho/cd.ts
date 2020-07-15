@@ -1,4 +1,4 @@
-import { divide_curve, find_offcurve, get_candidate, generateFattenCurve } from "../../curve";
+import { divide_curve, find_offcurve, generateFattenCurve } from "../../curve";
 import { Polygon } from "../../polygon";
 import { Polygons } from "../../polygons";
 import { hypot, normalize, round } from "../../util";
@@ -75,14 +75,31 @@ function cdDrawCurveU(
 	if (isQuadratic && font.kUseCurve) {
 		// Spline
 		// generating fatten curve -- begin
-		const font2 = new Mincho();
-		font2.kMinWidthY = font.kMinWidthY;
-		font2.kMinWidthT = kMinWidthT;
-		font2.kWidth = font.kWidth;
-		font2.kKakato = font.kKakato;
-		font2.kRate = 10;
-
-		const { left: curveL, right: curveR } = get_candidate(font2, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4); // L and R
+		const { left: curveL, right: curveR } = generateFattenCurve(
+			x1, y1, sx1, sy1, sx1, sy1, x2, y2,
+			10,
+			(t) => {
+				const hosomi = 0.5;
+				let deltad
+					= (a1 === 7 && a2 === 0) // L2RD: fatten
+						? t ** hosomi * 1.1
+						: (a1 === 7)
+							? t ** hosomi
+							: (a2 === 7)
+								? (1 - t) ** hosomi
+								: (opt3 > 0)
+									? 1 - opt3 / 2 / (kMinWidthT - opt4 / 2) + opt3 / 2 / (kMinWidthT - opt4) * t
+									: 1;
+	
+				if (deltad < 0.15) {
+					deltad = 0.15;
+				}
+				return kMinWidthT * deltad;
+			},
+			([x, y], mag) => (y === 0)
+				? [-mag, 0] // ?????
+				: normalize([x, y], mag)
+		); // L and R
 
 		const { off: [offL1, offL2], index: indexL } = divide_curve(x1, y1, sx1, sy1, x2, y2, curveL);
 		const curveL1 = curveL.slice(0, indexL + 1);

@@ -1,5 +1,4 @@
 import { normalize, quadraticBezier, quadraticBezierDeriv, cubicBezier, cubicBezierDeriv, ternarySearchMin } from "./util";
-import { Mincho } from "./font";
 
 export function divide_curve(
 	x1: number, y1: number,
@@ -91,37 +90,4 @@ export function generateFattenCurve(
 		curve.right.push([x + ia, y + ib]);
 	}
 	return curve;
-}
-
-export function get_candidate(
-	font: Mincho,
-	a1: number, a2: number,
-	x1: number, y1: number, sx1: number, sy1: number, x2: number, y2: number,
-	opt3: number, opt4: number): { left: [number, number][]; right: [number, number][] } {
-
-	return generateFattenCurve(
-		x1, y1, sx1, sy1, sx1, sy1, x2, y2,
-		font.kRate,
-		(t) => {
-			const hosomi = 0.5;
-			let deltad
-				= (a1 === 7 && a2 === 0) // L2RD: fatten
-					? t ** hosomi * font.kL2RDfatten
-					: (a1 === 7)
-						? t ** hosomi
-						: (a2 === 7)
-							? (1 - t) ** hosomi
-							: (opt3 > 0)
-								? 1 - opt3 / 2 / (font.kMinWidthT - opt4 / 2) + opt3 / 2 / (font.kMinWidthT - opt4) * t
-								: 1;
-
-			if (deltad < 0.15) {
-				deltad = 0.15;
-			}
-			return font.kMinWidthT * deltad;
-		},
-		([x, y], mag) => (y === 0)
-			? [-mag, 0] // ?????
-			: normalize([x, y], mag)
-	);
 }
