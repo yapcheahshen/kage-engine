@@ -1,11 +1,11 @@
 import { divide_curve, find_offcurve, get_candidate } from "../../curve";
-import { Kage } from "../../kage";
 import { Polygon } from "../../polygon";
 import { Polygons } from "../../polygons";
 import { cubicBezier, cubicBezierDeriv, hypot, normalize, quadraticBezier, quadraticBezierDeriv, round } from "../../util";
+import Mincho from ".";
 
 function cdDrawCurveU(
-	kage: Kage, polygons: Polygons,
+	font: Mincho, polygons: Polygons,
 	x1: number, y1: number, sx1: number, sy1: number,
 	sx2: number, sy2: number, x2: number, y2: number,
 	ta1: number, ta2: number,
@@ -14,14 +14,14 @@ function cdDrawCurveU(
 	const a1 = ta1;
 	const a2 = ta2;
 
-	const kMinWidthT = kage.kMinWidthT - opt1 / 2;
-	const kMinWidthT2 = kage.kMinWidthT - opt4 / 2;
+	const kMinWidthT = font.kMinWidthT - opt1 / 2;
+	const kMinWidthT2 = font.kMinWidthT - opt4 / 2;
 
 	let delta;
 	switch (a1 % 100) {
 		case 0:
 		case 7:
-			delta = -1 * kage.kMinWidthY * 0.5;
+			delta = -1 * font.kMinWidthY * 0.5;
 			break;
 		case 1:
 		case 2: // ... must be 32
@@ -32,7 +32,7 @@ function cdDrawCurveU(
 			break;
 		case 12:
 			// case 32:
-			delta = kage.kMinWidthY;
+			delta = font.kMinWidthY;
 			break;
 		default:
 			return;
@@ -72,25 +72,25 @@ function cdDrawCurveU(
 
 	// ---------------------------------------------------------------
 
-	if (isQuadratic && kage.kUseCurve) {
+	if (isQuadratic && font.kUseCurve) {
 		// Spline
 		// generating fatten curve -- begin
-		const kage2 = new Kage();
-		kage2.kMinWidthY = kage.kMinWidthY;
-		kage2.kMinWidthT = kMinWidthT;
-		kage2.kWidth = kage.kWidth;
-		kage2.kKakato = kage.kKakato;
-		kage2.kRate = 10;
+		const font2 = new Mincho();
+		font2.kMinWidthY = font.kMinWidthY;
+		font2.kMinWidthT = kMinWidthT;
+		font2.kWidth = font.kWidth;
+		font2.kKakato = font.kKakato;
+		font2.kRate = 10;
 
-		const [curveL, curveR] = get_candidate(kage2, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4); // L and R
+		const [curveL, curveR] = get_candidate(font2, a1, a2, x1, y1, sx1, sy1, x2, y2, opt3, opt4); // L and R
 
-		const { off: [offL1, offL2], index: indexL } = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curveL);
+		const { off: [offL1, offL2], index: indexL } = divide_curve(x1, y1, sx1, sy1, x2, y2, curveL);
 		const curveL1 = curveL.slice(0, indexL + 1);
 		const curveL2 = curveL.slice(indexL);
-		const { off: [offR1, offR2], index: indexR } = divide_curve(kage2, x1, y1, sx1, sy1, x2, y2, curveR);
+		const { off: [offR1, offR2], index: indexR } = divide_curve(x1, y1, sx1, sy1, x2, y2, curveR);
 
-		const ncl1 = find_offcurve(kage2, curveL1, offL1[2], offL1[3]);
-		const ncl2 = find_offcurve(kage2, curveL2, offL2[2], offL2[3]);
+		const ncl1 = find_offcurve(curveL1, offL1[2], offL1[3]);
+		const ncl2 = find_offcurve(curveL2, offL2[2], offL2[3]);
 
 		const poly = new Polygon([
 			{ x: ncl1[0], y: ncl1[1] },
@@ -128,7 +128,7 @@ function cdDrawCurveU(
 	
 		const poly = new Polygon();
 		const poly2 = new Polygon();
-		for (let tt = 0; tt <= 1000; tt += kage.kRate) {
+		for (let tt = 0; tt <= 1000; tt += font.kRate) {
 			const t = tt / 1000;
 
 			let x;
@@ -148,13 +148,13 @@ function cdDrawCurveU(
 
 				deltad
 					= a1 === 7 && a2 === 0 // L2RD: fatten
-						? t ** hosomi * kage.kL2RDfatten
+						? t ** hosomi * font.kL2RDfatten
 						: a1 === 7
 							? t ** hosomi
 							: a2 === 7
 								? (1 - t) ** hosomi
 								: opt3 > 0 || opt4 > 0
-									? ((kage.kMinWidthT - opt3 / 2) - (opt4 - opt3) / 2 * t) / kage.kMinWidthT
+									? ((font.kMinWidthT - opt3 / 2) - (opt4 - opt3) / 2 * t) / font.kMinWidthT
 									: 1;
 			} else { // Bezier
 				// calculate a dot
@@ -166,7 +166,7 @@ function cdDrawCurveU(
 
 				deltad
 					= a1 === 7 && a2 === 0 // L2RD: fatten
-						? t ** hosomi * kage.kL2RDfatten
+						? t ** hosomi * font.kL2RDfatten
 						: a1 === 7
 							? (t ** hosomi) ** 0.7 // make fatten
 							: a2 === 7
@@ -247,14 +247,14 @@ function cdDrawCurveU(
 				type *= 16;
 			}
 			const pm = type < 0 ? -1 : 1;
-			const move = type < 0 ? -type * kage.kMinWidthY : 0;
+			const move = type < 0 ? -type * font.kMinWidthY : 0;
 			const [XX, XY] = (x1 === sx1)
 				? [1, 0] // ?????
 				: normalize([sy1 - y1, -(sx1 - x1)]);
 			const poly = new Polygon([
 				{ x: -kMinWidthT, y: 1 },
 				{ x: +kMinWidthT, y: 0 },
-				{ x: -kMinWidthT * pm, y: -kage.kMinWidthY * type * pm },
+				{ x: -kMinWidthT * pm, y: -font.kMinWidthY * type * pm },
 			]).transformMatrix2(XX, XY).translate(x1, y1);
 			// if(x1 > x2){
 			//  poly.reverse();
@@ -264,12 +264,12 @@ function cdDrawCurveU(
 			const poly2 = new Polygon();
 			poly2.push(kMinWidthT, -move);
 			if (x1 === sx1 && y1 === sy1) { // ?????
-				// type === -6.4 && pm === -1 && move === 6.4 * kage.kMinWidthY
-				poly2.push(kMinWidthT * 1.5, kage.kMinWidthY - move);
-				poly2.push(kMinWidthT - 2, kage.kMinWidthY * 2 + 1);
+				// type === -6.4 && pm === -1 && move === 6.4 * font.kMinWidthY
+				poly2.push(kMinWidthT * 1.5, font.kMinWidthY - move);
+				poly2.push(kMinWidthT - 2, font.kMinWidthY * 2 + 1);
 			} else {
-				poly2.push(kMinWidthT * 1.5, kage.kMinWidthY - move * 1.2);
-				poly2.push(kMinWidthT - 2, kage.kMinWidthY * 2 - move * 0.8 + 1);
+				poly2.push(kMinWidthT * 1.5, font.kMinWidthY - move * 1.2);
+				poly2.push(kMinWidthT - 2, font.kMinWidthY * 2 - move * 0.8 + 1);
 				// if(x1 < x2){
 				//  poly2.reverse();
 				// }
@@ -283,7 +283,7 @@ function cdDrawCurveU(
 			const poly = new Polygon([
 				{ x: -kMinWidthT, y: 0 },
 				{ x: +kMinWidthT, y: 0 },
-				{ x: +kMinWidthT, y: -kage.kMinWidthY },
+				{ x: +kMinWidthT, y: -font.kMinWidthY },
 			]);
 			poly.transformMatrix2(XX, XY).translate(x1, y1);
 			// if(x1 < x2){
@@ -293,8 +293,8 @@ function cdDrawCurveU(
 			// beginning of the stroke
 			const poly2 = new Polygon([
 				{ x: -kMinWidthT, y: 0 },
-				{ x: -kMinWidthT * 1.5, y: +kage.kMinWidthY },
-				{ x: -kMinWidthT * 0.5, y: +kage.kMinWidthY * 3 },
+				{ x: -kMinWidthT * 1.5, y: +font.kMinWidthY },
+				{ x: -kMinWidthT * 0.5, y: +font.kMinWidthY * 3 },
 			]);
 			// if(x1 < x2){
 			//  poly2.reverse();
@@ -306,9 +306,9 @@ function cdDrawCurveU(
 
 	if (a1 === 22) { // box's up-right corner, any time same degree
 		const poly = new Polygon([
-			{ x: -kMinWidthT, y: -kage.kMinWidthY },
-			{ x: 0, y: -kage.kMinWidthY - kage.kWidth },
-			{ x: +kMinWidthT + kage.kWidth, y: +kage.kMinWidthY },
+			{ x: -kMinWidthT, y: -font.kMinWidthY },
+			{ x: 0, y: -font.kMinWidthY - font.kWidth },
+			{ x: +kMinWidthT + font.kWidth, y: +font.kMinWidthY },
 			{ x: +kMinWidthT, y: +kMinWidthT - 1 },
 			{ x: -kMinWidthT, y: +kMinWidthT + 4 },
 		]);
@@ -325,7 +325,7 @@ function cdDrawCurveU(
 				? [1, 0] // ?????
 				: normalize([x2 - sx2, y2 - sy2]);
 		const poly = new Polygon(
-			(kage.kUseCurve)
+			(font.kUseCurve)
 				? // by curve path
 				[
 					{ x: 0, y: -kMinWidthT2 },
@@ -363,9 +363,9 @@ function cdDrawCurveU(
 				? [y2 > sy2 ? 1 : -1, 0] // for backward compatibility...
 				: normalize([-(y2 - sy2), x2 - sx2], 1);
 		const poly = new Polygon([
-			{ x: +kMinWidthT * kage.kL2RDfatten, y: 0 },
-			{ x: -kMinWidthT * kage.kL2RDfatten, y: 0 },
-			{ x: +pm2 * kMinWidthT * kage.kL2RDfatten, y: -Math.abs(type2) * kMinWidthT * kage.kL2RDfatten },
+			{ x: +kMinWidthT * font.kL2RDfatten, y: 0 },
+			{ x: -kMinWidthT * font.kL2RDfatten, y: 0 },
+			{ x: +pm2 * kMinWidthT * font.kL2RDfatten, y: -Math.abs(type2) * kMinWidthT * font.kL2RDfatten },
 		]);
 		poly.transformMatrix2(dx, dy).translate(x2, y2);
 		polygons.push(poly);
@@ -375,8 +375,8 @@ function cdDrawCurveU(
 		// anytime same degree
 		const poly = new Polygon([
 			{ x: 0, y: -kMinWidthT + 1 },
-			{ x: +2, y: -kMinWidthT - kage.kWidth * 5 },
-			{ x: 0, y: -kMinWidthT - kage.kWidth * 5 },
+			{ x: +2, y: -kMinWidthT - font.kWidth * 5 },
+			{ x: 0, y: -kMinWidthT - font.kWidth * 5 },
 			{ x: -kMinWidthT, y: -kMinWidthT + 1 },
 		]);
 		if (y1 >= y2) {
@@ -390,8 +390,8 @@ function cdDrawCurveU(
 		const poly = new Polygon([
 			{ x: 0, y: 0 },
 			{ x: 0, y: -kMinWidthT },
-			{ x: -kage.kWidth * 4 * Math.min(1 - opt2 / 10, (kMinWidthT / kage.kMinWidthT) ** 3), y: -kMinWidthT },
-			{ x: -kage.kWidth * 4 * Math.min(1 - opt2 / 10, (kMinWidthT / kage.kMinWidthT) ** 3), y: -kMinWidthT * 0.5 },
+			{ x: -font.kWidth * 4 * Math.min(1 - opt2 / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT },
+			{ x: -font.kWidth * 4 * Math.min(1 - opt2 / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT * 0.5 },
 		]);
 		// poly.reverse();
 		poly.translate(x2, y2);
@@ -400,24 +400,24 @@ function cdDrawCurveU(
 }
 
 export function cdDrawBezier(
-	kage: Kage, polygons: Polygons,
+	font: Mincho, polygons: Polygons,
 	x1: number, y1: number, x2: number, y2: number,
 	x3: number, y3: number, x4: number, y4: number,
 	a1: number, a2: number,
 	opt1: number, opt2: number, opt3: number, opt4: number): void {
-	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, opt2, opt3, opt4);
+	cdDrawCurveU(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, opt2, opt3, opt4);
 }
 
 export function cdDrawCurve(
-	kage: Kage, polygons: Polygons,
+	font: Mincho, polygons: Polygons,
 	x1: number, y1: number, x2: number, y2: number, x3: number, y3: number,
 	a1: number, a2: number,
 	opt1: number, opt2: number, opt3: number, opt4: number): void {
-	cdDrawCurveU(kage, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2, opt1, opt2, opt3, opt4);
+	cdDrawCurveU(font, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2, opt1, opt2, opt3, opt4);
 }
 
 export function cdDrawLine(
-	kage: Kage, polygons: Polygons,
+	font: Mincho, polygons: Polygons,
 	tx1: number, ty1: number, tx2: number, ty2: number,
 	ta1: number, ta2: number, opt1: number, opt2: number): void {
 
@@ -428,7 +428,7 @@ export function cdDrawLine(
 	const a1 = ta1;
 	const a2 = ta2;
 
-	const kMinWidthT = kage.kMinWidthT - opt1 / 2;
+	const kMinWidthT = font.kMinWidthT - opt1 / 2;
 
 	if (x1 === x2 || y1 !== y2 && (x1 > x2 || Math.abs(y2 - y1) >= Math.abs(x2 - x1) || a1 === 6 || a2 === 6)) {
 		// if TATE stroke, use y-axis
@@ -441,11 +441,11 @@ export function cdDrawLine(
 		switch (a1) {
 			case 0:
 				poly0.set(0,
-					x1 + sinrad * kMinWidthT + cosrad * kage.kMinWidthY / 2,
-					y1 - cosrad * kMinWidthT + sinrad * kage.kMinWidthY / 2);
+					x1 + sinrad * kMinWidthT + cosrad * font.kMinWidthY / 2,
+					y1 - cosrad * kMinWidthT + sinrad * font.kMinWidthY / 2);
 				poly0.set(3,
-					x1 - sinrad * kMinWidthT - cosrad * kage.kMinWidthY / 2,
-					y1 + cosrad * kMinWidthT - sinrad * kage.kMinWidthY / 2);
+					x1 - sinrad * kMinWidthT - cosrad * font.kMinWidthY / 2,
+					y1 + cosrad * kMinWidthT - sinrad * font.kMinWidthY / 2);
 				break;
 			case 1:
 			case 6: // ... no need
@@ -454,11 +454,11 @@ export function cdDrawLine(
 				break;
 			case 12:
 				poly0.set(0,
-					x1 + sinrad * kMinWidthT - cosrad * kage.kMinWidthY,
-					y1 - cosrad * kMinWidthT - sinrad * kage.kMinWidthY);
+					x1 + sinrad * kMinWidthT - cosrad * font.kMinWidthY,
+					y1 - cosrad * kMinWidthT - sinrad * font.kMinWidthY);
 				poly0.set(3,
-					x1 - sinrad * kMinWidthT - cosrad * (kMinWidthT + kage.kMinWidthY),
-					y1 + cosrad * kMinWidthT - sinrad * (kMinWidthT + kage.kMinWidthY));
+					x1 - sinrad * kMinWidthT - cosrad * (kMinWidthT + font.kMinWidthY),
+					y1 + cosrad * kMinWidthT - sinrad * (kMinWidthT + font.kMinWidthY));
 				break;
 			case 22:
 				if (x1 === x2) {
@@ -474,8 +474,8 @@ export function cdDrawLine(
 				break;
 			case 32:
 				if (x1 === x2) {
-					poly0.set(0, x1 + kMinWidthT, y1 - kage.kMinWidthY);
-					poly0.set(3, x1 - kMinWidthT, y1 - kage.kMinWidthY);
+					poly0.set(0, x1 + kMinWidthT, y1 - font.kMinWidthY);
+					poly0.set(3, x1 - kMinWidthT, y1 - font.kMinWidthY);
 				} else {
 					poly0.set(0, x1 + kMinWidthT / sinrad, y1);
 					poly0.set(3, x1 - kMinWidthT / sinrad, y1);
@@ -508,25 +508,25 @@ export function cdDrawLine(
 				break;
 			case 13:
 				poly0.set(1,
-					x2 + sinrad * kMinWidthT + cosrad * kage.kAdjustKakatoL[opt2],
-					y2 - cosrad * kMinWidthT + sinrad * kage.kAdjustKakatoL[opt2]);
+					x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoL[opt2],
+					y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoL[opt2]);
 				poly0.set(2,
-					x2 - sinrad * kMinWidthT + cosrad * (kage.kAdjustKakatoL[opt2] + kMinWidthT),
-					y2 + cosrad * kMinWidthT + sinrad * (kage.kAdjustKakatoL[opt2] + kMinWidthT));
+					x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoL[opt2] + kMinWidthT),
+					y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoL[opt2] + kMinWidthT));
 				break;
 			case 23:
 				poly0.set(1,
-					x2 + sinrad * kMinWidthT + cosrad * kage.kAdjustKakatoR[opt2],
-					y2 - cosrad * kMinWidthT + sinrad * kage.kAdjustKakatoR[opt2]);
+					x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoR[opt2],
+					y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoR[opt2]);
 				poly0.set(2,
-					x2 - sinrad * kMinWidthT + cosrad * (kage.kAdjustKakatoR[opt2] + kMinWidthT),
-					y2 + cosrad * kMinWidthT + sinrad * (kage.kAdjustKakatoR[opt2] + kMinWidthT));
+					x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoR[opt2] + kMinWidthT),
+					y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoR[opt2] + kMinWidthT));
 				break;
 			case 24: // for T/H design
 			case 32:
 				if (x1 === x2) {
-					poly0.set(1, x2 + kMinWidthT, y2 + kage.kMinWidthY);
-					poly0.set(2, x2 - kMinWidthT, y2 + kage.kMinWidthY);
+					poly0.set(1, x2 + kMinWidthT, y2 + font.kMinWidthY);
+					poly0.set(2, x2 - kMinWidthT, y2 + font.kMinWidthY);
 				} else {
 					poly0.set(1, x2 + kMinWidthT / sinrad, y2);
 					poly0.set(2, x2 - kMinWidthT / sinrad, y2);
@@ -538,12 +538,12 @@ export function cdDrawLine(
 
 		if (a2 === 24) { // for T design
 			const poly = new Polygon([
-				{ x: 0, y: +kage.kMinWidthY },
+				{ x: 0, y: +font.kMinWidthY },
 				(x1 === x2) // ?????
-					? { x: +kMinWidthT, y: -kage.kMinWidthY * 3 }
-					: { x: +kMinWidthT * 0.5, y: -kage.kMinWidthY * 4 },
-				{ x: +kMinWidthT * 2, y: -kage.kMinWidthY },
-				{ x: +kMinWidthT * 2, y: +kage.kMinWidthY },
+					? { x: +kMinWidthT, y: -font.kMinWidthY * 3 }
+					: { x: +kMinWidthT * 0.5, y: -font.kMinWidthY * 4 },
+				{ x: +kMinWidthT * 2, y: -font.kMinWidthY },
+				{ x: +kMinWidthT * 2, y: +font.kMinWidthY },
 			]);
 			poly.translate(x2, y2);
 			polygons.push(poly);
@@ -552,10 +552,10 @@ export function cdDrawLine(
 		if (a2 === 13 && opt2 === 4) { // for new GTH box's left bottom corner
 			if (x1 === x2) {
 				const poly = new Polygon([
-					{ x: -kMinWidthT, y: -kage.kMinWidthY * 3 },
+					{ x: -kMinWidthT, y: -font.kMinWidthY * 3 },
 					{ x: -kMinWidthT * 2, y: 0 },
-					{ x: -kage.kMinWidthY, y: +kage.kMinWidthY * 5 },
-					{ x: +kMinWidthT, y: +kage.kMinWidthY },
+					{ x: -font.kMinWidthY, y: +font.kMinWidthY * 5 },
+					{ x: +kMinWidthT, y: +font.kMinWidthY },
 				]);
 				poly.translate(x2, y2);
 				polygons.push(poly);
@@ -564,10 +564,10 @@ export function cdDrawLine(
 					? Math.floor((x1 - x2) / (y2 - y1) * 3)
 					: 0;
 				const poly = new Polygon([
-					{ x: 0, y: -kage.kMinWidthY * 5 },
+					{ x: 0, y: -font.kMinWidthY * 5 },
 					{ x: -kMinWidthT * 2, y: 0 },
-					{ x: -kage.kMinWidthY, y: +kage.kMinWidthY * 5 },
-					{ x: +kMinWidthT, y: +kage.kMinWidthY },
+					{ x: -font.kMinWidthY, y: +font.kMinWidthY * 5 },
+					{ x: +kMinWidthT, y: +font.kMinWidthY },
 					{ x: 0, y: 0 },
 				]);
 				poly.translate(x2 + m, y2);
@@ -579,9 +579,9 @@ export function cdDrawLine(
 			// box's right top corner
 			// SHIKAKU MIGIUE UROKO NANAME DEMO MASSUGU MUKI
 			const poly = new Polygon();
-			poly.push(-kMinWidthT, -kage.kMinWidthY);
-			poly.push(0, -kage.kMinWidthY - kage.kWidth);
-			poly.push(+kMinWidthT + kage.kWidth, +kage.kMinWidthY);
+			poly.push(-kMinWidthT, -font.kMinWidthY);
+			poly.push(0, -font.kMinWidthY - font.kWidth);
+			poly.push(+kMinWidthT + font.kWidth, +font.kMinWidthY);
 			if (x1 === x2) {
 				poly.push(+kMinWidthT, +kMinWidthT);
 				poly.push(-kMinWidthT, 0);
@@ -596,21 +596,21 @@ export function cdDrawLine(
 		if (a1 === 0) { // beginning of the stroke
 			const poly = new Polygon([
 				{
-					x: +kMinWidthT * sinrad + kage.kMinWidthY * 0.5 * cosrad,
-					y: +kMinWidthT * -cosrad + kage.kMinWidthY * 0.5 * sinrad,
+					x: +kMinWidthT * sinrad + font.kMinWidthY * 0.5 * cosrad,
+					y: +kMinWidthT * -cosrad + font.kMinWidthY * 0.5 * sinrad,
 				},
 				{
-					x: +(kMinWidthT + kMinWidthT * 0.5) * sinrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY) * cosrad,
-					y: +(kMinWidthT + kMinWidthT * 0.5) * -cosrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY) * sinrad,
+					x: +(kMinWidthT + kMinWidthT * 0.5) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * cosrad,
+					y: +(kMinWidthT + kMinWidthT * 0.5) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * sinrad,
 				},
 				(x1 === x2) // ?????
 					? {
-						x: +(kMinWidthT - 2) * sinrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2 + 1) * cosrad,
-						y: +(kMinWidthT - 2) * -cosrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2 + 1) * sinrad,
+						x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * cosrad,
+						y: +(kMinWidthT - 2) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * sinrad,
 					}
 					: {
-						x: +(kMinWidthT - 2) * sinrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2) * cosrad,
-						y: +(kMinWidthT + 1) * -cosrad + (kage.kMinWidthY * 0.5 + kage.kMinWidthY * 2) * sinrad, // ?????
+						x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * cosrad,
+						y: +(kMinWidthT + 1) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * sinrad, // ?????
 					},
 			]);
 			poly.translate(x1, y1);
@@ -620,7 +620,7 @@ export function cdDrawLine(
 		if (x1 === x2 && a2 === 1 || a1 === 6 && (a2 === 0 || x1 !== x2 && a2 === 5)) {
 			// KAGI NO YOKO BOU NO SAIGO NO MARU ... no need only used at 1st=yoko
 			const poly = new Polygon();
-			if (kage.kUseCurve) {
+			if (font.kUseCurve) {
 				poly.push(-sinrad * -kMinWidthT, +cosrad * -kMinWidthT);
 				poly.push(
 					-cosrad * kMinWidthT * 0.9 + -sinrad * -kMinWidthT * 0.9, // typo?
@@ -654,8 +654,8 @@ export function cdDrawLine(
 			const rv = x1 < x2 ? 1 : -1;
 			const poly = new Polygon([
 				{ x: 0, y: +rv * (-kMinWidthT + 1) },
-				{ x: +2, y: +rv * (-kMinWidthT - kage.kWidth * 5) },
-				{ x: 0, y: +rv * (-kMinWidthT - kage.kWidth * 5) },
+				{ x: +2, y: +rv * (-kMinWidthT - font.kWidth * 5) },
+				{ x: 0, y: +rv * (-kMinWidthT - font.kWidth * 5) },
 				{ x: -kMinWidthT, y: -kMinWidthT + 1 }, // rv ?????
 			]);
 			poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
@@ -678,7 +678,7 @@ export function cdDrawLine(
 			const [cosrad, sinrad] = (x1 < x2) ? [1, 0] : [-1, 0];
 			const r = 0.6;
 			const poly = new Polygon(
-				(kage.kUseCurve)
+				(font.kUseCurve)
 					? [
 						{ x: 0, y: -kMinWidthT },
 						{ x: +kMinWidthT * 0.9, y: -kMinWidthT * 0.9, off: true },
@@ -705,8 +705,8 @@ export function cdDrawLine(
 			const poly = new Polygon([
 				// { x: 0, y: -kMinWidthT + 1 },
 				{ x: 0, y: -kMinWidthT },
-				{ x: +2, y: -kMinWidthT - kage.kWidth * (4 * (1 - opt1 / kage.kAdjustMageStep) + 1) },
-				{ x: 0, y: -kMinWidthT - kage.kWidth * (4 * (1 - opt1 / kage.kAdjustMageStep) + 1) },
+				{ x: +2, y: -kMinWidthT - font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1) },
+				{ x: 0, y: -kMinWidthT - font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1) },
 				// { x: -kMinWidthT, y: -kMinWidthT + 1 },
 				{ x: -kMinWidthT, y: -kMinWidthT },
 			]);
@@ -723,19 +723,19 @@ export function cdDrawLine(
 		const [cosrad, sinrad] = (y1 === y2) ? [1, 0] : normalize([x2 - x1, y2 - y1]);
 		// always same
 		const poly = new Polygon([
-			{ x: x1 + sinrad * kage.kMinWidthY, y: y1 - cosrad * kage.kMinWidthY },
-			{ x: x2 + sinrad * kage.kMinWidthY, y: y2 - cosrad * kage.kMinWidthY },
-			{ x: x2 - sinrad * kage.kMinWidthY, y: y2 + cosrad * kage.kMinWidthY },
-			{ x: x1 - sinrad * kage.kMinWidthY, y: y1 + cosrad * kage.kMinWidthY },
+			{ x: x1 + sinrad * font.kMinWidthY, y: y1 - cosrad * font.kMinWidthY },
+			{ x: x2 + sinrad * font.kMinWidthY, y: y2 - cosrad * font.kMinWidthY },
+			{ x: x2 - sinrad * font.kMinWidthY, y: y2 + cosrad * font.kMinWidthY },
+			{ x: x1 - sinrad * font.kMinWidthY, y: y1 + cosrad * font.kMinWidthY },
 		]);
 		polygons.push(poly);
 
 		// UROKO
 		if (a2 === 0) {
 			const poly2 = new Polygon([
-				{ x: +sinrad * kage.kMinWidthY, y: -cosrad * kage.kMinWidthY },
-				{ x: -cosrad * kage.kAdjustUrokoX[opt2], y: -sinrad * kage.kAdjustUrokoX[opt2] },
-				{ x: -(cosrad - sinrad) * kage.kAdjustUrokoX[opt2] / 2, y: -(sinrad + cosrad) * kage.kAdjustUrokoY[opt2] },
+				{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
+				{ x: -cosrad * font.kAdjustUrokoX[opt2], y: -sinrad * font.kAdjustUrokoX[opt2] },
+				{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[opt2] / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[opt2] },
 			]);
 			poly2.translate(x2, y2);
 			polygons.push(poly2);

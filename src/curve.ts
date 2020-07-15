@@ -1,8 +1,7 @@
-import { Kage } from "./kage";
 import { normalize, quadraticBezier, quadraticBezierDeriv, ternarySearchMin } from "./util";
+import { Mincho } from "./font";
 
 export function divide_curve(
-	_kage: Kage,
 	x1: number, y1: number,
 	sx1: number, sy1: number,
 	x2: number, y2: number, curve: [number, number][]): { index: number, off: [number[], number[]] } {
@@ -25,7 +24,6 @@ export function divide_curve(
 
 // ------------------------------------------------------------------
 export function find_offcurve(
-	_kage: Kage,
 	curve: [number, number][], sx: number, sy: number): number[] {
 	const [nx1, ny1] = curve[0];
 	const [nx2, ny2] = curve[curve.length - 1];
@@ -51,13 +49,13 @@ export function find_offcurve(
 
 // ------------------------------------------------------------------
 export function get_candidate(
-	kage: Kage,
+	font: Mincho,
 	a1: number, a2: number,
 	x1: number, y1: number, sx1: number, sy1: number, x2: number, y2: number,
 	opt3: number, opt4: number): [[number, number][], [number, number][]] {
 	const curve: [[number, number][], [number, number][]] = [[], []];
 
-	for (let tt = 0; tt <= 1000; tt += kage.kRate) {
+	for (let tt = 0; tt <= 1000; tt += font.kRate) {
 		const t = tt / 1000;
 
 		// calculate a dot
@@ -71,13 +69,13 @@ export function get_candidate(
 		const hosomi = 0.5;
 		let deltad
 			= (a1 === 7 && a2 === 0) // L2RD: fatten
-				? t ** hosomi * kage.kL2RDfatten
+				? t ** hosomi * font.kL2RDfatten
 				: (a1 === 7)
 					? t ** hosomi
 					: (a2 === 7)
 						? (1 - t) ** hosomi
 						: (opt3 > 0)
-							? 1 - opt3 / 2 / (kage.kMinWidthT - opt4 / 2) + opt3 / 2 / (kage.kMinWidthT - opt4) * t
+							? 1 - opt3 / 2 / (font.kMinWidthT - opt4 / 2) + opt3 / 2 / (font.kMinWidthT - opt4) * t
 							: 1;
 
 		if (deltad < 0.15) {
@@ -86,8 +84,8 @@ export function get_candidate(
 
 		// line SUICHOKU by vector
 		const [ia, ib] = (ix === 0)
-			? [-kage.kMinWidthT * deltad, 0] // ?????
-			: normalize([-iy, ix], kage.kMinWidthT * deltad);
+			? [-font.kMinWidthT * deltad, 0] // ?????
+			: normalize([-iy, ix], font.kMinWidthT * deltad);
 
 		curve[0].push([x - ia, y - ib]);
 		curve[1].push([x + ia, y + ib]);

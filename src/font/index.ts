@@ -1,4 +1,4 @@
-import { Kage, KShotai } from "../kage";
+import { KShotai } from "../kage";
 import { Polygons } from "../polygons";
 import { Stroke } from "../stroke";
 import Mincho from "./mincho";
@@ -6,8 +6,10 @@ import Gothic from "./gothic";
 
 export interface Font {
 	shotai: KShotai;
-	draw(kage: Kage, polygons: Polygons, stroke: Stroke): void;
-	adjustStrokes(kage: Kage, strokes: Stroke[]): Stroke[];
+	kUseCurve: boolean;
+	draw(polygons: Polygons, stroke: Stroke): void;
+	setSize(size?: number): void;
+	adjustStrokes(strokes: Stroke[]): Stroke[];
 }
 
 export { default as Mincho } from "./mincho";

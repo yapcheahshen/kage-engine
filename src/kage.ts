@@ -13,7 +13,7 @@ export class Kage {
 	public kMincho = KShotai.kMincho;
 	public kGothic = KShotai.kGothic;
 
-	public kFont: Font;
+	public kFont: Font = selectFont(KShotai.kMincho);
 
 	// properties
 	public get kShotai(): KShotai {
@@ -22,99 +22,22 @@ export class Kage {
 	public set kShotai(shotai: KShotai) {
 		this.kFont = selectFont(shotai);
 	}
-	public kRate: number = 100; // must divide 1000
-	public kMinWidthY: number;
-	public kMinWidthT: number;
-	public kWidth: number;
-	public kKakato: number;
-	public kL2RDfatten: number;
-	public kMage: number;
-	public kUseCurve: boolean;
 
-	/** for KAKATO adjustment 000,100,200,300,400 */
-	public kAdjustKakatoL: number[];
-	/** for KAKATO adjustment 000,100,200,300 */
-	public kAdjustKakatoR: number[];
-	/** check area width */
-	public kAdjustKakatoRangeX: number;
-	/** 3 steps of checking */
-	public kAdjustKakatoRangeY: number[];
-	/** number of steps */
-	public kAdjustKakatoStep: number;
-
-	/** for UROKO adjustment 000,100,200,300 */
-	public kAdjustUrokoX: number[];
-	/** for UROKO adjustment 000,100,200,300 */
-	public kAdjustUrokoY: number[];
-	/** length for checking */
-	public kAdjustUrokoLength: number[];
-	/** number of steps */
-	public kAdjustUrokoLengthStep: number;
-	/** check for crossing. corresponds to length */
-	public kAdjustUrokoLine: number[];
-
-	public kAdjustUroko2Step: number;
-	public kAdjustUroko2Length: number;
-	public kAdjustTateStep: number;
-	public kAdjustMageStep: number;
+	public get kUseCurve(): boolean {
+		return this.kFont.kUseCurve;
+	}
+	public set kUseCurve(value: boolean) {
+		this.kFont.kUseCurve = value;
+	}
 
 	public kBuhin: Buhin;
 
 	public stretch = stretch;
 
 	constructor(size?: number) {
-		this.kShotai = KShotai.kMincho;
-		if (size === 1) {
-			this.kMinWidthY = 1.2;
-			this.kMinWidthT = 3.6;
-			this.kWidth = 3;
-			this.kKakato = 1.8;
-			this.kL2RDfatten = 1.1;
-			this.kMage = 6;
-			this.kUseCurve = false;
-
-			this.kAdjustKakatoL = [8, 5, 3, 1, 0];
-			this.kAdjustKakatoR = [4, 3, 2, 1];
-			this.kAdjustKakatoRangeX = 12;
-			this.kAdjustKakatoRangeY = [1, 11, 14, 18];
-			this.kAdjustKakatoStep = 3;
-
-			this.kAdjustUrokoX = [14, 12, 9, 7];
-			this.kAdjustUrokoY = [7, 6, 5, 4];
-			this.kAdjustUrokoLength = [13, 21, 30];
-			this.kAdjustUrokoLengthStep = 3;
-			this.kAdjustUrokoLine = [13, 15, 18];
-		} else {
-			this.kMinWidthY = 2;
-			this.kMinWidthT = 6;
-			this.kWidth = 5;
-			this.kKakato = 3;
-			this.kL2RDfatten = 1.1;
-			this.kMage = 10;
-			this.kUseCurve = false;
-
-			this.kAdjustKakatoL = [14, 9, 5, 2, 0];
-			this.kAdjustKakatoR = [8, 6, 4, 2];
-			this.kAdjustKakatoRangeX = 20;
-			this.kAdjustKakatoRangeY = [1, 19, 24, 30];
-			this.kAdjustKakatoStep = 3;
-
-			this.kAdjustUrokoX = [24, 20, 16, 12];
-			this.kAdjustUrokoY = [12, 11, 9, 8];
-			this.kAdjustUrokoLength = [22, 36, 50];
-			this.kAdjustUrokoLengthStep = 3;
-			this.kAdjustUrokoLine = [22, 26, 30];
-
-			this.kAdjustUroko2Step = 3;
-			this.kAdjustUroko2Length = 40;
-
-			this.kAdjustTateStep = 4;
-
-			this.kAdjustMageStep = 5;
-		}
+		this.kFont.setSize(size);
 
 		this.kBuhin = new Buhin();
-
 	}
 	// method
 	public makeGlyph(polygons: Polygons, buhin: string): void {
@@ -125,9 +48,9 @@ export class Kage {
 	public makeGlyph2(polygons: Polygons, data: string): void {
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
-			this.kFont.adjustStrokes(this, strokesArray);
+			this.kFont.adjustStrokes(strokesArray);
 			strokesArray.forEach((stroke) => {
-				this.kFont.draw(this, polygons, stroke);
+				this.kFont.draw(polygons, stroke);
 			});
 		}
 	}
@@ -136,10 +59,10 @@ export class Kage {
 		const result: Polygons[] = [];
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
-			this.kFont.adjustStrokes(this, strokesArray);
+			this.kFont.adjustStrokes(strokesArray);
 			strokesArray.forEach((stroke) => {
 				const polygons = new Polygons();
-				this.kFont.draw(this, polygons, stroke);
+				this.kFont.draw(polygons, stroke);
 				result.push(polygons);
 			});
 		}
@@ -148,12 +71,12 @@ export class Kage {
 
 	public makeGlyphSeparated(data: string[]): Polygons[] {
 		const strokesArrays = data.map((subdata) => this.getEachStrokes(subdata));
-		this.kFont.adjustStrokes(this, strokesArrays.reduce((left, right) => left.concat(right), []));
+		this.kFont.adjustStrokes(strokesArrays.reduce((left, right) => left.concat(right), []));
 		const polygons = new Polygons();
 		return strokesArrays.map((strokesArray) => {
 			const startIndex = polygons.array.length;
 			strokesArray.forEach((stroke) => {
-				this.kFont.draw(this, polygons, stroke);
+				this.kFont.draw(polygons, stroke);
 			});
 			const result = new Polygons();
 			result.array = polygons.array.slice(startIndex);
