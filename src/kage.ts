@@ -9,6 +9,9 @@ export enum KShotai {
 }
 
 export class Kage {
+	static Buhin = Buhin;
+	static Polygons = Polygons;
+
 	// TODO: should be static
 	public kMincho = KShotai.kMincho;
 	public kGothic = KShotai.kGothic;
