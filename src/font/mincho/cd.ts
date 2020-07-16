@@ -9,7 +9,7 @@ function cdDrawCurveU(
 	x1: number, y1: number, sx1: number, sy1: number,
 	sx2: number, sy2: number, x2: number, y2: number,
 	ta1: number, ta2: number,
-	opt1: number, opt2: number, opt3: number, opt4: number) {
+	opt1: number, haneAdjustment: number, opt3: number, opt4: number) {
 
 	const a1 = ta1;
 	const a2 = ta2;
@@ -394,8 +394,8 @@ function cdDrawCurveU(
 		const poly = new Polygon([
 			{ x: 0, y: 0 },
 			{ x: 0, y: -kMinWidthT },
-			{ x: -font.kWidth * 4 * Math.min(1 - opt2 / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT },
-			{ x: -font.kWidth * 4 * Math.min(1 - opt2 / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT * 0.5 },
+			{ x: -font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT },
+			{ x: -font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT * 0.5 },
 		]);
 		// poly.reverse();
 		poly.translate(x2, y2);
@@ -408,16 +408,16 @@ export function cdDrawBezier(
 	x1: number, y1: number, x2: number, y2: number,
 	x3: number, y3: number, x4: number, y4: number,
 	a1: number, a2: number,
-	opt1: number, opt2: number, opt3: number, opt4: number): void {
-	cdDrawCurveU(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, opt2, opt3, opt4);
+	opt1: number, haneAdjustment: number, opt3: number, opt4: number): void {
+	cdDrawCurveU(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, haneAdjustment, opt3, opt4);
 }
 
 export function cdDrawCurve(
 	font: Mincho, polygons: Polygons,
 	x1: number, y1: number, x2: number, y2: number, x3: number, y3: number,
 	a1: number, a2: number,
-	opt1: number, opt2: number, opt3: number, opt4: number): void {
-	cdDrawCurveU(font, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2, opt1, opt2, opt3, opt4);
+	opt1: number, haneAdjustment: number, opt3: number, opt4: number): void {
+	cdDrawCurveU(font, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2, opt1, haneAdjustment, opt3, opt4);
 }
 
 export function cdDrawLine(

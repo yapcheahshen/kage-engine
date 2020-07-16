@@ -49,11 +49,6 @@ export class Stroke {
 	public kakatoAdjustment: number;
 	public mageAdjustment: number;
 
-	// temporarily
-	public get opt2(): number {
-		return this.haneAdjustment || this.urokoAdjustment || this.kakatoAdjustment;
-	}
-
 	public readonly a2_100: number;
 	public readonly a3_100: number;
 

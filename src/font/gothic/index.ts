@@ -12,7 +12,7 @@ function dfDrawFont(
 	{
 		a1, x1, y1, x2, y2, x3, y3, x4, y4,
 		a2_100,
-		a3_100, opt2, haneAdjustment, mageAdjustment,
+		a3_100, haneAdjustment, mageAdjustment,
 	}: Stroke): void {
 
 	switch (a1 % 100) {
@@ -44,7 +44,7 @@ function dfDrawFont(
 				const ty1 = y3 + dy1;
 				cdDrawCurve(font, polygons, x1, y1, x2, y2, tx1, ty1, a2_100, 1);
 				cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage * 2, y3 - font.kMage * 0.5, 1, 0);
-			} else if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
+			} else if (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) {
 				const tx1 = x3 + font.kMage;
 				const ty1 = y3;
 				const tx2 = tx1 + font.kMage * 0.5;
@@ -71,7 +71,7 @@ function dfDrawFont(
 			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100, 1);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1);
 
-			if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
+			if (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) {
 				const tx3 = x3 - font.kMage;
 				const ty3 = y3;
 				const tx4 = x3 + font.kMage * 0.5;
@@ -85,7 +85,7 @@ function dfDrawFont(
 			break;
 		}
 		case 6: {
-			if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
+			if (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) {
 				const tx1 = x4 - font.kMage;
 				const ty1 = y4;
 				const tx2 = x4 + font.kMage * 0.5;

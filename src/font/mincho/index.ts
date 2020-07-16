@@ -12,7 +12,7 @@ function dfDrawFont(
 	{
 		a1, x1, y1, x2, y2, x3, y3, x4, y4,
 		a2_100, kirikuchiAdjustment, tateAdjustment, opt3,
-		a3_100, opt2, haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
+		a3_100, haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
 	}: Stroke): void {
 
 	switch (a1 % 100) { // ... no need to divide
@@ -33,7 +33,7 @@ function dfDrawFont(
 						polygon.scale(10).floor().reflectY().translate(dx * 10, dy * 10).scale(0.1);
 					}
 				}
-			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 1 && opt2 === 0 && mageAdjustment === 0) {
+			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 1 && haneAdjustment === 0 && mageAdjustment === 0) {
 				for (const polygon of polygons.array) {
 					const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
 					if (inside) {
@@ -42,7 +42,7 @@ function dfDrawFont(
 						polygon.scale(10).floor().rotate90().translate(dx * 10, dy * 10).scale(0.1);
 					}
 				}
-			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 2 && opt2 === 0 && mageAdjustment === 0) {
+			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 2 && haneAdjustment === 0 && mageAdjustment === 0) {
 				for (const polygon of polygons.array) {
 					const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
 					if (inside) {
@@ -50,7 +50,7 @@ function dfDrawFont(
 						polygon.scale(10).floor().rotate180().translate(dx * 10, dy * 10).scale(0.1);
 					}
 				}
-			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 3 && opt2 === 0 && mageAdjustment === 0) {
+			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 3 && haneAdjustment === 0 && mageAdjustment === 0) {
 				for (const polygon of polygons.array) {
 					const inside = polygon.array.every(({ x, y }) => x1 <= x && x <= x2 && y1 <= y && y <= y2);
 					if (inside) {
@@ -98,8 +98,8 @@ function dfDrawFont(
 			} else {
 				cdDrawCurve(
 					font, polygons, x1, y1, x2, y2, x3, y3,
-					a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) ? 15 : a3_100,
-					tateAdjustment, opt2, opt3, mageAdjustment);
+					a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) ? 15 : a3_100,
+					tateAdjustment, haneAdjustment, opt3, mageAdjustment);
 			}
 			break;
 		}
@@ -118,9 +118,9 @@ function dfDrawFont(
 			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment + opt3 * 10, mageAdjustment);
 
-			if (!(a3_100 === 5 && opt2 === 0 && !((x2 < x3 && x3 - tx2 > 0) || (x2 > x3 && tx2 - x3 > 0)))) { // for closer position
+			if (!(a3_100 === 5 && haneAdjustment === 0 && !((x2 < x3 && x3 - tx2 > 0) || (x2 > x3 && tx2 - x3 > 0)))) { // for closer position
 				cdDrawLine(font, polygons, tx2, ty2, x3, y3,
-					6, a3_100, mageAdjustment, opt2, opt2, (a3_100 === 5 && opt2 === 0) ? 0 : mageAdjustment); // bolder by force
+					6, a3_100, mageAdjustment, urokoAdjustment, kakatoAdjustment, (a3_100 === 5 && haneAdjustment === 0) ? 0 : mageAdjustment); // bolder by force
 			}
 			break;
 		}
@@ -128,7 +128,7 @@ function dfDrawFont(
 			cdDrawCurve(
 				font, polygons, x1, y1, x2, y2, x3, y3,
 				a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, opt2, opt2, mageAdjustment);
+			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, urokoAdjustment, kakatoAdjustment, mageAdjustment);
 			break;
 		}
 		case 4: {
@@ -150,8 +150,8 @@ function dfDrawFont(
 			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
 
-			if (!(a3_100 === 5 && opt2 === 0 && mageAdjustment === 0 && x3 - tx2 <= 0)) { // for closer position
-				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, opt2, opt2, mageAdjustment); // bolder by force
+			if (!(a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0 && x3 - tx2 <= 0)) { // for closer position
+				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, urokoAdjustment, kakatoAdjustment, mageAdjustment); // bolder by force
 			}
 			break;
 		}
@@ -171,8 +171,8 @@ function dfDrawFont(
 			} else {
 				cdDrawBezier(
 					font, polygons, x1, y1, x2, y2, x3, y3, x4, y4,
-					a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) ? 15 : a3_100,
-					tateAdjustment, opt2, opt3, mageAdjustment);
+					a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) ? 15 : a3_100,
+					tateAdjustment, haneAdjustment, opt3, mageAdjustment);
 			}
 			break;
 		}
@@ -180,7 +180,7 @@ function dfDrawFont(
 			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 			cdDrawCurve(
 				font, polygons, x2, y2, x3, y3, x4, y4,
-				1, a3_100, tateAdjustment, opt2, opt3, mageAdjustment);
+				1, a3_100, tateAdjustment, haneAdjustment, opt3, mageAdjustment);
 			break;
 		}
 		case 9: // may not be exist ... no need
