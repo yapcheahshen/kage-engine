@@ -423,7 +423,7 @@ export function cdDrawCurve(
 export function cdDrawLine(
 	font: Mincho, polygons: Polygons,
 	tx1: number, ty1: number, tx2: number, ty2: number,
-	ta1: number, ta2: number, opt1: number, opt2: number): void {
+	ta1: number, ta2: number, opt1: number, opt2: number, mageAdjustment: number): void {
 
 	const x1 = tx1;
 	const y1 = ty1;
@@ -441,104 +441,106 @@ export function cdDrawLine(
 		const [cosrad, sinrad] = (x1 === x2)
 			? [0, 1] // ?????
 			: normalize([x2 - x1, y2 - y1]);
-		const poly0 = new Polygon(4);
-		switch (a1) {
-			case 0:
-				poly0.set(0,
-					x1 + sinrad * kMinWidthT + cosrad * font.kMinWidthY / 2,
-					y1 - cosrad * kMinWidthT + sinrad * font.kMinWidthY / 2);
-				poly0.set(3,
-					x1 - sinrad * kMinWidthT - cosrad * font.kMinWidthY / 2,
-					y1 + cosrad * kMinWidthT - sinrad * font.kMinWidthY / 2);
-				break;
-			case 1:
-			case 6: // ... no need
-				poly0.set(0, x1 + sinrad * kMinWidthT, y1 - cosrad * kMinWidthT);
-				poly0.set(3, x1 - sinrad * kMinWidthT, y1 + cosrad * kMinWidthT);
-				break;
-			case 12:
-				poly0.set(0,
-					x1 + sinrad * kMinWidthT - cosrad * font.kMinWidthY,
-					y1 - cosrad * kMinWidthT - sinrad * font.kMinWidthY);
-				poly0.set(3,
-					x1 - sinrad * kMinWidthT - cosrad * (kMinWidthT + font.kMinWidthY),
-					y1 + cosrad * kMinWidthT - sinrad * (kMinWidthT + font.kMinWidthY));
-				break;
-			case 22:
-				if (x1 === x2) {
-					poly0.set(0, x1 + kMinWidthT, y1);
-					poly0.set(3, x1 - kMinWidthT, y1);
-				} else {
-					const rad = Math.atan((y2 - y1) / (x2 - x1));
-					const v = x1 > x2 ? -1 : 1;
-					// TODO: why " + 1" ???
-					poly0.set(0, x1 + (kMinWidthT * v + 1) / Math.sin(rad), y1 + 1);
-					poly0.set(3, x1 - (kMinWidthT * v) / Math.sin(rad), y1);
-				}
-				break;
-			case 32:
-				if (x1 === x2) {
-					poly0.set(0, x1 + kMinWidthT, y1 - font.kMinWidthY);
-					poly0.set(3, x1 - kMinWidthT, y1 - font.kMinWidthY);
-				} else {
-					poly0.set(0, x1 + kMinWidthT / sinrad, y1);
-					poly0.set(3, x1 - kMinWidthT / sinrad, y1);
-				}
-				break;
-		}
-
-		switch (a2) {
-			case 0:
-				if (a1 === 6) { // KAGI's tail ... no need
-					poly0.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-					poly0.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
-				} else {
-					poly0.set(1,
-						x2 + sinrad * kMinWidthT - cosrad * kMinWidthT / 2,
-						y2 - cosrad * kMinWidthT - sinrad * kMinWidthT / 2);
-					poly0.set(2,
-						x2 - sinrad * kMinWidthT + cosrad * kMinWidthT / 2,
-						y2 + cosrad * kMinWidthT + sinrad * kMinWidthT / 2);
-				}
-				break;
-			case 5:
-				if (x1 === x2) {
+		if (!((a2 === 13 || a2 === 23) && mageAdjustment !== 0)) { // for backward compatibility...
+			const poly = new Polygon(4);
+			switch (a1) {
+				case 0:
+					poly.set(0,
+						x1 + sinrad * kMinWidthT + cosrad * font.kMinWidthY / 2,
+						y1 - cosrad * kMinWidthT + sinrad * font.kMinWidthY / 2);
+					poly.set(3,
+						x1 - sinrad * kMinWidthT - cosrad * font.kMinWidthY / 2,
+						y1 + cosrad * kMinWidthT - sinrad * font.kMinWidthY / 2);
 					break;
-				}
-			// falls through
-			case 1: // is needed?
-				poly0.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-				poly0.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
-				break;
-			case 13:
-				poly0.set(1,
-					x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoL[opt2],
-					y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoL[opt2]);
-				poly0.set(2,
-					x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoL[opt2] + kMinWidthT),
-					y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoL[opt2] + kMinWidthT));
-				break;
-			case 23:
-				poly0.set(1,
-					x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoR[opt2],
-					y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoR[opt2]);
-				poly0.set(2,
-					x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoR[opt2] + kMinWidthT),
-					y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoR[opt2] + kMinWidthT));
-				break;
-			case 24: // for T/H design
-			case 32:
-				if (x1 === x2) {
-					poly0.set(1, x2 + kMinWidthT, y2 + font.kMinWidthY);
-					poly0.set(2, x2 - kMinWidthT, y2 + font.kMinWidthY);
-				} else {
-					poly0.set(1, x2 + kMinWidthT / sinrad, y2);
-					poly0.set(2, x2 - kMinWidthT / sinrad, y2);
-				}
-				break;
-		}
+				case 1:
+				case 6: // ... no need
+					poly.set(0, x1 + sinrad * kMinWidthT, y1 - cosrad * kMinWidthT);
+					poly.set(3, x1 - sinrad * kMinWidthT, y1 + cosrad * kMinWidthT);
+					break;
+				case 12:
+					poly.set(0,
+						x1 + sinrad * kMinWidthT - cosrad * font.kMinWidthY,
+						y1 - cosrad * kMinWidthT - sinrad * font.kMinWidthY);
+					poly.set(3,
+						x1 - sinrad * kMinWidthT - cosrad * (kMinWidthT + font.kMinWidthY),
+						y1 + cosrad * kMinWidthT - sinrad * (kMinWidthT + font.kMinWidthY));
+					break;
+				case 22:
+					if (x1 === x2) {
+						poly.set(0, x1 + kMinWidthT, y1);
+						poly.set(3, x1 - kMinWidthT, y1);
+					} else {
+						const rad = Math.atan((y2 - y1) / (x2 - x1));
+						const v = x1 > x2 ? -1 : 1;
+						// TODO: why " + 1" ???
+						poly.set(0, x1 + (kMinWidthT * v + 1) / Math.sin(rad), y1 + 1);
+						poly.set(3, x1 - (kMinWidthT * v) / Math.sin(rad), y1);
+					}
+					break;
+				case 32:
+					if (x1 === x2) {
+						poly.set(0, x1 + kMinWidthT, y1 - font.kMinWidthY);
+						poly.set(3, x1 - kMinWidthT, y1 - font.kMinWidthY);
+					} else {
+						poly.set(0, x1 + kMinWidthT / sinrad, y1);
+						poly.set(3, x1 - kMinWidthT / sinrad, y1);
+					}
+					break;
+			}
 
-		polygons.push(poly0);
+			switch (a2) {
+				case 0:
+					if (a1 === 6) { // KAGI's tail ... no need
+						poly.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
+						poly.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
+					} else {
+						poly.set(1,
+							x2 + sinrad * kMinWidthT - cosrad * kMinWidthT / 2,
+							y2 - cosrad * kMinWidthT - sinrad * kMinWidthT / 2);
+						poly.set(2,
+							x2 - sinrad * kMinWidthT + cosrad * kMinWidthT / 2,
+							y2 + cosrad * kMinWidthT + sinrad * kMinWidthT / 2);
+					}
+					break;
+				case 5:
+					if (x1 === x2) {
+						break;
+					}
+				// falls through
+				case 1: // is needed?
+					poly.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
+					poly.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
+					break;
+				case 13:
+					poly.set(1,
+						x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoL[opt2],
+						y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoL[opt2]);
+					poly.set(2,
+						x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoL[opt2] + kMinWidthT),
+						y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoL[opt2] + kMinWidthT));
+					break;
+				case 23:
+					poly.set(1,
+						x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoR[opt2],
+						y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoR[opt2]);
+					poly.set(2,
+						x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoR[opt2] + kMinWidthT),
+						y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoR[opt2] + kMinWidthT));
+					break;
+				case 24: // for T/H design
+				case 32:
+					if (x1 === x2) {
+						poly.set(1, x2 + kMinWidthT, y2 + font.kMinWidthY);
+						poly.set(2, x2 - kMinWidthT, y2 + font.kMinWidthY);
+					} else {
+						poly.set(1, x2 + kMinWidthT / sinrad, y2);
+						poly.set(2, x2 - kMinWidthT / sinrad, y2);
+					}
+					break;
+			}
+
+			polygons.push(poly);
+		}
 
 		if (a2 === 24) { // for T design
 			const poly = new Polygon([
@@ -553,7 +555,7 @@ export function cdDrawLine(
 			polygons.push(poly);
 		}
 
-		if (a2 === 13 && opt2 === 4) { // for new GTH box's left bottom corner
+		if (a2 === 13 && opt2 === 4 && mageAdjustment === 0) { // for new GTH box's left bottom corner
 			if (x1 === x2) {
 				const poly = new Polygon([
 					{ x: -kMinWidthT, y: -font.kMinWidthY * 3 },
@@ -735,7 +737,7 @@ export function cdDrawLine(
 		polygons.push(poly);
 
 		// UROKO
-		if (a2 === 0) {
+		if (a2 === 0 && mageAdjustment === 0) {
 			const poly2 = new Polygon([
 				{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
 				{ x: -cosrad * font.kAdjustUrokoX[opt2], y: -sinrad * font.kAdjustUrokoX[opt2] },

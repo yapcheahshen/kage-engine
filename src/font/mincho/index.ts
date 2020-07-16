@@ -68,7 +68,7 @@ function dfDrawFont(
 					: normalize([x1 - x2, y1 - y2], font.kMage);
 				const tx1 = x2 + dx1;
 				const ty1 = y2 + dy1;
-				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
+				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0);
 				cdDrawCurve(
 					font, polygons,
 					tx1, ty1, x2, y2,
@@ -77,7 +77,7 @@ function dfDrawFont(
 			} else {
 				cdDrawLine(
 					font, polygons, x1, y1, x2, y2,
-					a2_100 + kirikuchiAdjustment * 100, a3_100, tateAdjustment + opt3 * 10, opt2 + mageAdjustment * 10);
+					a2_100 + kirikuchiAdjustment * 100, a3_100, tateAdjustment + opt3 * 10, opt2, mageAdjustment);
 			}
 			break;
 		}
@@ -118,18 +118,18 @@ function dfDrawFont(
 			const tx2 = x2 + dx2;
 			const ty2 = y2 + dy2;
 
-			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
+			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment + opt3 * 10, mageAdjustment);
 
 			if (a3_100 === 5 && opt2 === 0) {
 				const tx3 = x3;
 				const ty3 = y3;
 				if ((x2 < x3 && tx3 - tx2 > 0) || (x2 > x3 && tx2 - tx3 > 0)) { // for closer position
-					cdDrawLine(font, polygons, tx2, ty2, tx3, ty3, 6, 5, mageAdjustment, 0); // bolder by force
+					cdDrawLine(font, polygons, tx2, ty2, tx3, ty3, 6, 5, mageAdjustment, 0, 0); // bolder by force
 				}
 			} else {
 				cdDrawLine(font, polygons, tx2, ty2, x3, y3,
-					6, a3_100, mageAdjustment, opt2 + mageAdjustment * 10); // bolder by force
+					6, a3_100, mageAdjustment, opt2, mageAdjustment); // bolder by force
 			}
 			break;
 		}
@@ -137,7 +137,7 @@ function dfDrawFont(
 			cdDrawCurve(
 				font, polygons, x1, y1, x2, y2, x3, y3,
 				a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, opt2 + mageAdjustment * 10);
+			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, opt2, mageAdjustment);
 			break;
 		}
 		case 4: {
@@ -156,17 +156,17 @@ function dfDrawFont(
 			const tx2 = x2 + dx2;
 			const ty2 = y2 + dy2;
 
-			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
+			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
 
 			if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
 				const tx3 = x3;
 				const ty3 = y3;
 				if (tx3 - tx2 > 0) { // for closer position
-					cdDrawLine(font, polygons, tx2, ty2, tx3, ty3, 6, 5, 0, 0); // bolder by force
+					cdDrawLine(font, polygons, tx2, ty2, tx3, ty3, 6, 5, 0, 0, 0); // bolder by force
 				}
 			} else {
-				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, opt2 + mageAdjustment * 10); // bolder by force
+				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, opt2, mageAdjustment); // bolder by force
 			}
 			break;
 		}
@@ -195,7 +195,7 @@ function dfDrawFont(
 			break;
 		}
 		case 7: {
-			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0);
+			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0);
 			cdDrawCurve(
 				font, polygons, x2, y2, x3, y3, x4, y4,
 				1, a3_100, tateAdjustment, opt2, opt3, mageAdjustment);
