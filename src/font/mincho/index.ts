@@ -12,7 +12,7 @@ function dfDrawFont(
 	{
 		a1, x1, y1, x2, y2, x3, y3, x4, y4,
 		a2_100, kirikuchiAdjustment, tateAdjustment, opt3,
-		a3_100, opt2, mageAdjustment,
+		a3_100, opt2, haneAdjustment, mageAdjustment,
 	}: Stroke): void {
 
 	switch (a1 % 100) { // ... no need to divide
@@ -73,7 +73,7 @@ function dfDrawFont(
 					font, polygons,
 					tx1, ty1, x2, y2,
 					x2 - font.kMage * (((font.kAdjustTateStep + 4) - tateAdjustment - opt3 * 10) / (font.kAdjustTateStep + 4)), y2,
-					1, 14, tateAdjustment, opt2, opt3, mageAdjustment);
+					1, 14, tateAdjustment, haneAdjustment, opt3, mageAdjustment);
 			} else {
 				cdDrawLine(
 					font, polygons, x1, y1, x2, y2,
@@ -94,7 +94,7 @@ function dfDrawFont(
 				cdDrawCurve(
 					font, polygons, x1, y1, x2, y2, tx1, ty1,
 					a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-				cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage, y3, 1, 14, 0, opt2, 0, mageAdjustment);
+				cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage, y3, 1, 14, 0, haneAdjustment, 0, mageAdjustment);
 			} else if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
 				cdDrawCurve(
 					font, polygons, x1, y1, x2, y2, x3, y3,
@@ -182,7 +182,7 @@ function dfDrawFont(
 				cdDrawBezier(
 					font, polygons, x1, y1, x2, y2, x3, y3, tx1, ty1,
 					a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-				cdDrawCurve(font, polygons, tx1, ty1, x4, y4, x4 - font.kMage, y4, 1, 14, 0, opt2, 0, mageAdjustment);
+				cdDrawCurve(font, polygons, tx1, ty1, x4, y4, x4 - font.kMage, y4, 1, 14, 0, haneAdjustment, 0, mageAdjustment);
 			} else if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
 				cdDrawBezier(
 					font, polygons, x1, y1, x2, y2, x3, y3, x4, y4,
@@ -322,7 +322,7 @@ class Mincho implements Font {
 	protected adjustHane(strokesArray: Stroke[]): Stroke[] {
 		strokesArray.forEach((stroke, i) => {
 			if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6)
-				&& stroke.a3_100 === 4 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
+				&& stroke.a3_100 === 4 && stroke.haneAdjustment === 0 && stroke.mageAdjustment === 0) {
 				let lpx: number; // lastPointX
 				let lpy: number; // lastPointY
 				if (stroke.a1 === 1) {
@@ -350,7 +350,7 @@ class Mincho implements Font {
 					}
 				});
 				if (mn !== Infinity) {
-					stroke.opt2 += 7 - Math.floor(mn / 15);
+					stroke.haneAdjustment += 7 - Math.floor(mn / 15);
 				}
 			}
 		});

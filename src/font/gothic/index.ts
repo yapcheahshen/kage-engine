@@ -12,14 +12,14 @@ function dfDrawFont(
 	{
 		a1, x1, y1, x2, y2, x3, y3, x4, y4,
 		a2_100,
-		a3_100, opt2, mageAdjustment,
+		a3_100, opt2, haneAdjustment, mageAdjustment,
 	}: Stroke): void {
 
 	switch (a1 % 100) {
 		case 0:
 			break;
 		case 1: {
-			if (a3_100 === 4 && opt2 === 0 && mageAdjustment === 0) {
+			if (a3_100 === 4 && haneAdjustment === 0 && mageAdjustment === 0) {
 				const [dx1, dy1] = (x1 === x2 && y1 === y2)
 					? [0, font.kMage] // ?????
 					: normalize([x1 - x2, y1 - y2], font.kMage);
@@ -34,7 +34,7 @@ function dfDrawFont(
 		}
 		case 2:
 		case 12: {
-			if (a3_100 === 4 && opt2 === 0 && mageAdjustment === 0) {
+			if (a3_100 === 4 && haneAdjustment === 0 && mageAdjustment === 0) {
 				const [dx1, dy1] = (x2 === x3)
 					? [0, -font.kMage] // ?????
 					: (y2 === y3)
