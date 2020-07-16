@@ -19,23 +19,31 @@
 			height: 32em;
 		}
 	</style>
-	<script type="text/javascript" src="dist/kage.js"></script>
+
+	<!-- include the library -->
+	<script type="text/javascript" src="../dist/kage.js"></script>
+
 	<script type="text/javascript">
 		function updateGlyph() {
-			var dataArea = document.getElementById("data_area");
-			var canvas = document.getElementById("canvas");
-			var ctx = canvas.getContext("2d");
 
 			var kage = new Kage();
-			kage.kUseCurve = false;
-			var polygons = new Polygons();
 
+			var polygons = new Kage.Polygons();
+
+			// Add components data
 			kage.kBuhin.push("u9ebb", "1:0:2:40:37:143:37$4:22:5:143:37:12:169:170:169:175:171");
 			kage.kBuhin.push("u9ebb-2", "99:0:0:0:0:200:200:u9ebb:0:0:0");
 
+			// Specify component name and generate glyph into `polygons`
 			// kage.makeGlyph(polygons, "u9ebb-2");
+
+			// ... or specify data and generate glyph into `polygons`
+			var dataArea = document.getElementById("data_area");
 			kage.makeGlyph2(polygons, dataArea.value.split("\n").join("$"));
 
+			// Draw the result polygons using canvas
+			var canvas = document.getElementById("canvas");
+			var ctx = canvas.getContext("2d");
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.fillStyle = "rgb(0, 0, 0)";
 
@@ -49,12 +57,14 @@
 				ctx.fill();
 			}
 
+			// Get a SVG string for the result polygons
 			document.getElementById("svg").innerHTML = polygons.generateSVG(false);
 		}
+
 		document.addEventListener("DOMContentLoaded", function () {
 			var dataArea = document.getElementById("data_area");
-			dataArea.addEventListener("change", updateGlyph);
-			dataArea.addEventListener("keyup", updateGlyph);
+			dataArea.addEventListener("input", updateGlyph);
+
 			var m = location.hash.match(/^#kage=([^&]+)/);
 			if (m) {
 				dataArea.value = decodeURIComponent(m[1]).split("$").join("\n");
