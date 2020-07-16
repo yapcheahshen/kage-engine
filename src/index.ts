@@ -1,3 +1,6 @@
+export { Kage } from "./kage";
+export { Polygons } from "./polygons";
+export { Buhin } from "./buhin";
+
 import { Kage } from "./kage";
-import { Polygons } from "./polygons";
-export { Kage, Polygons };
+export default Kage;

@@ -1,8 +1,6 @@
-import { Kage } from "./kage";
-import { normalize, quadraticBezier, quadraticBezierDeriv, ternarySearchMin } from "./util";
+import { normalize, quadraticBezier, quadraticBezierDeriv, cubicBezier, cubicBezierDeriv, ternarySearchMin } from "./util";
 
 export function divide_curve(
-	_kage: Kage,
 	x1: number, y1: number,
 	sx1: number, sy1: number,
 	x2: number, y2: number, curve: [number, number][]): { index: number, off: [number[], number[]] } {
@@ -25,7 +23,6 @@ export function divide_curve(
 
 // ------------------------------------------------------------------
 export function find_offcurve(
-	_kage: Kage,
 	curve: [number, number][], sx: number, sy: number): number[] {
 	const [nx1, ny1] = curve[0];
 	const [nx2, ny2] = curve[curve.length - 1];
@@ -50,47 +47,47 @@ export function find_offcurve(
 }
 
 // ------------------------------------------------------------------
-export function get_candidate(
-	kage: Kage,
-	a1: number, a2: number,
-	x1: number, y1: number, sx1: number, sy1: number, x2: number, y2: number,
-	opt3: number, opt4: number): [[number, number][], [number, number][]] {
-	const curve: [[number, number][], [number, number][]] = [[], []];
+export function generateFattenCurve(
+	x1: number, y1: number, sx1: number, sy1: number,
+	sx2: number, sy2: number, x2: number, y2: number,
+	kRate: number, widthFunc: (t: number) => number,
+	normalize_: ([x, y]: [number, number], mag: number) => [number, number] = normalize
+): { left: [number, number][]; right: [number, number][] } {
+	const curve: { left: [number, number][]; right: [number, number][] } = { left: [], right: [] };
 
-	for (let tt = 0; tt <= 1000; tt += kage.kRate) {
+	const isQuadratic = sx1 === sx2 && sy1 === sy2;
+	let xFunc, yFunc, ixFunc, iyFunc;
+	if (isQuadratic) {
+		// Spline
+		xFunc = (t: number) => quadraticBezier(x1, sx1, x2, t);
+		yFunc = (t: number) => quadraticBezier(y1, sy1, y2, t);
+		ixFunc = (t: number) => quadraticBezierDeriv(x1, sx1, x2, t);
+		iyFunc = (t: number) => quadraticBezierDeriv(y1, sy1, y2, t);
+	} else { // Bezier
+		xFunc = (t: number) => cubicBezier(x1, sx1, sx2, x2, t);
+		yFunc = (t: number) => cubicBezier(y1, sy1, sy2, y2, t);
+		ixFunc = (t: number) => cubicBezierDeriv(x1, sx1, sx2, x2, t);
+		iyFunc = (t: number) => cubicBezierDeriv(y1, sy1, sy2, y2, t);
+	}
+
+	for (let tt = 0; tt <= 1000; tt += kRate) {
 		const t = tt / 1000;
 
 		// calculate a dot
-		const x = quadraticBezier(x1, sx1, x2, t);
-		const y = quadraticBezier(y1, sy1, y2, t);
+		const x = xFunc(t);
+		const y = yFunc(t);
 
 		// KATAMUKI of vector by BIBUN
-		const ix = quadraticBezierDeriv(x1, sx1, x2, t);
-		const iy = quadraticBezierDeriv(y1, sy1, y2, t);
+		const ix = ixFunc(t);
+		const iy = iyFunc(t);
 
-		const hosomi = 0.5;
-		let deltad
-			= (a1 === 7 && a2 === 0) // L2RD: fatten
-				? t ** hosomi * kage.kL2RDfatten
-				: (a1 === 7)
-					? t ** hosomi
-					: (a2 === 7)
-						? (1 - t) ** hosomi
-						: (opt3 > 0)
-							? 1 - opt3 / 2 / (kage.kMinWidthT - opt4 / 2) + opt3 / 2 / (kage.kMinWidthT - opt4) * t
-							: 1;
-
-		if (deltad < 0.15) {
-			deltad = 0.15;
-		}
+		const width = widthFunc(t);
 
 		// line SUICHOKU by vector
-		const [ia, ib] = (ix === 0)
-			? [-kage.kMinWidthT * deltad, 0] // ?????
-			: normalize([-iy, ix], kage.kMinWidthT * deltad);
+		const [ia, ib] = normalize_([-iy, ix], width);
 
-		curve[0].push([x - ia, y - ib]);
-		curve[1].push([x + ia, y + ib]);
+		curve.left.push([x - ia, y - ib]);
+		curve.right.push([x + ia, y + ib]);
 	}
 	return curve;
 }
