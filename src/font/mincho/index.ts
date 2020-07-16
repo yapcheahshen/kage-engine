@@ -12,7 +12,7 @@ function dfDrawFont(
 	{
 		a1, x1, y1, x2, y2, x3, y3, x4, y4,
 		a2_100, kirikuchiAdjustment, tateAdjustment, opt3,
-		a3_100, opt2, haneAdjustment, mageAdjustment,
+		a3_100, opt2, haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
 	}: Stroke): void {
 
 	switch (a1 % 100) { // ... no need to divide
@@ -68,7 +68,7 @@ function dfDrawFont(
 					: normalize([x1 - x2, y1 - y2], font.kMage);
 				const tx1 = x2 + dx1;
 				const ty1 = y2 + dy1;
-				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0);
+				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 				cdDrawCurve(
 					font, polygons,
 					tx1, ty1, x2, y2,
@@ -77,7 +77,7 @@ function dfDrawFont(
 			} else {
 				cdDrawLine(
 					font, polygons, x1, y1, x2, y2,
-					a2_100 + kirikuchiAdjustment * 100, a3_100, tateAdjustment + opt3 * 10, opt2, mageAdjustment);
+					a2_100 + kirikuchiAdjustment * 100, a3_100, tateAdjustment + opt3 * 10, urokoAdjustment, kakatoAdjustment, mageAdjustment);
 			}
 			break;
 		}
@@ -118,18 +118,18 @@ function dfDrawFont(
 			const tx2 = x2 + dx2;
 			const ty2 = y2 + dy2;
 
-			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment + opt3 * 10, mageAdjustment);
 
 			if (a3_100 === 5 && opt2 === 0) {
 				const tx3 = x3;
 				const ty3 = y3;
 				if ((x2 < x3 && tx3 - tx2 > 0) || (x2 > x3 && tx2 - tx3 > 0)) { // for closer position
-					cdDrawLine(font, polygons, tx2, ty2, tx3, ty3, 6, 5, mageAdjustment, 0, 0); // bolder by force
+					cdDrawLine(font, polygons, tx2, ty2, tx3, ty3, 6, 5, mageAdjustment, 0, 0, 0); // bolder by force
 				}
 			} else {
 				cdDrawLine(font, polygons, tx2, ty2, x3, y3,
-					6, a3_100, mageAdjustment, opt2, mageAdjustment); // bolder by force
+					6, a3_100, mageAdjustment, opt2, opt2, mageAdjustment); // bolder by force
 			}
 			break;
 		}
@@ -137,7 +137,7 @@ function dfDrawFont(
 			cdDrawCurve(
 				font, polygons, x1, y1, x2, y2, x3, y3,
 				a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, opt2, mageAdjustment);
+			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, opt2, opt2, mageAdjustment);
 			break;
 		}
 		case 4: {
@@ -156,17 +156,17 @@ function dfDrawFont(
 			const tx2 = x2 + dx2;
 			const ty2 = y2 + dy2;
 
-			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
 
 			if (a3_100 === 5 && opt2 === 0 && mageAdjustment === 0) {
 				const tx3 = x3;
 				const ty3 = y3;
 				if (tx3 - tx2 > 0) { // for closer position
-					cdDrawLine(font, polygons, tx2, ty2, tx3, ty3, 6, 5, 0, 0, 0); // bolder by force
+					cdDrawLine(font, polygons, tx2, ty2, tx3, ty3, 6, 5, 0, 0, 0, 0); // bolder by force
 				}
 			} else {
-				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, opt2, mageAdjustment); // bolder by force
+				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, opt2, opt2, mageAdjustment); // bolder by force
 			}
 			break;
 		}
@@ -195,7 +195,7 @@ function dfDrawFont(
 			break;
 		}
 		case 7: {
-			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 			cdDrawCurve(
 				font, polygons, x2, y2, x3, y3, x4, y4,
 				1, a3_100, tateAdjustment, opt2, opt3, mageAdjustment);
@@ -408,7 +408,7 @@ class Mincho implements Font {
 	protected adjustKakato(strokesArray: Stroke[]): Stroke[] {
 		strokesArray.forEach((stroke, i) => {
 			if (stroke.a1 === 1
-				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.opt2 === 0 && stroke.mageAdjustment === 0) {
+				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.kakatoAdjustment === 0 && stroke.mageAdjustment === 0) {
 				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
 					if (isCrossBoxWithOthers(
 						strokesArray, i,
@@ -419,7 +419,7 @@ class Mincho implements Font {
 						|| round(stroke.y2 + this.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
 						|| round(stroke.y2 - stroke.y1) < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
-						stroke.opt2 += 3 - k;
+						stroke.kakatoAdjustment = 3 - k;
 						break;
 					}
 				}
@@ -431,7 +431,7 @@ class Mincho implements Font {
 	protected adjustUroko(strokesArray: Stroke[]): Stroke[] {
 		strokesArray.forEach((stroke, i) => {
 			if (stroke.a1 === 1
-				&& stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0) { // no operation for TATE
+				&& stroke.a3_100 === 0 && stroke.urokoAdjustment === 0 && stroke.mageAdjustment === 0) { // no operation for TATE
 				for (let k = 0; k < this.kAdjustUrokoLengthStep; k++) {
 					let tx;
 					let ty;
@@ -452,7 +452,7 @@ class Mincho implements Font {
 					}
 					if (round(tlen) < this.kAdjustUrokoLength[k]
 						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
-						stroke.opt2 += this.kAdjustUrokoLengthStep - k;
+						stroke.urokoAdjustment = this.kAdjustUrokoLengthStep - k;
 						break;
 					}
 				}
@@ -463,7 +463,7 @@ class Mincho implements Font {
 
 	protected adjustUroko2(strokesArray: Stroke[]): Stroke[] {
 		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 1 && stroke.a3_100 === 0 && stroke.opt2 === 0 && stroke.mageAdjustment === 0
+			if (stroke.a1 === 1 && stroke.a3_100 === 0 && stroke.urokoAdjustment === 0 && stroke.mageAdjustment === 0
 				&& stroke.y1 === stroke.y2) {
 				let pressure = 0;
 				strokesArray.forEach((stroke2, j) => {
@@ -484,7 +484,7 @@ class Mincho implements Font {
 				});
 				// const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
 				// if (stroke.a3 < result) {
-				stroke.opt2 = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
+				stroke.urokoAdjustment = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
 				// }
 			}
 		});

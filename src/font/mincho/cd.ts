@@ -423,7 +423,7 @@ export function cdDrawCurve(
 export function cdDrawLine(
 	font: Mincho, polygons: Polygons,
 	tx1: number, ty1: number, tx2: number, ty2: number,
-	ta1: number, ta2: number, opt1: number, opt2: number, mageAdjustment: number): void {
+	ta1: number, ta2: number, opt1: number, urokoAdjustment: number, kakatoAdjustment: number, mageAdjustment: number): void {
 
 	const x1 = tx1;
 	const y1 = ty1;
@@ -513,19 +513,19 @@ export function cdDrawLine(
 					break;
 				case 13:
 					poly.set(1,
-						x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoL[opt2],
-						y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoL[opt2]);
+						x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoL[kakatoAdjustment],
+						y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoL[kakatoAdjustment]);
 					poly.set(2,
-						x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoL[opt2] + kMinWidthT),
-						y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoL[opt2] + kMinWidthT));
+						x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoL[kakatoAdjustment] + kMinWidthT),
+						y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoL[kakatoAdjustment] + kMinWidthT));
 					break;
 				case 23:
 					poly.set(1,
-						x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoR[opt2],
-						y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoR[opt2]);
+						x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoR[kakatoAdjustment],
+						y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoR[kakatoAdjustment]);
 					poly.set(2,
-						x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoR[opt2] + kMinWidthT),
-						y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoR[opt2] + kMinWidthT));
+						x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoR[kakatoAdjustment] + kMinWidthT),
+						y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoR[kakatoAdjustment] + kMinWidthT));
 					break;
 				case 24: // for T/H design
 				case 32:
@@ -555,7 +555,7 @@ export function cdDrawLine(
 			polygons.push(poly);
 		}
 
-		if (a2 === 13 && opt2 === 4 && mageAdjustment === 0) { // for new GTH box's left bottom corner
+		if (a2 === 13 && kakatoAdjustment === 4 && mageAdjustment === 0) { // for new GTH box's left bottom corner
 			if (x1 === x2) {
 				const poly = new Polygon([
 					{ x: -kMinWidthT, y: -font.kMinWidthY * 3 },
@@ -740,8 +740,8 @@ export function cdDrawLine(
 		if (a2 === 0 && mageAdjustment === 0) {
 			const poly2 = new Polygon([
 				{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
-				{ x: -cosrad * font.kAdjustUrokoX[opt2], y: -sinrad * font.kAdjustUrokoX[opt2] },
-				{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[opt2] / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[opt2] },
+				{ x: -cosrad * font.kAdjustUrokoX[urokoAdjustment], y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] },
+				{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] },
 			]);
 			poly2.translate(x2, y2);
 			polygons.push(poly2);

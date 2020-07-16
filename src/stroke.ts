@@ -30,7 +30,7 @@ export class Stroke {
 	//  *             adjustKakato (when 1::X{13,23});
 	//  * 1000s place: adjustMage (when 3)
 	//  */
-	// public get a3() { return this.a3_100 + (this.haneAdjustment || this.opt2) * 100 + this.mageAdjustment * 1000; }
+	// public get a3() { return this.a3_100 + (this.haneAdjustment || this.urokoAdjustment || this.kakatoAdjustment) * 100 + this.mageAdjustment * 1000; }
 	public x1: number;
 	public y1: number;
 	public x2: number;
@@ -45,12 +45,14 @@ export class Stroke {
 	public opt3: number;
 
 	public haneAdjustment: number;
-	// public urokoAdjustment: number;
-	// public kakatoAdjustment: number;
+	public urokoAdjustment: number;
+	public kakatoAdjustment: number;
 	public mageAdjustment: number;
 
 	// temporarily
-	public opt2: number;
+	public get opt2(): number {
+		return this.haneAdjustment || this.urokoAdjustment || this.kakatoAdjustment;
+	}
 
 	public readonly a2_100: number;
 	public readonly a3_100: number;
@@ -75,7 +77,7 @@ export class Stroke {
 		this.opt3 = Math.floor(this.a2_100 / 10000);
 		this.a2_100 %= 100;
 
-		this.haneAdjustment = this.opt2 = Math.floor(this.a3_100 / 100) % 10;
+		this.haneAdjustment = this.urokoAdjustment = this.kakatoAdjustment = Math.floor(this.a3_100 / 100) % 10;
 		this.mageAdjustment = Math.floor(this.a3_100 / 1000);
 		this.a3_100 %= 100;
 	}
