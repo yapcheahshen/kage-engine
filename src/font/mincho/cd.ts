@@ -79,13 +79,13 @@ function cdDrawCurveU(
 		const hosomi = 0.5;
 		const deltadFunc: (t: number) => number
 			= (a1 === 7 && a2 === 0) // L2RD: fatten
-				? (t) => t ** hosomi * 1.1
+				? (t) => t ** hosomi * 1.1 // should be font.kL2RDfatten ?
 				: (a1 === 7)
 					? (t) => t ** hosomi
 					: (a2 === 7)
 						? (t) => (1 - t) ** hosomi
-						: (opt3 > 0)
-							? (t) => 1 - opt3 / 2 / (kMinWidthT - opt4 / 2) + opt3 / 2 / (kMinWidthT - opt4) * t
+						: (opt3 > 0) // should be (opt3 > 0 || opt4 > 0) ?
+							? (t) => 1 - opt3 / 2 / (kMinWidthT - opt4 / 2) + opt3 / 2 / (kMinWidthT - opt4) * t // ??????
 							: () => 1;
 
 		const { left: curveL, right: curveR } = generateFattenCurve(
@@ -146,25 +146,18 @@ function cdDrawCurveU(
 			hosomi += 0.4 * (1 - hypot(x2 - x1, y2 - y1) / 50);
 		}
 
-		const deltadFunc: (t: number) => number = (isQuadratic)
-			? // Spline
-			a1 === 7 && a2 === 0 // L2RD: fatten
+		const deltadFunc: (t: number) => number
+			= a1 === 7 && a2 === 0 // L2RD: fatten
 				? (t) => t ** hosomi * font.kL2RDfatten
 				: a1 === 7
-					? (t) => t ** hosomi
+					? (isQuadratic) // ?????
+						? (t) => t ** hosomi
+						: (t) => (t ** hosomi) ** 0.7 // make fatten
 					: a2 === 7
 						? (t) => (1 - t) ** hosomi
-						: opt3 > 0 || opt4 > 0
+						: isQuadratic && (opt3 > 0 || opt4 > 0) // ?????
 							? (t) => ((font.kMinWidthT - opt3 / 2) - (opt4 - opt3) / 2 * t) / font.kMinWidthT
-							: () => 1
-			: // Bezier
-			a1 === 7 && a2 === 0 // L2RD: fatten
-				? (t) => t ** hosomi * font.kL2RDfatten
-				: a1 === 7
-					? (t) => (t ** hosomi) ** 0.7 // make fatten
-					: a2 === 7
-						? (t) => (1 - t) ** hosomi
-						: () => 1;
+							: () => 1;
 
 		const { left, right } = generateFattenCurve(
 			x1, y1, sx1, sy1, sx2, sy2, x2, y2,
@@ -194,7 +187,7 @@ function cdDrawCurveU(
 		}
 
 		// suiheisen ni setsuzoku
-		if (a1 === 132 || a1 === 22 && (isQuadratic ? (y1 > y2) : (x1 > sx1))) {
+		if (a1 === 132 || a1 === 22 && (isQuadratic ? (y1 > y2) : (x1 > sx1))) { // ?????
 			for (let index = 0, length = poly2.length; index + 1 < length; index++) {
 				const point1 = poly2.get(index);
 				const point2 = poly2.get(index + 1);
