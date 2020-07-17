@@ -10,17 +10,24 @@
 ### Changed
 - Stylistic parameters are moved from `Kage` to `Kage.kFont`.
 ```diff
-  const kage = new Kage();
-- kage.kMinWidthY = 3;
-- kage.kMinWidthT = 8;
-+ kage.kFont.kMinWidthY = 3;
-+ kage.kFont.kMinWidthT = 8;
+ const kage = new Kage();
+-kage.kMinWidthY = 3;
+-kage.kMinWidthT = 8;
++kage.kFont.kMinWidthY = 3;
++kage.kFont.kMinWidthT = 8;
   // ...
+```
+- Assigning a value to `Kage.kShotai` resets all stylistic parameters. Set `Kage.kShotai` before modifying any stylistic parameter.
+- Passing size as a parameter to `Kage` constructor is now deprecated. Use `Kage.kFont.setSize(size)` instead.
+```diff
+-const kage = new Kage(1);
++const kage = new Kage();
++kage.kFont.setSize(1);
 ```
 
 ## [0.2.3] - 2020-07-13
 ### Changed
-- Improve compatibility with the original engine.
+- Improve compatibility with the original engine for glyphs using reflect and/or rotate operations.
 
 ### Fixed
 - Fixed vertical reflection (`0:97`).
