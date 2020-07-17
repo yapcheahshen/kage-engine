@@ -15,9 +15,11 @@
 -kage.kMinWidthT = 8;
 +kage.kFont.kMinWidthY = 3;
 +kage.kFont.kMinWidthT = 8;
-  // ...
+ // ... the same goes for other parameters ...
 ```
-- Assigning a value to `Kage.kShotai` resets all stylistic parameters. Set `Kage.kShotai` before modifying any stylistic parameter.
+- Assigning a value to `Kage.kShotai` now resets all stylistic parameters. Set `Kage.kShotai` before modifying any stylistic parameter.
+
+### Deprecated
 - Passing size as a parameter to `Kage` constructor is now deprecated. Use `Kage.kFont.setSize(size)` instead.
 ```diff
 -const kage = new Kage(1);
