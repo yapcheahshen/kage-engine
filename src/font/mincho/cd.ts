@@ -15,7 +15,6 @@ function cdDrawCurveU(
 	const a2 = ta2;
 
 	const kMinWidthT = font.kMinWidthT - opt1 / 2;
-	const kMinWidthT2 = font.kMinWidthT - opt4 / 2;
 
 	let delta;
 	switch (a1 % 100) {
@@ -317,6 +316,7 @@ function cdDrawCurveU(
 	// process for tail
 
 	if (a2 === 1 || a2 === 8 || a2 === 15) { // the last filled circle ... it can change 15->5
+		const kMinWidthT2 = font.kMinWidthT - opt4 / 2;
 		const [dx, dy] = (sx2 === x2)
 			? [0, 1] // ?????
 			: (sy2 === y2)
