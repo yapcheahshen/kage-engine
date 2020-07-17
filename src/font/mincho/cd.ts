@@ -75,22 +75,25 @@ function cdDrawCurveU(
 	if (isQuadratic && font.kUseCurve) {
 		// Spline
 		// generating fatten curve -- begin
+
+		const hosomi = 0.5;
+		const deltadFunc: (t: number) => number
+			= (a1 === 7 && a2 === 0) // L2RD: fatten
+				? (t) => t ** hosomi * 1.1
+				: (a1 === 7)
+					? (t) => t ** hosomi
+					: (a2 === 7)
+						? (t) => (1 - t) ** hosomi
+						: (opt3 > 0)
+							? (t) => 1 - opt3 / 2 / (kMinWidthT - opt4 / 2) + opt3 / 2 / (kMinWidthT - opt4) * t
+							: () => 1;
+
 		const { left: curveL, right: curveR } = generateFattenCurve(
 			x1, y1, sx1, sy1, sx1, sy1, x2, y2,
 			10,
 			(t) => {
-				const hosomi = 0.5;
-				let deltad
-					= (a1 === 7 && a2 === 0) // L2RD: fatten
-						? t ** hosomi * 1.1
-						: (a1 === 7)
-							? t ** hosomi
-							: (a2 === 7)
-								? (1 - t) ** hosomi
-								: (opt3 > 0)
-									? 1 - opt3 / 2 / (kMinWidthT - opt4 / 2) + opt3 / 2 / (kMinWidthT - opt4) * t
-									: 1;
-	
+				let deltad = deltadFunc(t);
+
 				if (deltad < 0.15) {
 					deltad = 0.15;
 				}
@@ -143,33 +146,31 @@ function cdDrawCurveU(
 			hosomi += 0.4 * (1 - hypot(x2 - x1, y2 - y1) / 50);
 		}
 
+		const deltadFunc: (t: number) => number = (isQuadratic)
+			? // Spline
+			a1 === 7 && a2 === 0 // L2RD: fatten
+				? (t) => t ** hosomi * font.kL2RDfatten
+				: a1 === 7
+					? (t) => t ** hosomi
+					: a2 === 7
+						? (t) => (1 - t) ** hosomi
+						: opt3 > 0 || opt4 > 0
+							? (t) => ((font.kMinWidthT - opt3 / 2) - (opt4 - opt3) / 2 * t) / font.kMinWidthT
+							: () => 1
+			: // Bezier
+			a1 === 7 && a2 === 0 // L2RD: fatten
+				? (t) => t ** hosomi * font.kL2RDfatten
+				: a1 === 7
+					? (t) => (t ** hosomi) ** 0.7 // make fatten
+					: a2 === 7
+						? (t) => (1 - t) ** hosomi
+						: () => 1;
+
 		const { left, right } = generateFattenCurve(
 			x1, y1, sx1, sy1, sx2, sy2, x2, y2,
 			font.kRate,
 			(t) => {
-				let deltad;
-				if (isQuadratic) {
-					// Spline
-					deltad
-						= a1 === 7 && a2 === 0 // L2RD: fatten
-							? t ** hosomi * font.kL2RDfatten
-							: a1 === 7
-								? t ** hosomi
-								: a2 === 7
-									? (1 - t) ** hosomi
-									: opt3 > 0 || opt4 > 0
-										? ((font.kMinWidthT - opt3 / 2) - (opt4 - opt3) / 2 * t) / font.kMinWidthT
-										: 1;
-				} else { // Bezier
-					deltad
-						= a1 === 7 && a2 === 0 // L2RD: fatten
-							? t ** hosomi * font.kL2RDfatten
-							: a1 === 7
-								? (t ** hosomi) ** 0.7 // make fatten
-								: a2 === 7
-									? (1 - t) ** hosomi
-									: 1;
-				}
+				let deltad = deltadFunc(t);
 
 				if (deltad < 0.15) {
 					deltad = 0.15;
