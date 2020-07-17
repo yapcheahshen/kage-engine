@@ -4,6 +4,7 @@
 
 ## [0.3.0] - 2020-07-17
 ### Added
+- `Polygons` and `Buhin` are accessible as `Kage`'s static properties.
 - The script for use in browser environment is now included in the tarball.
 
 ### Changed
