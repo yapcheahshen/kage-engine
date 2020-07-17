@@ -1,4 +1,4 @@
-/*! kage.js v0.3.0-0
+/*! kage.js v0.3.0
  *  Licensed under GPL-3.0
  *  https://github.com/kurgm/kage-engine#readme
  */
