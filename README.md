@@ -1,8 +1,11 @@
 # KAGE engine
 
-くろごまが改変したKAGEエンジンです。
+[KAGE/engine](http://fonts.jp/engine.html) (Kanji-glyph Automatic Generating Engine) is a set of scripts that can render kanji glyphs described in KAGE format, and is a part of [KAGE system](http://fonts.jp/kage.html) which also includes a glyph design editor, a TrueType font generator, etc.
 
-[デモページ](https://kurgm.github.io/kage-engine/)
+くろごまが改変したKAGEエンジンです。
+This repository contains KAGE engine modified by @kurgm. 
+
+[デモページ Demo page](https://kurgm.github.io/kage-engine/)
 
 ## 改変したところ
 
@@ -36,6 +39,6 @@
 
 などなど……（[GlyphWiki:バグ報告](http://glyphwiki.org/wiki/GlyphWiki:%E3%83%90%E3%82%B0%E5%A0%B1%E5%91%8A)にもKAGEエンジンのバグが報告されています）
 
-## ライセンス
+## License / ライセンス
 
 GPL v3

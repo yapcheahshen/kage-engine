@@ -1,13 +1,14 @@
 {
   "name": "@kurgm/kage-engine",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "An engine that generates glyph image file from KAGE data",
   "directories": {
     "doc": "docs"
   },
   "main": "lib/index.js",
   "files": [
-    "lib/"
+    "lib",
+    "dist"
   ],
   "scripts": {
     "build": "npm run build:ts && npm run build:browser",
