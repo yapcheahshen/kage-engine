@@ -8,7 +8,7 @@
 - The script for use in browser environment is now included in the tarball.
 
 ### Changed
-- Stylistic parameters are moved from `Kage` to `Kage.kFont`.
+- Font parameters are moved from `Kage` to `Kage.kFont`.
 ```diff
  const kage = new Kage();
 -kage.kMinWidthY = 3;
@@ -17,7 +17,7 @@
 +kage.kFont.kMinWidthT = 8;
  // ... the same goes for other parameters ...
 ```
-- Assigning a value to `Kage.kShotai` now resets all stylistic parameters. Set `Kage.kShotai` before modifying any stylistic parameter.
+- Assigning a value to `Kage.kShotai` now resets all font parameters to the default values. Set `Kage.kShotai` before modifying any font parameter.
 
 ### Deprecated
 - Passing size as a parameter to `Kage` constructor is now deprecated. Use `Kage.kFont.setSize(size)` instead.
@@ -29,7 +29,7 @@
 
 ## [0.2.3] - 2020-07-13
 ### Changed
-- Improve compatibility with the original engine for glyphs using reflect and/or rotate operations.
+- Improved compatibility with the original engine for glyphs using reflect and/or rotate operations.
 
 ### Fixed
 - Fixed vertical reflection (`0:97`).
