@@ -400,11 +400,12 @@ function cdDrawCurveU(
 		}
 
 		case 14: { // jump to left, allways go left
+			const haneLength = font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3);
 			const poly = new Polygon([
 				{ x: 0, y: 0 },
 				{ x: 0, y: -kMinWidthT },
-				{ x: -font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT },
-				{ x: -font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT * 0.5 },
+				{ x: -haneLength, y: -kMinWidthT },
+				{ x: -haneLength, y: -kMinWidthT * 0.5 },
 			]);
 			// poly.reverse();
 			poly.translate(x2, y2);
@@ -674,11 +675,12 @@ export function cdDrawLine(
 			polygons.push(poly);
 			if (x1 !== x2 && a1 === 6 && a2 === 5) {
 				// KAGI NO YOKO BOU NO HANE
+				const haneLength = font.kWidth * 5;
 				const rv = x1 < x2 ? 1 : -1;
 				const poly = new Polygon([
 					{ x: 0, y: +rv * (-kMinWidthT + 1) },
-					{ x: +2, y: +rv * (-kMinWidthT - font.kWidth * 5) },
-					{ x: 0, y: +rv * (-kMinWidthT - font.kWidth * 5) },
+					{ x: +2, y: +rv * (-kMinWidthT - haneLength) },
+					{ x: 0, y: +rv * (-kMinWidthT - haneLength) },
 					{ x: -kMinWidthT, y: -kMinWidthT + 1 }, // rv ?????
 				]);
 				poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
@@ -727,12 +729,13 @@ export function cdDrawLine(
 				polygons.push(poly);
 
 				if (a2 === 5) {
+					const haneLength = font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1);
 					// KAGI NO YOKO BOU NO HANE
 					const poly = new Polygon([
 						// { x: 0, y: -kMinWidthT + 1 },
 						{ x: 0, y: -kMinWidthT },
-						{ x: +2, y: -kMinWidthT - font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1) },
-						{ x: 0, y: -kMinWidthT - font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1) },
+						{ x: +2, y: -kMinWidthT - haneLength },
+						{ x: 0, y: -kMinWidthT - haneLength },
 						// { x: -kMinWidthT, y: -kMinWidthT + 1 },
 						{ x: -kMinWidthT, y: -kMinWidthT },
 					]);
