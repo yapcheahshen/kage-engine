@@ -221,179 +221,193 @@ function cdDrawCurveU(
 
 	// process for head of stroke
 
-	if (a1 === 12) {
-		const [dx, dy] = (x1 === x2)
-			? [1, 0] // ?????
-			: (sx1 === x1)
-				? [sy1 < y1 ? 1 : -1, 0] // for backward compatibility...
-				: normalize([sy1 - y1, -(sx1 - x1)]);
-		const poly = new Polygon([
-			{ x: -kMinWidthT, y: 0 },
-			{ x: +kMinWidthT, y: 0 },
-			{ x: -kMinWidthT, y: -kMinWidthT },
-		]).transformMatrix2(dx, dy).translate(x1, y1);
-		polygons.push(poly);
-	}
-
-	if (a1 === 0) {
-		if (y1 <= y2) { // from up to bottom
-			let type = Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4;
-			if (type > 0) {
-				type *= 2;
-			} else {
-				type *= 16;
-			}
-			const pm = type < 0 ? -1 : 1;
-			const move = type < 0 ? -type * font.kMinWidthY : 0;
-			const [XX, XY] = (x1 === sx1)
+	switch (a1) {
+		case 12: {
+			const [dx, dy] = (x1 === x2)
 				? [1, 0] // ?????
-				: normalize([sy1 - y1, -(sx1 - x1)]);
+				: (sx1 === x1)
+					? [sy1 < y1 ? 1 : -1, 0] // for backward compatibility...
+					: normalize([sy1 - y1, -(sx1 - x1)]);
 			const poly = new Polygon([
-				{ x: -kMinWidthT, y: 1 },
+				{ x: -kMinWidthT, y: 0 },
 				{ x: +kMinWidthT, y: 0 },
-				{ x: -kMinWidthT * pm, y: -font.kMinWidthY * type * pm },
-			]).transformMatrix2(XX, XY).translate(x1, y1);
-			// if(x1 > x2){
-			//  poly.reverse();
-			// }
+				{ x: -kMinWidthT, y: -kMinWidthT },
+			]).transformMatrix2(dx, dy).translate(x1, y1);
 			polygons.push(poly);
-			// beginning of the stroke
-			const poly2 = new Polygon();
-			poly2.push(kMinWidthT, -move);
-			if (x1 === sx1 && y1 === sy1) { // ?????
-				// type === -6.4 && pm === -1 && move === 6.4 * font.kMinWidthY
-				poly2.push(kMinWidthT * 1.5, font.kMinWidthY - move);
-				poly2.push(kMinWidthT - 2, font.kMinWidthY * 2 + 1);
-			} else {
-				poly2.push(kMinWidthT * 1.5, font.kMinWidthY - move * 1.2);
-				poly2.push(kMinWidthT - 2, font.kMinWidthY * 2 - move * 0.8 + 1);
+			break;
+		}
+		case 0: {
+			if (y1 <= y2) { // from up to bottom
+				let type = Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4;
+				if (type > 0) {
+					type *= 2;
+				} else {
+					type *= 16;
+				}
+				const pm = type < 0 ? -1 : 1;
+				const move = type < 0 ? -type * font.kMinWidthY : 0;
+				const [XX, XY] = (x1 === sx1)
+					? [1, 0] // ?????
+					: normalize([sy1 - y1, -(sx1 - x1)]);
+				const poly = new Polygon([
+					{ x: -kMinWidthT, y: 1 },
+					{ x: +kMinWidthT, y: 0 },
+					{ x: -kMinWidthT * pm, y: -font.kMinWidthY * type * pm },
+				]).transformMatrix2(XX, XY).translate(x1, y1);
+				// if(x1 > x2){
+				//  poly.reverse();
+				// }
+				polygons.push(poly);
+				// beginning of the stroke
+				const poly2 = new Polygon();
+				poly2.push(kMinWidthT, -move);
+				if (x1 === sx1 && y1 === sy1) { // ?????
+					// type === -6.4 && pm === -1 && move === 6.4 * font.kMinWidthY
+					poly2.push(kMinWidthT * 1.5, font.kMinWidthY - move);
+					poly2.push(kMinWidthT - 2, font.kMinWidthY * 2 + 1);
+				} else {
+					poly2.push(kMinWidthT * 1.5, font.kMinWidthY - move * 1.2);
+					poly2.push(kMinWidthT - 2, font.kMinWidthY * 2 - move * 0.8 + 1);
+					// if(x1 < x2){
+					//  poly2.reverse();
+					// }
+				}
+				poly2.transformMatrix2(XX, XY).translate(x1, y1);
+				polygons.push(poly2);
+			} else { // bottom to up
+				const [XX, XY] = (x1 === sx1)
+					? [1, 0] // ?????
+					: normalize([sy1 - y1, -(sx1 - x1)]);
+				const poly = new Polygon([
+					{ x: -kMinWidthT, y: 0 },
+					{ x: +kMinWidthT, y: 0 },
+					{ x: +kMinWidthT, y: -font.kMinWidthY },
+				]);
+				poly.transformMatrix2(XX, XY).translate(x1, y1);
+				// if(x1 < x2){
+				//  poly.reverse();
+				// }
+				polygons.push(poly);
+				// beginning of the stroke
+				const poly2 = new Polygon([
+					{ x: -kMinWidthT, y: 0 },
+					{ x: -kMinWidthT * 1.5, y: +font.kMinWidthY },
+					{ x: -kMinWidthT * 0.5, y: +font.kMinWidthY * 3 },
+				]);
 				// if(x1 < x2){
 				//  poly2.reverse();
 				// }
+				poly2.transformMatrix2(XX, XY).translate(x1, y1);
+				polygons.push(poly2);
 			}
-			poly2.transformMatrix2(XX, XY).translate(x1, y1);
-			polygons.push(poly2);
-		} else { // bottom to up
-			const [XX, XY] = (x1 === sx1)
-				? [1, 0] // ?????
-				: normalize([sy1 - y1, -(sx1 - x1)]);
-			const poly = new Polygon([
-				{ x: -kMinWidthT, y: 0 },
-				{ x: +kMinWidthT, y: 0 },
-				{ x: +kMinWidthT, y: -font.kMinWidthY },
-			]);
-			poly.transformMatrix2(XX, XY).translate(x1, y1);
-			// if(x1 < x2){
-			//  poly.reverse();
-			// }
-			polygons.push(poly);
-			// beginning of the stroke
-			const poly2 = new Polygon([
-				{ x: -kMinWidthT, y: 0 },
-				{ x: -kMinWidthT * 1.5, y: +font.kMinWidthY },
-				{ x: -kMinWidthT * 0.5, y: +font.kMinWidthY * 3 },
-			]);
-			// if(x1 < x2){
-			//  poly2.reverse();
-			// }
-			poly2.transformMatrix2(XX, XY).translate(x1, y1);
-			polygons.push(poly2);
+			break;
 		}
-	}
-
-	if (a1 === 22) { // box's up-right corner, any time same degree
-		const poly = new Polygon([
-			{ x: -kMinWidthT, y: -font.kMinWidthY },
-			{ x: 0, y: -font.kMinWidthY - font.kWidth },
-			{ x: +kMinWidthT + font.kWidth, y: +font.kMinWidthY },
-			{ x: +kMinWidthT, y: +kMinWidthT - 1 },
-			{ x: -kMinWidthT, y: +kMinWidthT + 4 },
-		]);
-		poly.translate(x1, y1);
-		polygons.push(poly);
+		case 22: { // box's up-right corner, any time same degree
+			const poly = new Polygon([
+				{ x: -kMinWidthT, y: -font.kMinWidthY },
+				{ x: 0, y: -font.kMinWidthY - font.kWidth },
+				{ x: +kMinWidthT + font.kWidth, y: +font.kMinWidthY },
+				{ x: +kMinWidthT, y: +kMinWidthT - 1 },
+				{ x: -kMinWidthT, y: +kMinWidthT + 4 },
+			]);
+			poly.translate(x1, y1);
+			polygons.push(poly);
+			break;
+		}
 	}
 
 	// process for tail
 
-	if (a2 === 1 || a2 === 8 || a2 === 15) { // the last filled circle ... it can change 15->5
-		const kMinWidthT2 = font.kMinWidthT - opt4 / 2;
-		const [dx, dy] = (sx2 === x2)
-			? [0, 1] // ?????
-			: (sy2 === y2)
-				? [1, 0] // ?????
-				: normalize([x2 - sx2, y2 - sy2]);
-		const poly = new Polygon(
-			(font.kUseCurve)
-				? // by curve path
-				[
-					{ x: 0, y: -kMinWidthT2 },
-					{ x: +kMinWidthT2 * 0.9, y: -kMinWidthT2 * 0.9, off: true },
-					{ x: +kMinWidthT2, y: 0 },
-					{ x: +kMinWidthT2 * 0.9, y: +kMinWidthT2 * 0.9, off: true },
-					{ x: 0, y: +kMinWidthT2 },
-				]
-				: // by polygon
-				[
-					{ x: 0, y: -kMinWidthT2 },
-					{ x: +kMinWidthT2 * 0.7, y: -kMinWidthT2 * 0.7 },
-					{ x: +kMinWidthT2, y: 0 },
-					{ x: +kMinWidthT2 * 0.7, y: +kMinWidthT2 * 0.7 },
-					{ x: 0, y: +kMinWidthT2 },
+	switch (a2) {
+		case 1:
+		case 8:
+		case 15: { // the last filled circle ... it can change 15->5
+			const kMinWidthT2 = font.kMinWidthT - opt4 / 2;
+			const [dx, dy] = (sx2 === x2)
+				? [0, 1] // ?????
+				: (sy2 === y2)
+					? [1, 0] // ?????
+					: normalize([x2 - sx2, y2 - sy2]);
+			const poly = new Polygon(
+				(font.kUseCurve)
+					? // by curve path
+					[
+						{ x: 0, y: -kMinWidthT2 },
+						{ x: +kMinWidthT2 * 0.9, y: -kMinWidthT2 * 0.9, off: true },
+						{ x: +kMinWidthT2, y: 0 },
+						{ x: +kMinWidthT2 * 0.9, y: +kMinWidthT2 * 0.9, off: true },
+						{ x: 0, y: +kMinWidthT2 },
+					]
+					: // by polygon
+					[
+						{ x: 0, y: -kMinWidthT2 },
+						{ x: +kMinWidthT2 * 0.7, y: -kMinWidthT2 * 0.7 },
+						{ x: +kMinWidthT2, y: 0 },
+						{ x: +kMinWidthT2 * 0.7, y: +kMinWidthT2 * 0.7 },
+						{ x: 0, y: +kMinWidthT2 },
+					]);
+			if (sx2 === x2) {
+				poly.reverse();
+			}
+			poly.transformMatrix2(dx, dy).translate(x2, y2);
+			polygons.push(poly);
+
+			if (a2 === 15) { // jump up ... it can change 15->5
+				// anytime same degree
+				const poly = new Polygon([
+					{ x: 0, y: -kMinWidthT + 1 },
+					{ x: +2, y: -kMinWidthT - font.kWidth * 5 },
+					{ x: 0, y: -kMinWidthT - font.kWidth * 5 },
+					{ x: -kMinWidthT, y: -kMinWidthT + 1 },
 				]);
-		if (sx2 === x2) {
-			poly.reverse();
+				if (y1 >= y2) {
+					poly.rotate180();
+				}
+				poly.translate(x2, y2);
+				polygons.push(poly);
+			}
+			break;
 		}
-		poly.transformMatrix2(dx, dy).translate(x2, y2);
-		polygons.push(poly);
-	}
-
-	if (a2 === 9 || (a1 === 7 && a2 === 0)) { // Math.sinnyu & L2RD Harai ... no need for a2=9
-		let type2 = (Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6);
-		if (type2 > 0) {
-			type2 *= 8;
-		} else {
-			type2 *= 3;
+		case 0:
+			if (a1 !== 7) {
+				break;
+			}
+		// fall through
+		case 9: { // Math.sinnyu & L2RD Harai ... no need for a2=9
+			let type2 = (Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6);
+			if (type2 > 0) {
+				type2 *= 8;
+			} else {
+				type2 *= 3;
+			}
+			const pm2 = type2 < 0 ? -1 : 1;
+			const [dx, dy] = (sy2 === y2)
+				? [0, 1] // ?????
+				: (sx2 === x2)
+					? [y2 > sy2 ? 1 : -1, 0] // for backward compatibility...
+					: normalize([-(y2 - sy2), x2 - sx2], 1);
+			const poly = new Polygon([
+				{ x: +kMinWidthT * font.kL2RDfatten, y: 0 },
+				{ x: -kMinWidthT * font.kL2RDfatten, y: 0 },
+				{ x: +pm2 * kMinWidthT * font.kL2RDfatten, y: -Math.abs(type2) * kMinWidthT * font.kL2RDfatten },
+			]);
+			poly.transformMatrix2(dx, dy).translate(x2, y2);
+			polygons.push(poly);
+			break;
 		}
-		const pm2 = type2 < 0 ? -1 : 1;
-		const [dx, dy] = (sy2 === y2)
-			? [0, 1] // ?????
-			: (sx2 === x2)
-				? [y2 > sy2 ? 1 : -1, 0] // for backward compatibility...
-				: normalize([-(y2 - sy2), x2 - sx2], 1);
-		const poly = new Polygon([
-			{ x: +kMinWidthT * font.kL2RDfatten, y: 0 },
-			{ x: -kMinWidthT * font.kL2RDfatten, y: 0 },
-			{ x: +pm2 * kMinWidthT * font.kL2RDfatten, y: -Math.abs(type2) * kMinWidthT * font.kL2RDfatten },
-		]);
-		poly.transformMatrix2(dx, dy).translate(x2, y2);
-		polygons.push(poly);
-	}
 
-	if (a2 === 15) { // jump up ... it can change 15->5
-		// anytime same degree
-		const poly = new Polygon([
-			{ x: 0, y: -kMinWidthT + 1 },
-			{ x: +2, y: -kMinWidthT - font.kWidth * 5 },
-			{ x: 0, y: -kMinWidthT - font.kWidth * 5 },
-			{ x: -kMinWidthT, y: -kMinWidthT + 1 },
-		]);
-		if (y1 >= y2) {
-			poly.rotate180();
+		case 14: { // jump to left, allways go left
+			const poly = new Polygon([
+				{ x: 0, y: 0 },
+				{ x: 0, y: -kMinWidthT },
+				{ x: -font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT },
+				{ x: -font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT * 0.5 },
+			]);
+			// poly.reverse();
+			poly.translate(x2, y2);
+			polygons.push(poly);
+			break;
 		}
-		poly.translate(x2, y2);
-		polygons.push(poly);
-	}
-
-	if (a2 === 14) { // jump to left, allways go left
-		const poly = new Polygon([
-			{ x: 0, y: 0 },
-			{ x: 0, y: -kMinWidthT },
-			{ x: -font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT },
-			{ x: -font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3), y: -kMinWidthT * 0.5 },
-		]);
-		// poly.reverse();
-		poly.translate(x2, y2);
-		polygons.push(poly);
 	}
 }
 
@@ -536,85 +550,92 @@ export function cdDrawLine(
 			polygons.push(poly);
 		}
 
-		if (a2 === 24) { // for T design
-			const poly = new Polygon([
-				{ x: 0, y: +font.kMinWidthY },
-				(x1 === x2) // ?????
-					? { x: +kMinWidthT, y: -font.kMinWidthY * 3 }
-					: { x: +kMinWidthT * 0.5, y: -font.kMinWidthY * 4 },
-				{ x: +kMinWidthT * 2, y: -font.kMinWidthY },
-				{ x: +kMinWidthT * 2, y: +font.kMinWidthY },
-			]);
-			poly.translate(x2, y2);
-			polygons.push(poly);
-		}
-
-		if (a2 === 13 && kakatoAdjustment === 4 && mageAdjustment === 0) { // for new GTH box's left bottom corner
-			if (x1 === x2) {
+		switch (a2) {
+			case 24: { // for T design
 				const poly = new Polygon([
-					{ x: -kMinWidthT, y: -font.kMinWidthY * 3 },
-					{ x: -kMinWidthT * 2, y: 0 },
-					{ x: -font.kMinWidthY, y: +font.kMinWidthY * 5 },
-					{ x: +kMinWidthT, y: +font.kMinWidthY },
+					{ x: 0, y: +font.kMinWidthY },
+					(x1 === x2) // ?????
+						? { x: +kMinWidthT, y: -font.kMinWidthY * 3 }
+						: { x: +kMinWidthT * 0.5, y: -font.kMinWidthY * 4 },
+					{ x: +kMinWidthT * 2, y: -font.kMinWidthY },
+					{ x: +kMinWidthT * 2, y: +font.kMinWidthY },
 				]);
 				poly.translate(x2, y2);
 				polygons.push(poly);
-			} else { // MUKI KANKEINASHI
-				const m = (x1 > x2 && y1 !== y2)
-					? Math.floor((x1 - x2) / (y2 - y1) * 3)
-					: 0;
-				const poly = new Polygon([
-					{ x: 0, y: -font.kMinWidthY * 5 },
-					{ x: -kMinWidthT * 2, y: 0 },
-					{ x: -font.kMinWidthY, y: +font.kMinWidthY * 5 },
-					{ x: +kMinWidthT, y: +font.kMinWidthY },
-					{ x: 0, y: 0 },
-				]);
-				poly.translate(x2 + m, y2);
-				polygons.push(poly);
+				break;
 			}
-		}
-
-		if (a1 === 22) {
-			// box's right top corner
-			// SHIKAKU MIGIUE UROKO NANAME DEMO MASSUGU MUKI
-			const poly = new Polygon();
-			poly.push(-kMinWidthT, -font.kMinWidthY);
-			poly.push(0, -font.kMinWidthY - font.kWidth);
-			poly.push(+kMinWidthT + font.kWidth, +font.kMinWidthY);
-			if (x1 === x2) {
-				poly.push(+kMinWidthT, +kMinWidthT);
-				poly.push(-kMinWidthT, 0);
-			} else {
-				poly.push(+kMinWidthT, +kMinWidthT - 1);
-				poly.push(-kMinWidthT, +kMinWidthT + 4);
-			}
-			poly.translate(x1, y1);
-			polygons.push(poly);
-		}
-
-		if (a1 === 0) { // beginning of the stroke
-			const poly = new Polygon([
-				{
-					x: +kMinWidthT * sinrad + font.kMinWidthY * 0.5 * cosrad,
-					y: +kMinWidthT * -cosrad + font.kMinWidthY * 0.5 * sinrad,
-				},
-				{
-					x: +(kMinWidthT + kMinWidthT * 0.5) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * cosrad,
-					y: +(kMinWidthT + kMinWidthT * 0.5) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * sinrad,
-				},
-				(x1 === x2) // ?????
-					? {
-						x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * cosrad,
-						y: +(kMinWidthT - 2) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * sinrad,
+			case 13:
+				if (kakatoAdjustment === 4 && mageAdjustment === 0) { // for new GTH box's left bottom corner
+					if (x1 === x2) {
+						const poly = new Polygon([
+							{ x: -kMinWidthT, y: -font.kMinWidthY * 3 },
+							{ x: -kMinWidthT * 2, y: 0 },
+							{ x: -font.kMinWidthY, y: +font.kMinWidthY * 5 },
+							{ x: +kMinWidthT, y: +font.kMinWidthY },
+						]);
+						poly.translate(x2, y2);
+						polygons.push(poly);
+					} else { // MUKI KANKEINASHI
+						const m = (x1 > x2 && y1 !== y2)
+							? Math.floor((x1 - x2) / (y2 - y1) * 3)
+							: 0;
+						const poly = new Polygon([
+							{ x: 0, y: -font.kMinWidthY * 5 },
+							{ x: -kMinWidthT * 2, y: 0 },
+							{ x: -font.kMinWidthY, y: +font.kMinWidthY * 5 },
+							{ x: +kMinWidthT, y: +font.kMinWidthY },
+							{ x: 0, y: 0 },
+						]);
+						poly.translate(x2 + m, y2);
+						polygons.push(poly);
 					}
-					: {
-						x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * cosrad,
-						y: +(kMinWidthT + 1) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * sinrad, // ?????
+				}
+				break;
+		}
+
+		switch (a1) {
+			case 22: {
+				// box's right top corner
+				// SHIKAKU MIGIUE UROKO NANAME DEMO MASSUGU MUKI
+				const poly = new Polygon();
+				poly.push(-kMinWidthT, -font.kMinWidthY);
+				poly.push(0, -font.kMinWidthY - font.kWidth);
+				poly.push(+kMinWidthT + font.kWidth, +font.kMinWidthY);
+				if (x1 === x2) {
+					poly.push(+kMinWidthT, +kMinWidthT);
+					poly.push(-kMinWidthT, 0);
+				} else {
+					poly.push(+kMinWidthT, +kMinWidthT - 1);
+					poly.push(-kMinWidthT, +kMinWidthT + 4);
+				}
+				poly.translate(x1, y1);
+				polygons.push(poly);
+				break;
+			}
+			case 0: { // beginning of the stroke
+				const poly = new Polygon([
+					{
+						x: +kMinWidthT * sinrad + font.kMinWidthY * 0.5 * cosrad,
+						y: +kMinWidthT * -cosrad + font.kMinWidthY * 0.5 * sinrad,
 					},
-			]);
-			poly.translate(x1, y1);
-			polygons.push(poly);
+					{
+						x: +(kMinWidthT + kMinWidthT * 0.5) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * cosrad,
+						y: +(kMinWidthT + kMinWidthT * 0.5) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * sinrad,
+					},
+					(x1 === x2) // ?????
+						? {
+							x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * cosrad,
+							y: +(kMinWidthT - 2) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * sinrad,
+						}
+						: {
+							x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * cosrad,
+							y: +(kMinWidthT + 1) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * sinrad, // ?????
+						},
+				]);
+				poly.translate(x1, y1);
+				polygons.push(poly);
+				break;
+			}
 		}
 
 		if (x1 === x2 && a2 === 1 || a1 === 6 && (a2 === 0 || x1 !== x2 && a2 === 5)) {
@@ -648,18 +669,18 @@ export function cdDrawLine(
 			poly.translate(x2, y2);
 			// poly.reverse(); // for fill-rule
 			polygons.push(poly);
-		}
-		if (x1 !== x2 && a1 === 6 && a2 === 5) {
-			// KAGI NO YOKO BOU NO HANE
-			const rv = x1 < x2 ? 1 : -1;
-			const poly = new Polygon([
-				{ x: 0, y: +rv * (-kMinWidthT + 1) },
-				{ x: +2, y: +rv * (-kMinWidthT - font.kWidth * 5) },
-				{ x: 0, y: +rv * (-kMinWidthT - font.kWidth * 5) },
-				{ x: -kMinWidthT, y: -kMinWidthT + 1 }, // rv ?????
-			]);
-			poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
-			polygons.push(poly);
+			if (x1 !== x2 && a1 === 6 && a2 === 5) {
+				// KAGI NO YOKO BOU NO HANE
+				const rv = x1 < x2 ? 1 : -1;
+				const poly = new Polygon([
+					{ x: 0, y: +rv * (-kMinWidthT + 1) },
+					{ x: +2, y: +rv * (-kMinWidthT - font.kWidth * 5) },
+					{ x: 0, y: +rv * (-kMinWidthT - font.kWidth * 5) },
+					{ x: -kMinWidthT, y: -kMinWidthT + 1 }, // rv ?????
+				]);
+				poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
+				polygons.push(poly);
+			}
 		}
 	} else if (y1 === y2 && a1 === 6) {
 		// if it is YOKO stroke, use x-axis
@@ -673,49 +694,54 @@ export function cdDrawLine(
 		]);
 		polygons.push(poly0);
 
-		if (a2 === 1 || a2 === 0 || a2 === 5) { // no need a2=1
-			// KAGI NO YOKO BOU NO SAIGO NO MARU
-			const [cosrad, sinrad] = (x1 < x2) ? [1, 0] : [-1, 0];
-			const r = 0.6;
-			const poly = new Polygon(
-				(font.kUseCurve)
-					? [
-						{ x: 0, y: -kMinWidthT },
-						{ x: +kMinWidthT * 0.9, y: -kMinWidthT * 0.9, off: true },
-						{ x: +kMinWidthT, y: 0 },
-						{ x: +kMinWidthT * 0.9, y: +kMinWidthT * 0.9, off: true },
-						{ x: 0, y: +kMinWidthT },
-					]
-					: [
-						{ x: 0, y: -kMinWidthT },
-						{ x: +kMinWidthT * r, y: -kMinWidthT * 0.6 },
-						{ x: +kMinWidthT, y: 0 },
-						{ x: +kMinWidthT * r, y: +kMinWidthT * 0.6 },
-						{ x: 0, y: +kMinWidthT },
-					]);
-			if (x1 >= x2) {
-				poly.reverse();
-			}
-			poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
-			polygons.push(poly);
-		}
+		switch (a2) {
+			case 1:
+			case 0:
+			case 5: { // no need a2=1
+				// KAGI NO YOKO BOU NO SAIGO NO MARU
+				const [cosrad, sinrad] = (x1 < x2) ? [1, 0] : [-1, 0];
+				const r = 0.6;
+				const poly = new Polygon(
+					(font.kUseCurve)
+						? [
+							{ x: 0, y: -kMinWidthT },
+							{ x: +kMinWidthT * 0.9, y: -kMinWidthT * 0.9, off: true },
+							{ x: +kMinWidthT, y: 0 },
+							{ x: +kMinWidthT * 0.9, y: +kMinWidthT * 0.9, off: true },
+							{ x: 0, y: +kMinWidthT },
+						]
+						: [
+							{ x: 0, y: -kMinWidthT },
+							{ x: +kMinWidthT * r, y: -kMinWidthT * 0.6 },
+							{ x: +kMinWidthT, y: 0 },
+							{ x: +kMinWidthT * r, y: +kMinWidthT * 0.6 },
+							{ x: 0, y: +kMinWidthT },
+						]);
+				if (x1 >= x2) {
+					poly.reverse();
+				}
+				poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
+				polygons.push(poly);
 
-		if (a2 === 5) {
-			// KAGI NO YOKO BOU NO HANE
-			const poly = new Polygon([
-				// { x: 0, y: -kMinWidthT + 1 },
-				{ x: 0, y: -kMinWidthT },
-				{ x: +2, y: -kMinWidthT - font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1) },
-				{ x: 0, y: -kMinWidthT - font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1) },
-				// { x: -kMinWidthT, y: -kMinWidthT + 1 },
-				{ x: -kMinWidthT, y: -kMinWidthT },
-			]);
-			// poly2.reverse(); // for fill-rule
-			if (x1 >= x2) {
-				poly.reflectX();
+				if (a2 === 5) {
+					// KAGI NO YOKO BOU NO HANE
+					const poly = new Polygon([
+						// { x: 0, y: -kMinWidthT + 1 },
+						{ x: 0, y: -kMinWidthT },
+						{ x: +2, y: -kMinWidthT - font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1) },
+						{ x: 0, y: -kMinWidthT - font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1) },
+						// { x: -kMinWidthT, y: -kMinWidthT + 1 },
+						{ x: -kMinWidthT, y: -kMinWidthT },
+					]);
+					// poly2.reverse(); // for fill-rule
+					if (x1 >= x2) {
+						poly.reflectX();
+					}
+					poly.translate(x2, y2);
+					polygons.push(poly);
+				}
+				break;
 			}
-			poly.translate(x2, y2);
-			polygons.push(poly);
 		}
 	} else {
 		// for others, use x-axis
@@ -730,15 +756,19 @@ export function cdDrawLine(
 		]);
 		polygons.push(poly);
 
-		// UROKO
-		if (a2 === 0 && mageAdjustment === 0) {
-			const poly2 = new Polygon([
-				{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
-				{ x: -cosrad * font.kAdjustUrokoX[urokoAdjustment], y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] },
-				{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] },
-			]);
-			poly2.translate(x2, y2);
-			polygons.push(poly2);
+		switch (a2) {
+			// UROKO
+			case 0:
+				if (mageAdjustment === 0) {
+					const poly2 = new Polygon([
+						{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
+						{ x: -cosrad * font.kAdjustUrokoX[urokoAdjustment], y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] },
+						{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] },
+					]);
+					poly2.translate(x2, y2);
+					polygons.push(poly2);
+				}
+				break;
 		}
 	}
 }
