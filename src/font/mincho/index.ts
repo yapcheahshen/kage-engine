@@ -27,31 +27,33 @@ function dfDrawFont(
 	switch (a1 % 100) { // ... no need to divide
 		case 0:
 			if (a2_100 === 98 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+				const dx = x1 + x2, dy = 0;
 				for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
-					const dx = x1 + x2, dy = 0;
 					polygon.scale(10).floor().reflectX().translate(dx * 10, dy * 10).scale(0.1);
 				}
 			} else if (a2_100 === 97 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+				const dx = 0, dy = y1 + y2;
 				for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
-					const dx = 0, dy = y1 + y2;
 					polygon.scale(10).floor().reflectY().translate(dx * 10, dy * 10).scale(0.1);
 				}
-			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 1 && haneAdjustment === 0 && mageAdjustment === 0) {
-				for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
-					// polygon.translate(-x1, -y2).rotate90().translate(x1, y1);
+			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+				if (a3_100 === 1 && haneAdjustment === 0 && mageAdjustment === 0) {
 					const dx = x1 + y2, dy = y1 - x1;
-					polygon.scale(10).floor().rotate90().translate(dx * 10, dy * 10).scale(0.1);
-				}
-			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 2 && haneAdjustment === 0 && mageAdjustment === 0) {
-				for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
+					for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
+						// polygon.translate(-x1, -y2).rotate90().translate(x1, y1);
+						polygon.scale(10).floor().rotate90().translate(dx * 10, dy * 10).scale(0.1);
+					}
+				} else if (a3_100 === 2 && haneAdjustment === 0 && mageAdjustment === 0) {
 					const dx = x1 + x2, dy = y1 + y2;
-					polygon.scale(10).floor().rotate180().translate(dx * 10, dy * 10).scale(0.1);
-				}
-			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0 && a3_100 === 3 && haneAdjustment === 0 && mageAdjustment === 0) {
-				for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
-					// polygon.translate(-x1, -y1).rotate270().translate(x1, y2);
+					for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
+						polygon.scale(10).floor().rotate180().translate(dx * 10, dy * 10).scale(0.1);
+					}
+				} else if (a3_100 === 3 && haneAdjustment === 0 && mageAdjustment === 0) {
 					const dx = x1 - y1, dy = y2 + x1;
-					polygon.scale(10).floor().rotate270().translate(dx * 10, dy * 10).scale(0.1);
+					for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
+						// polygon.translate(-x1, -y1).rotate270().translate(x1, y2);
+						polygon.scale(10).floor().rotate270().translate(dx * 10, dy * 10).scale(0.1);
+					}
 				}
 			}
 			break;
