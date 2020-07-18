@@ -248,17 +248,17 @@ function cdDrawCurveU(
 					type *= 16;
 				}
 				const pm = type < 0 ? -1 : 1;
-				const move = type < 0 ? -type * font.kMinWidthY : 0;
 				const poly = new Polygon([
-					{ x: -kMinWidthT, y: 1 },
+					{ x: -kMinWidthT, y: 1 }, // 1 ???
 					{ x: +kMinWidthT, y: 0 },
-					{ x: -kMinWidthT * pm, y: -font.kMinWidthY * type * pm },
+					{ x: -pm * kMinWidthT, y: -font.kMinWidthY * Math.abs(type) },
 				]).rotate270().transformMatrix2(XX, XY).translate(x1, y1);
 				// if(x1 > x2){
 				//  poly.reverse();
 				// }
 				polygons.push(poly);
 				// beginning of the stroke
+				const move = type < 0 ? -type * font.kMinWidthY : 0;
 				const poly2 = new Polygon();
 				poly2.push(kMinWidthT, -move);
 				if (x1 === sx1 && y1 === sy1) { // ?????
@@ -276,25 +276,25 @@ function cdDrawCurveU(
 				polygons.push(poly2);
 			} else { // bottom to up
 				const poly = new Polygon([
-					{ x: -kMinWidthT, y: 0 },
-					{ x: +kMinWidthT, y: 0 },
-					{ x: +kMinWidthT, y: -font.kMinWidthY },
+					{ x: 0, y: +kMinWidthT },
+					{ x: 0, y: -kMinWidthT },
+					{ x: -font.kMinWidthY, y: -kMinWidthT },
 				]);
-				poly.rotate270().transformMatrix2(XX, XY).translate(x1, y1);
+				poly.transformMatrix2(XX, XY).translate(x1, y1);
 				// if(x1 < x2){
 				//  poly.reverse();
 				// }
 				polygons.push(poly);
 				// beginning of the stroke
 				const poly2 = new Polygon([
-					{ x: -kMinWidthT, y: 0 },
-					{ x: -kMinWidthT * 1.5, y: +font.kMinWidthY },
-					{ x: -kMinWidthT * 0.5, y: +font.kMinWidthY * 3 },
+					{ x: 0, y: +kMinWidthT },
+					{ x: +font.kMinWidthY, y: +kMinWidthT * 1.5 },
+					{ x: +font.kMinWidthY * 3, y: +kMinWidthT * 0.5 },
 				]);
 				// if(x1 < x2){
 				//  poly2.reverse();
 				// }
-				poly2.rotate270().transformMatrix2(XX, XY).translate(x1, y1);
+				poly2.transformMatrix2(XX, XY).translate(x1, y1);
 				polygons.push(poly2);
 			}
 			break;
@@ -371,24 +371,24 @@ function cdDrawCurveU(
 			}
 		// fall through
 		case 9: { // Math.sinnyu & L2RD Harai ... no need for a2=9
-			let type2 = (Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6);
-			if (type2 > 0) {
-				type2 *= 8;
+			let type = Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6;
+			if (type > 0) {
+				type *= 8;
 			} else {
-				type2 *= 3;
+				type *= 3;
 			}
-			const pm2 = type2 < 0 ? -1 : 1;
+			const pm = type < 0 ? -1 : 1;
 			const [dx, dy] = (sy2 === y2)
 				? [1, 0] // ?????
 				: (sx2 === x2)
 					? [0, y2 > sy2 ? -1 : 1] // for backward compatibility...
 					: normalize([x2 - sx2, y2 - sy2]);
 			const poly = new Polygon([
-				{ x: +kMinWidthT * font.kL2RDfatten, y: 0 },
-				{ x: -kMinWidthT * font.kL2RDfatten, y: 0 },
-				{ x: +pm2 * kMinWidthT * font.kL2RDfatten, y: -Math.abs(type2) * kMinWidthT * font.kL2RDfatten },
+				{ x: 0, y: +kMinWidthT * font.kL2RDfatten },
+				{ x: 0, y: -kMinWidthT * font.kL2RDfatten },
+				{ x: Math.abs(type) * kMinWidthT * font.kL2RDfatten, y: pm * kMinWidthT * font.kL2RDfatten },
 			]);
-			poly.rotate90().transformMatrix2(dx, dy).translate(x2, y2);
+			poly.transformMatrix2(dx, dy).translate(x2, y2);
 			polygons.push(poly);
 			break;
 		}
@@ -762,7 +762,7 @@ export function cdDrawLine(
 					const poly2 = new Polygon([
 						{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
 						{ x: -cosrad * font.kAdjustUrokoX[urokoAdjustment], y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] },
-						{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] },
+						{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] }, // ?????
 					]);
 					poly2.translate(x2, y2);
 					polygons.push(poly2);
