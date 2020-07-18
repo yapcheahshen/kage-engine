@@ -224,19 +224,22 @@ function cdDrawCurveU(
 	switch (a1) {
 		case 12: {
 			const [dx, dy] = (x1 === x2)
-				? [1, 0] // ?????
+				? [0, 1] // ?????
 				: (sx1 === x1)
-					? [sy1 < y1 ? 1 : -1, 0] // for backward compatibility...
-					: normalize([sy1 - y1, -(sx1 - x1)]);
+					? [0, sy1 < y1 ? 1 : -1] // for backward compatibility...
+					: normalize([sx1 - x1, sy1 - y1]);
 			const poly = new Polygon([
 				{ x: -kMinWidthT, y: 0 },
 				{ x: +kMinWidthT, y: 0 },
 				{ x: -kMinWidthT, y: -kMinWidthT },
-			]).transformMatrix2(dx, dy).translate(x1, y1);
+			]).rotate270().transformMatrix2(dx, dy).translate(x1, y1);
 			polygons.push(poly);
 			break;
 		}
 		case 0: {
+			const [XX, XY] = (x1 === sx1)
+				? [0, 1] // ?????
+				: normalize([sx1 - x1, sy1 - y1]);
 			if (y1 <= y2) { // from up to bottom
 				let type = Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4;
 				if (type > 0) {
@@ -246,14 +249,11 @@ function cdDrawCurveU(
 				}
 				const pm = type < 0 ? -1 : 1;
 				const move = type < 0 ? -type * font.kMinWidthY : 0;
-				const [XX, XY] = (x1 === sx1)
-					? [1, 0] // ?????
-					: normalize([sy1 - y1, -(sx1 - x1)]);
 				const poly = new Polygon([
 					{ x: -kMinWidthT, y: 1 },
 					{ x: +kMinWidthT, y: 0 },
 					{ x: -kMinWidthT * pm, y: -font.kMinWidthY * type * pm },
-				]).transformMatrix2(XX, XY).translate(x1, y1);
+				]).rotate270().transformMatrix2(XX, XY).translate(x1, y1);
 				// if(x1 > x2){
 				//  poly.reverse();
 				// }
@@ -272,18 +272,15 @@ function cdDrawCurveU(
 					//  poly2.reverse();
 					// }
 				}
-				poly2.transformMatrix2(XX, XY).translate(x1, y1);
+				poly2.rotate270().transformMatrix2(XX, XY).translate(x1, y1);
 				polygons.push(poly2);
 			} else { // bottom to up
-				const [XX, XY] = (x1 === sx1)
-					? [1, 0] // ?????
-					: normalize([sy1 - y1, -(sx1 - x1)]);
 				const poly = new Polygon([
 					{ x: -kMinWidthT, y: 0 },
 					{ x: +kMinWidthT, y: 0 },
 					{ x: +kMinWidthT, y: -font.kMinWidthY },
 				]);
-				poly.transformMatrix2(XX, XY).translate(x1, y1);
+				poly.rotate270().transformMatrix2(XX, XY).translate(x1, y1);
 				// if(x1 < x2){
 				//  poly.reverse();
 				// }
@@ -297,7 +294,7 @@ function cdDrawCurveU(
 				// if(x1 < x2){
 				//  poly2.reverse();
 				// }
-				poly2.transformMatrix2(XX, XY).translate(x1, y1);
+				poly2.rotate270().transformMatrix2(XX, XY).translate(x1, y1);
 				polygons.push(poly2);
 			}
 			break;
@@ -382,16 +379,16 @@ function cdDrawCurveU(
 			}
 			const pm2 = type2 < 0 ? -1 : 1;
 			const [dx, dy] = (sy2 === y2)
-				? [0, 1] // ?????
+				? [1, 0] // ?????
 				: (sx2 === x2)
-					? [y2 > sy2 ? 1 : -1, 0] // for backward compatibility...
-					: normalize([-(y2 - sy2), x2 - sx2], 1);
+					? [0, y2 > sy2 ? -1 : 1] // for backward compatibility...
+					: normalize([x2 - sx2, y2 - sy2]);
 			const poly = new Polygon([
 				{ x: +kMinWidthT * font.kL2RDfatten, y: 0 },
 				{ x: -kMinWidthT * font.kL2RDfatten, y: 0 },
 				{ x: +pm2 * kMinWidthT * font.kL2RDfatten, y: -Math.abs(type2) * kMinWidthT * font.kL2RDfatten },
 			]);
-			poly.transformMatrix2(dx, dy).translate(x2, y2);
+			poly.rotate90().transformMatrix2(dx, dy).translate(x2, y2);
 			polygons.push(poly);
 			break;
 		}
@@ -746,7 +743,9 @@ export function cdDrawLine(
 	} else {
 		// for others, use x-axis
 		// ASAI KAUDO
-		const [cosrad, sinrad] = (y1 === y2) ? [1, 0] : normalize([x2 - x1, y2 - y1]);
+		const [cosrad, sinrad] = (y1 === y2)
+			? [1, 0] // ?????
+			: normalize([x2 - x1, y2 - y1]);
 		// always same
 		const poly = new Polygon([
 			{ x: x1 + sinrad * font.kMinWidthY, y: y1 - cosrad * font.kMinWidthY },
