@@ -16,33 +16,36 @@ function cdDrawCurveU(
 
 	const kMinWidthT = font.kMinWidthT - opt1 / 2;
 
-	let delta;
+	let delta1;
 	switch (a1 % 100) {
 		case 0:
 		case 7:
-			delta = -1 * font.kMinWidthY * 0.5;
+			delta1 = -1 * font.kMinWidthY * 0.5;
 			break;
 		case 1:
 		case 2: // ... must be 32
 		case 6:
 		case 22:
 		case 32: // changed
-			delta = 0;
+			delta1 = 0;
 			break;
 		case 12:
 			// case 32:
-			delta = font.kMinWidthY;
+			delta1 = font.kMinWidthY;
 			break;
 		default:
 			return;
 	}
 
-	const [dx1, dy1] = (x1 === sx1 && y1 === sy1)
-		? [0, delta] // ?????
-		: normalize([x1 - sx1, y1 - sy1], delta);
-	x1 += dx1;
-	y1 += dy1;
+	if (delta1 !== 0) {
+		const [dx1, dy1] = (x1 === sx1 && y1 === sy1)
+			? [0, delta1] // ?????
+			: normalize([x1 - sx1, y1 - sy1], delta1);
+		x1 += dx1;
+		y1 += dy1;
+	}
 
+	let delta2;
 	switch (a2 % 100) {
 		case 0:
 		case 1:
@@ -52,20 +55,23 @@ function cdDrawCurveU(
 		case 14: // it can change to 14->4
 		case 17: // no need
 		case 5:
-			delta = 0;
+			delta2 = 0;
 			break;
 		case 8: // get shorten for tail's circle
-			delta = -1 * kMinWidthT * 0.5;
+			delta2 = -1 * kMinWidthT * 0.5;
 			break;
 		default:
+			delta2 = delta1; // ?????
 			break;
 	}
 
-	const [dx2, dy2] = (sx2 === x2 && sy2 === y2)
-		? [0, -delta] // ?????
-		: normalize([x2 - sx2, y2 - sy2], delta);
-	x2 += dx2;
-	y2 += dy2;
+	if (delta2 !== 0) {
+		const [dx2, dy2] = (sx2 === x2 && sy2 === y2)
+			? [0, -delta2] // ?????
+			: normalize([x2 - sx2, y2 - sy2], delta2);
+		x2 += dx2;
+		y2 += dy2;
+	}
 
 	const isQuadratic = sx1 === sx2 && sy1 === sy2;
 
