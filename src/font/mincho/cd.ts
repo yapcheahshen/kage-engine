@@ -123,13 +123,13 @@ function cdDrawCurveU(
 			{ x: curveR[0][0], y: curveR[0][1] },
 			{
 				x: offR1[2] - (ncl1[2] - offL1[2]),
-				y: offL1[3] - (ncl1[3] - offL1[3]), // typo?
+				y: offR1[3] - (ncl1[3] - offL1[3]),
 				off: true,
 			},
 			{ x: curveR[indexR][0], y: curveR[indexR][1] },
 			{
 				x: offR2[2] - (ncl2[2] - offL2[2]),
-				y: offL2[3] - (ncl2[3] - offL2[3]), // typo?
+				y: offR2[3] - (ncl2[3] - offL2[3]),
 				off: true,
 			},
 			{ x: curveR[curveR.length - 1][0], y: curveR[curveR.length - 1][1] },
