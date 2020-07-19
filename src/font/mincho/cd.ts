@@ -229,11 +229,9 @@ function cdDrawCurveU(
 
 	switch (a1) {
 		case 12: {
-			const [dx, dy] = (x1 === x2)
+			const [dx, dy] = (x1 === sx1)
 				? [0, 1] // ?????
-				: (sx1 === x1)
-					? [0, sy1 < y1 ? 1 : -1] // for backward compatibility...
-					: normalize([sx1 - x1, sy1 - y1]);
+				: normalize([sx1 - x1, sy1 - y1]);
 			const poly = new Polygon([
 				{ x: -kMinWidthT, y: 0 },
 				{ x: +kMinWidthT, y: 0 },
