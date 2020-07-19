@@ -448,7 +448,7 @@ export function cdDrawCurve(
 export function cdDrawLine(
 	font: Mincho, polygons: Polygons,
 	tx1: number, ty1: number, tx2: number, ty2: number,
-	ta1: number, ta2: number, opt1: number, urokoAdjustment: number, kakatoAdjustment: number, mageAdjustment: number): void {
+	ta1: number, ta2: number, opt1: number, _urokoAdjustment: number, kakatoAdjustment: number, mageAdjustment: number): void {
 
 	const x1 = tx1;
 	const y1 = ty1;
