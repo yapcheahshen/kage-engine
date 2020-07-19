@@ -47,6 +47,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 		switch (a1 % 100) {
 			case 0:
 			case 7:
+			case 27:
 				delta = -1 * kage.kMinWidthY * 0.5;
 				break;
 			case 1:
@@ -126,6 +127,16 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			}
 			x2 = x2 + delta * Math.cos(rad) * v;
 			y2 = y2 + delta * Math.sin(rad) * v;
+		}
+
+		var cornerOffset = 0;
+		function hypot() {
+			return Math.sqrt(arguments[0] * arguments[0] + arguments[1] * arguments[1]);
+		}
+		var contourLength = hypot(sx1 - x1, sy1 - y1) + hypot(sx2 - sx1, sy2 - sy1) + hypot(x2 - sx2, y2 - sy2);
+		if ((a1 == 22 || a1 == 27) && a2 == 7 && contourLength < 100) {
+			cornerOffset = (kMinWidthT > 6) ? (kMinWidthT - 6) * ((100 - contourLength) / 100) : 0;
+			x1 += cornerOffset;
 		}
 
 		hosomi = 0.5;
@@ -208,9 +219,9 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 						ib = kMinWidthT;
 					}
 
-					if (a1 == 7 && a2 == 0) { // L2RD: fatten
+					if ((a1 == 7 || a1 == 27) && a2 == 0) { // L2RD: fatten
 						deltad = Math.pow(t, hosomi) * kage.kL2RDfatten;
-					} else if (a1 == 7) {
+					} else if (a1 == 7 || a1 == 27) {
 						deltad = Math.pow(t, hosomi);
 					} else if (a2 == 7) {
 						deltad = Math.pow(1.0 - t, hosomi);
@@ -311,9 +322,9 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 					ib = kMinWidthT;
 				}
 
-				if (a1 == 7 && a2 == 0) { // L2RD: fatten
+				if ((a1 == 7 || a1 == 27) && a2 == 0) { // L2RD: fatten
 					deltad = Math.pow(t, hosomi) * kage.kL2RDfatten;
-				} else if (a1 == 7) {
+				} else if (a1 == 7 || a1 == 27) {
 					deltad = Math.pow(t, hosomi);
 					deltad = Math.pow(deltad, 0.7); // make fatten
 				} else if (a2 == 7) {
@@ -401,7 +412,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 		YY = Math.sin(rad) * v;
 
 		if (a1 == 12) {
-			if (x1 == x2) {
+			if (x1 == sx1) {
 				poly = new Polygon();
 				poly.push(x1 - kMinWidthT, y1);
 				poly.push(x1 + kMinWidthT, y1);
@@ -470,13 +481,18 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			}
 		}
 
-		if (a1 == 22) { //box's up-right corner, any time same degree
+		if (a1 == 22 || a1 == 27) { //box's up-right corner, any time same degree
 			poly = new Polygon();
-			poly.push(x1 - kMinWidthT, y1 - kage.kMinWidthY);
-			poly.push(x1, y1 - kage.kMinWidthY - kage.kWidth);
-			poly.push(x1 + kMinWidthT + kage.kWidth, y1 + kage.kMinWidthY);
-			poly.push(x1 + kMinWidthT, y1 + kMinWidthT - 1);
-			poly.push(x1 - kMinWidthT, y1 + kMinWidthT + 4);
+      poly.push(x1 - cornerOffset - kMinWidthT, y1 - kage.kMinWidthY);
+      poly.push(x1 - cornerOffset, y1 - kage.kMinWidthY - kage.kWidth);
+      poly.push(x1 - cornerOffset + kMinWidthT + kage.kWidth, y1 + kage.kMinWidthY);
+      poly.push(x1 - cornerOffset + kMinWidthT, y1 + kMinWidthT - 1);
+      if (a1 == 27) {
+        poly.push(x1 - cornerOffset, y1 + kMinWidthT + 2);
+        poly.push(x1 - cornerOffset, y1);
+      } else {
+        poly.push(x1 - cornerOffset - kMinWidthT, y1 + kMinWidthT + 4);
+      }
 			polygons.push(poly);
 		}
 
@@ -590,7 +606,7 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			}
 		}
 
-		if (a2 == 9 || (a1 == 7 && a2 == 0)) { // Math.sinnyu & L2RD Harai ... no need for a2=9
+		if (a2 == 9 || ((a1 == 7 || a1 == 27) && a2 == 0)) { // Math.sinnyu & L2RD Harai ... no need for a2=9
 			var type = (Math.atan2(Math.abs(y2 - sy2), Math.abs(x2 - sx2)) / Math.PI * 2 - 0.6);
 			if (type > 0) {
 				type = type * 8;
@@ -639,8 +655,9 @@ function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, t
 			poly = new Polygon();
 			poly.push(x2, y2);
 			poly.push(x2, y2 - kMinWidthT);
-			poly.push(x2 - kage.kWidth * 4 * Math.min(1 - opt2 / 10, Math.pow(kMinWidthT / kage.kMinWidthT, 3)), y2 - kMinWidthT);
-			poly.push(x2 - kage.kWidth * 4 * Math.min(1 - opt2 / 10, Math.pow(kMinWidthT / kage.kMinWidthT, 3)), y2 - kMinWidthT * 0.5);
+			var jumpFactor = (kMinWidthT > 6 ? 6.0 / kMinWidthT : 1.0);
+			poly.push(x2 - kage.kWidth * 4 * Math.min(1 - opt2 / 10, Math.pow(kMinWidthT / kage.kMinWidthT, 3)) * jumpFactor, y2 - kMinWidthT);
+			poly.push(x2 - kage.kWidth * 4 * Math.min(1 - opt2 / 10, Math.pow(kMinWidthT / kage.kMinWidthT, 3)) * jumpFactor, y2 - kMinWidthT * 0.5);
 			//poly.reverse();
 			polygons.push(poly);
 		}
@@ -926,7 +943,7 @@ export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 				polygons.push(poly);
 			}
 
-			if (a1 == 22) { //box's right top corner
+			if (a1 == 22 || a1 == 27) { //box's right top corner
 				poly = new Polygon();
 				poly.push(x1 - kMinWidthT, y1 - kage.kMinWidthY);
 				poly.push(x1, y1 - kage.kMinWidthY - kage.kWidth);
@@ -1038,10 +1055,11 @@ export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 
 				//UROKO
 				if (a2 == 0) {
+					var urokoScale = (kage.kMinWidthU / kage.kMinWidthY - 1.0) / 4.0 + 1.0;
 					poly = new Polygon();
 					poly.push(x2, y2 - kage.kMinWidthY);
-					poly.push(x2 - kage.kAdjustUrokoX[opt2], y2);
-					poly.push(x2 - kage.kAdjustUrokoX[opt2] / 2, y2 - kage.kAdjustUrokoY[opt2]);
+					poly.push(x2 - kage.kAdjustUrokoX[opt2] * urokoScale, y2);
+					poly.push(x2 - kage.kAdjustUrokoX[opt2] * urokoScale / 2, y2 - kage.kAdjustUrokoY[opt2] * urokoScale);
 					polygons.push(poly);
 				}
 			}
@@ -1058,10 +1076,11 @@ export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 
 				//UROKO
 				if (a2 == 0) {
+          var urokoScale = (kage.kMinWidthU / kage.kMinWidthY - 1.0) / 4.0 + 1.0;
 					poly = new Polygon();
 					poly.push(x2 + Math.sin(rad) * kage.kMinWidthY, y2 - Math.cos(rad) * kage.kMinWidthY);
-					poly.push(x2 - Math.cos(rad) * kage.kAdjustUrokoX[opt2], y2 - Math.sin(rad) * kage.kAdjustUrokoX[opt2]);
-					poly.push(x2 - Math.cos(rad) * kage.kAdjustUrokoX[opt2] / 2 + Math.sin(rad) * kage.kAdjustUrokoX[opt2] / 2, y2 - Math.sin(rad) * kage.kAdjustUrokoY[opt2] - Math.cos(rad) * kage.kAdjustUrokoY[opt2]);
+					poly.push(x2 - Math.cos(rad) * kage.kAdjustUrokoX[opt2] * urokoScale, y2 - Math.sin(rad) * kage.kAdjustUrokoX[opt2] * urokoScale);
+					poly.push(x2 - Math.cos(rad) * kage.kAdjustUrokoX[opt2] * urokoScale / 2 + Math.sin(rad) * kage.kAdjustUrokoX[opt2] * urokoScale / 2, y2 - Math.sin(rad) * kage.kAdjustUrokoY[opt2] * urokoScale - Math.cos(rad) * kage.kAdjustUrokoY[opt2] * urokoScale);
 					polygons.push(poly);
 				}
 			} else { //KAKUDO GA FUKAI or KAGI NO YOKO BOU
@@ -1174,13 +1193,18 @@ export function cdDrawLine(kage, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
 					polygons.push(poly);
 				}
 
-				if (a1 == 22) { //SHIKAKU MIGIUE UROKO NANAME DEMO MASSUGU MUKI
+				if (a1 == 22 || a1 == 27) { //SHIKAKU MIGIUE UROKO NANAME DEMO MASSUGU MUKI
 					poly = new Polygon();
 					poly.push(x1 - kMinWidthT, y1 - kage.kMinWidthY);
 					poly.push(x1, y1 - kage.kMinWidthY - kage.kWidth);
 					poly.push(x1 + kMinWidthT + kage.kWidth, y1 + kage.kMinWidthY);
 					poly.push(x1 + kMinWidthT, y1 + kMinWidthT - 1);
-					poly.push(x1 - kMinWidthT, y1 + kMinWidthT + 4);
+					if (a1 == 27) {
+						poly.push(x1, y1 + kMinWidthT + 2);
+						poly.push(x1, y1);
+					} else {
+						poly.push(x1 - kMinWidthT, y1 + kMinWidthT + 4);
+					}
 					polygons.push(poly);
 				}
 
