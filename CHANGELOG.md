@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.3.1] - 2020-07-19
 ### Added
 - Added support for new head stroke type 27 (roofed narrow as in right-top corner of 乁).
 - Added font parameter `kMinWidthU`, which controls the size of uroko (open end of horizontal stroke).
@@ -56,7 +58,8 @@
 ## [0.2.0] - 2020-06-05
 
 
-[Unreleased]: https://github.com/kurgm/kage-engine/compare/v0.3.0...master
+[Unreleased]: https://github.com/kurgm/kage-engine/compare/v0.3.1...master
+[0.3.1]: https://github.com/kurgm/kage-engine/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/kurgm/kage-engine/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/kurgm/kage-engine/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/kurgm/kage-engine/compare/v0.2.1...v0.2.2

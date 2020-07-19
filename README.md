@@ -29,7 +29,7 @@ const { Kage, Polygons } = require("@kurgm/kage-engine");
 
 You can also load from CDN to your HTML page:
 ```html
-<script src="https://unpkg.com/@kurgm/kage-engine@0.3.0/dist/kage.min.js"></script>
+<script src="https://unpkg.com/@kurgm/kage-engine@0.3.1/dist/kage.min.js"></script>
 ```
 This way, only `Kage` is defined in the global scope. You can access `Polygons` and `Buhin` as `Kage`'s properties:
 ```js
