@@ -11,9 +11,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run build:ts && npm run build:browser",
-    "build:ts": "tsc",
-    "build:browser": "mkdir -p dist && rollup -c",
+    "build": "npm run build:lib && npm run build:dist",
+    "build:lib": "tsc",
+    "build:dist": "mkdir -p dist && rollup -c",
     "clean": "rm -r lib dist",
     "lint": "eslint 'src/**/*.ts'",
     "test": "node test/index.js"
