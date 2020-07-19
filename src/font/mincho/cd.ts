@@ -20,6 +20,7 @@ function cdDrawCurveU(
 	switch (a1 % 100) {
 		case 0:
 		case 7:
+		case 27:
 			delta1 = -1 * font.kMinWidthY * 0.5;
 			break;
 		case 1:
@@ -43,6 +44,12 @@ function cdDrawCurveU(
 			: normalize([x1 - sx1, y1 - sy1], delta1);
 		x1 += dx1;
 		y1 += dy1;
+	}
+	let cornerOffset = 0;
+	const contourLength = hypot(sx1 - x1, sy1 - y1) + hypot(sx2 - sx1, sy2 - sy1) + hypot(x2 - sx2, y2 - sy2);
+	if ((a1 === 22 || a1 === 27) && a2 === 7 && contourLength < 100) {
+		cornerOffset = (kMinWidthT > 6) ? (kMinWidthT - 6) * ((100 - contourLength) / 100) : 0;
+		x1 += cornerOffset;
 	}
 
 	let delta2;
@@ -152,9 +159,9 @@ function cdDrawCurveU(
 		}
 
 		const deltadFunc: (t: number) => number
-			= a1 === 7 && a2 === 0 // L2RD: fatten
+			= (a1 === 7 || a1 === 27) && a2 === 0 // L2RD: fatten
 				? (t) => t ** hosomi * font.kL2RDfatten
-				: a1 === 7
+				: (a1 === 7 || a1 === 27)
 					? (isQuadratic) // ?????
 						? (t) => t ** hosomi
 						: (t) => (t ** hosomi) ** 0.7 // make fatten
@@ -303,15 +310,22 @@ function cdDrawCurveU(
 			}
 			break;
 		}
-		case 22: { // box's up-right corner, any time same degree
+		case 22:
+		case 27: { // box's up-right corner, any time same degree
 			const poly = new Polygon([
 				{ x: -kMinWidthT, y: -font.kMinWidthY },
 				{ x: 0, y: -font.kMinWidthY - font.kWidth },
 				{ x: +kMinWidthT + font.kWidth, y: +font.kMinWidthY },
 				{ x: +kMinWidthT, y: +kMinWidthT - 1 },
-				{ x: -kMinWidthT, y: +kMinWidthT + 4 },
-			]);
-			poly.translate(x1, y1);
+			].concat((a1 === 27)
+				? [
+					{ x: 0, y: +kMinWidthT + 2 },
+					{ x: 0, y: 0 },
+				]
+				: [
+					{ x: -kMinWidthT, y: +kMinWidthT + 4 },
+				]));
+			poly.translate(x1 - cornerOffset, y1);
 			polygons.push(poly);
 			break;
 		}
@@ -370,7 +384,7 @@ function cdDrawCurveU(
 			break;
 		}
 		case 0:
-			if (a1 !== 7) {
+			if (!(a1 === 7 || a1 === 27)) {
 				break;
 			}
 		// fall through
@@ -398,7 +412,8 @@ function cdDrawCurveU(
 		}
 
 		case 14: { // jump to left, allways go left
-			const haneLength = font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3);
+			const jumpFactor = kMinWidthT > 6 ? 6.0 / kMinWidthT : 1.0;
+			const haneLength = font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, (kMinWidthT / font.kMinWidthT) ** 3) * jumpFactor;
 			const poly = new Polygon([
 				{ x: 0, y: 0 },
 				{ x: 0, y: -kMinWidthT },
@@ -596,7 +611,8 @@ export function cdDrawLine(
 		}
 
 		switch (a1) {
-			case 22: {
+			case 22:
+			case 27: {
 				// box's right top corner
 				// SHIKAKU MIGIUE UROKO NANAME DEMO MASSUGU MUKI
 				const poly = new Polygon();
@@ -608,7 +624,12 @@ export function cdDrawLine(
 					poly.push(-kMinWidthT, 0);
 				} else {
 					poly.push(+kMinWidthT, +kMinWidthT - 1);
-					poly.push(-kMinWidthT, +kMinWidthT + 4);
+					if (a1 === 27) {
+						poly.push(0, +kMinWidthT + 2);
+						poly.push(0, 0);
+					} else {
+						poly.push(-kMinWidthT, +kMinWidthT + 4);
+					}
 				}
 				poly.translate(x1, y1);
 				polygons.push(poly);
@@ -762,19 +783,20 @@ export function cdDrawLine(
 		]);
 		polygons.push(poly);
 
-		switch (a2) {
-			// UROKO
-			case 0:
-				if (mageAdjustment === 0) {
-					const poly2 = new Polygon([
-						{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
-						{ x: -cosrad * font.kAdjustUrokoX[urokoAdjustment], y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] },
-						{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] }, // ?????
-					]);
-					poly2.translate(x2, y2);
-					polygons.push(poly2);
-				}
-				break;
-		}
+		// switch (a2) {
+		// 	// UROKO
+		// 	case 0:
+		// 		if (mageAdjustment === 0) {
+		// 			const urokoScale = (kage.kMinWidthU / font.kMinWidthY - 1.0) / 4.0 + 1.0;
+		// 			const poly2 = new Polygon([
+		// 				{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
+		// 				{ x: -cosrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale, y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale },
+		// 				{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] * urokoScale / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] * urokoScale }, // ?????
+		// 			]);
+		// 			poly2.translate(x2, y2);
+		// 			polygons.push(poly2);
+		// 		}
+		// 		break;
+		// }
 	}
 }
