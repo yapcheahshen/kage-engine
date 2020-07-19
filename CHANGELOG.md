@@ -1,6 +1,12 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Added support for new head stroke type 27 (roofed narrow as in right-top corner of 乁).
+
+### Fixed
+- Fixed the problem of top-left corner turning over under some conditions.
+- Fixed routine of checking for crossing with otsu strokes.
 
 ## [0.3.0] - 2020-07-17
 ### Added
