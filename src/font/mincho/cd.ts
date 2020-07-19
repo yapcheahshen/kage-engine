@@ -448,7 +448,7 @@ export function cdDrawCurve(
 export function cdDrawLine(
 	font: Mincho, polygons: Polygons,
 	tx1: number, ty1: number, tx2: number, ty2: number,
-	ta1: number, ta2: number, opt1: number, _urokoAdjustment: number, kakatoAdjustment: number, mageAdjustment: number): void {
+	ta1: number, ta2: number, opt1: number, urokoAdjustment: number, kakatoAdjustment: number, mageAdjustment: number): void {
 
 	const x1 = tx1;
 	const y1 = ty1;
@@ -783,20 +783,20 @@ export function cdDrawLine(
 		]);
 		polygons.push(poly);
 
-		// switch (a2) {
-		// 	// UROKO
-		// 	case 0:
-		// 		if (mageAdjustment === 0) {
-		// 			const urokoScale = (kage.kMinWidthU / font.kMinWidthY - 1.0) / 4.0 + 1.0;
-		// 			const poly2 = new Polygon([
-		// 				{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
-		// 				{ x: -cosrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale, y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale },
-		// 				{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] * urokoScale / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] * urokoScale }, // ?????
-		// 			]);
-		// 			poly2.translate(x2, y2);
-		// 			polygons.push(poly2);
-		// 		}
-		// 		break;
-		// }
+		switch (a2) {
+			// UROKO
+			case 0:
+				if (mageAdjustment === 0) {
+					const urokoScale = (font.kMinWidthU / font.kMinWidthY - 1.0) / 4.0 + 1.0;
+					const poly2 = new Polygon([
+						{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
+						{ x: -cosrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale, y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale },
+						{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] * urokoScale / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] * urokoScale }, // ?????
+					]);
+					poly2.translate(x2, y2);
+					polygons.push(poly2);
+				}
+				break;
+		}
 	}
 }

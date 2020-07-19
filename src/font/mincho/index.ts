@@ -89,8 +89,8 @@ function dfDrawFont(
 				const ty1 = y3 + dy1;
 				cdDrawCurve(
 					font, polygons, x1, y1, x2, y2, tx1, ty1,
-					a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-				cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage, y3, 1, 14, 0, haneAdjustment, 0, mageAdjustment);
+					a2_100 + kirikuchiAdjustment * 100, 0, tateAdjustment, 0, opt3, 0);
+				cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage, y3, 2, 14, tateAdjustment, haneAdjustment, 0, mageAdjustment);
 			} else {
 				cdDrawCurve(
 					font, polygons, x1, y1, x2, y2, x3, y3,
@@ -193,6 +193,7 @@ class Mincho implements Font {
 
 	public kRate: number = 100; // must divide 1000
 	public kMinWidthY: number;
+	public kMinWidthU: number;
 	public kMinWidthT: number;
 	public kWidth: number;
 	public kKakato: number;
@@ -258,6 +259,7 @@ class Mincho implements Font {
 			this.kAdjustUrokoLine = [13, 15, 18];
 		} else {
 			this.kMinWidthY = 2;
+			this.kMinWidthU = 2;
 			this.kMinWidthT = 6;
 			this.kWidth = 5;
 			this.kKakato = 3;
