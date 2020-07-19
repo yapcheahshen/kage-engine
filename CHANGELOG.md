@@ -3,6 +3,10 @@
 ## [Unreleased]
 ### Added
 - Added support for new head stroke type 27 (roofed narrow as in right-top corner of 乁).
+- Added font parameter `kMinWidthU`, which controls the size of uroko (open end of horizontal stroke).
+
+### Changed
+- Changed tail width of `2:x:4` strokes where x ≥ 1000.
 
 ### Fixed
 - Fixed the problem of top-left corner turning over under some conditions.
