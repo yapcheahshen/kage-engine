@@ -91,7 +91,7 @@ export class Stroke {
 			case 2:
 			case 12:
 			case 3:
-				// TODO: forgotten case 4: ?
+			case 4:
 				res.unshift([this.x2, this.y2, this.x3, this.y3]);
 			// falls through
 			default:
