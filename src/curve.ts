@@ -30,14 +30,14 @@ export function find_offcurve(
 	const area = 8;
 
 	const minx = ternarySearchMin((tx) => curve.reduce((diff, p, i) => {
-		const t = i / curve.length;
+		const t = i / (curve.length - 1);
 		const x = quadraticBezier(nx1, tx, nx2, t);
 
 		return diff + (p[0] - x) ** 2;
 	}, 0), sx - area, sx + area);
 
 	const miny = ternarySearchMin((ty) => curve.reduce((diff, p, i) => {
-		const t = i / curve.length;
+		const t = i / (curve.length - 1);
 		const y = quadraticBezier(ny1, ty, ny2, t);
 
 		return diff + (p[1] - y) ** 2;
