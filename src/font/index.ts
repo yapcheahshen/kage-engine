@@ -1,8 +1,12 @@
-import { KShotai } from "../kage";
 import { Polygons } from "../polygons";
 import { Stroke } from "../stroke";
 import Mincho from "./mincho";
 import Gothic from "./gothic";
+
+export enum KShotai {
+	kMincho = 0,
+	kGothic = 1,
+}
 
 export interface Font {
 	shotai: KShotai;

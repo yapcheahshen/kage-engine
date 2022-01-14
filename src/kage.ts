@@ -1,12 +1,9 @@
 import { Buhin } from "./buhin";
 import { Polygons } from "./polygons";
 import { stretch, Stroke } from "./stroke";
-import { Font, select as selectFont } from "./font";
+import { KShotai, Font, select as selectFont } from "./font";
 
-export enum KShotai {
-	kMincho = 0,
-	kGothic = 1,
-}
+export { KShotai };
 
 export class Kage {
 	static Buhin = Buhin;

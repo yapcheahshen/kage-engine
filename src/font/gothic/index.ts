@@ -1,8 +1,7 @@
-import { KShotai } from "../../kage";
 import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
 import { normalize } from "../../util";
-import { Font } from "..";
+import { KShotai, Font } from "..";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 import Mincho from "../mincho";

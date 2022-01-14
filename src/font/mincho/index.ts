@@ -1,10 +1,9 @@
-import { KShotai } from "../../kage";
 import { Polygon } from "../../polygon";
 import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
 import { hypot, normalize, round } from "../../util";
 import { isCrossBoxWithOthers, isCrossWithOthers } from "../../2d";
-import { Font } from "..";
+import { KShotai, Font } from "..";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 
