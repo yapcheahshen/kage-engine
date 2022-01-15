@@ -1,6 +1,24 @@
 import { Polygon } from "./polygon";
 
+/**
+ * Represents the rendered glyph.
+ */
 export class Polygons {
+	/**
+	 * Stores the rendered glyph as an array of instances of {@link Polygon}.
+	 * @example
+	 * const polygons = new Polygons();
+	 * kage.makeGlyph(polygons, someGlyphName);
+	 * for (const poly of polygons.array) {
+	 * 	let first = true;
+	 * 	for (const { x, y } of poly.array) {
+	 * 		if (first) ctx.moveTo(x, y);
+	 * 		else ctx.lineTo(x, y);
+	 * 		first = false;
+	 * 	}
+	 * 	ctx.closePath();
+	 * }
+	 */
 	public array: Polygon[];
 
 	constructor() {
@@ -8,10 +26,16 @@ export class Polygons {
 		this.array = [];
 	}
 	// method
+	/** Clears the content. */
 	public clear(): void {
 		this.array = [];
 	}
 
+	/**
+	 * Appends a new {@link Polygon} to the end of the array.
+	 * Nothing is performed if `polygon` is not a valid polygon.
+	 * @param polygon An instance of {@link Polygon} to be appended.
+	 */
 	public push(polygon: Polygon): void {
 		// only a simple check
 		let minx = 200;
@@ -43,6 +67,13 @@ export class Polygons {
 		}
 	}
 
+	/**
+	 * Generates a string in SVG format that represents the rendered glyph.
+	 * @param curve Set to true to use `<path />` format or set to false to use
+	 *     `<polygon />` format. Must be set to true if the glyph was rendered with
+	 *     `kage.kFont.kUseCurve = true`.
+	 * @returns The string representation of the rendered glyph in SVG format.
+	 */
 	public generateSVG(curve: boolean): string {
 		let buffer = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
 			+ 'version="1.1" baseProfile="full" viewBox="0 0 200 200" width="200" height="200">\n';
@@ -76,6 +107,10 @@ export class Polygons {
 		return buffer;
 	}
 
+	/**
+	 * Generates a string in EPS format that represents the rendered glyph.
+	 * @returns The string representation of the rendered glyph in EPS format.
+	 */
 	public generateEPS(): string {
 		let buffer = "";
 		buffer += `\

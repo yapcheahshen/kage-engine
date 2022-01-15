@@ -118,6 +118,7 @@ function dfDrawFont(
 	}
 }
 
+/** Gothic style font. */
 class Gothic extends Mincho implements Font {
 	public shotai = KShotai.kGothic;
 	public draw(polygons: Polygons, stroke: Stroke): void {

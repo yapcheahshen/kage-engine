@@ -4,7 +4,9 @@ import Mincho from "./mincho";
 import Gothic from "./gothic";
 
 export enum KShotai {
+	/** Mincho style font */
 	kMincho = 0,
+	/** Gothic style font */
 	kGothic = 1,
 }
 

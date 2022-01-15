@@ -187,6 +187,7 @@ function dfDrawFont(
 	}
 }
 
+/** Mincho style font. */
 class Mincho implements Font {
 	public shotai = KShotai.kMincho;
 

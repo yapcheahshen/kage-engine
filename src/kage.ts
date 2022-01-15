@@ -16,6 +16,11 @@ export class Kage {
 	public kFont: Font = selectFont(KShotai.kMincho);
 
 	// properties
+	/**
+	 * @example
+	 * const kage = new Kage();
+	 * kage.kShotai = kage.kGothic;
+	 */
 	public get kShotai(): KShotai {
 		return this.kFont.shotai;
 	}
@@ -23,6 +28,9 @@ export class Kage {
 		this.kFont = selectFont(shotai);
 	}
 
+	/**
+	 * Whether to render the glyph with contours with off-curve points.
+	 */
 	public get kUseCurve(): boolean {
 		return this.kFont.kUseCurve;
 	}
@@ -30,6 +38,7 @@ export class Kage {
 		this.kFont.kUseCurve = value;
 	}
 
+	/** A storage from which components are looked up. */
 	public kBuhin: Buhin;
 
 	public stretch = stretch;
@@ -40,11 +49,34 @@ export class Kage {
 		this.kBuhin = new Buhin();
 	}
 	// method
+	/**
+	 * Renders the glyph of the given name. Existing data in `polygons` (if any) are
+	 * NOT cleared; new glyph is "overprinted".
+	 * @example
+	 * const kage = new Kage();
+	 * kage.kBuhin.push("uXXXX", "1:0:2:32:31:176:31$2:22:7:176:31:170:43:156:63");
+	 * const polygons = new Polygons();
+	 * kage.makeGlyph(polygons, "uXXXX");
+	 * const svg = polygons.generateSVG(); // now `svg` has the string of the rendered glyph
+	 * @param polygons A {@link Polygons} instance on which the glyph is rendered.
+	 * @param buhin The name of the glyph to be rendered.
+	 */
 	public makeGlyph(polygons: Polygons, buhin: string): void {
 		const glyphData = this.kBuhin.search(buhin);
 		this.makeGlyph2(polygons, glyphData);
 	}
 
+	/**
+	 * Renders the glyph of the given KAGE data. Existing data in `polygons` (if any) are
+	 * NOT cleared; new glyph is "overprinted".
+	 * @example
+	 * const kage = new Kage();
+	 * const polygons = new Polygons();
+	 * kage.makeGlyph2(polygons, "1:0:2:32:31:176:31$2:22:7:176:31:170:43:156:63");
+	 * const svg = polygons.generateSVG(); // now `svg` has the string of the rendered glyph
+	 * @param polygons A {@link Polygons} instance on which the glyph is rendered.
+	 * @param data The KAGE data to be rendered (in which lines are delimited by `"$"`).
+	 */
 	public makeGlyph2(polygons: Polygons, data: string): void {
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
@@ -55,6 +87,18 @@ export class Kage {
 		}
 	}
 
+	/**
+	 * Renders each stroke of the given KAGE data on separate instances of
+	 * {@link Polygons}.
+	 * @example
+	 * const kage = new Kage();
+	 * const array = kage.makeGlyph3("1:0:2:32:31:176:31$2:22:7:176:31:170:43:156:63");
+	 * console.log(array.length); // => 2
+	 * console.log(array[0] instanceof Polygons); // => true
+	 * @param data The KAGE data to be rendered (in which lines are delimited by `"$"`).
+	 * @returns An array of {@link Polygons} instances holding the rendered data
+	 *     of each stroke in the glyph.
+	 */
 	public makeGlyph3(data: string): Polygons[] {
 		const result: Polygons[] = [];
 		if (data !== "") {
@@ -69,6 +113,24 @@ export class Kage {
 		return result;
 	}
 
+	/**
+	 * Renders each KAGE data fragment in the given array on separate instances of
+	 * {@link Polygons}, with stroke parameters adjusted as if all the fragments joined
+	 * together compose a single glyph.
+	 * @example
+	 * const kage = new Kage();
+	 * const array = kage.makeGlyphSeparated([
+	 * 	"2:7:8:31:16:32:53:16:65",
+	 * 	"1:2:2:32:31:176:31$2:22:7:176:31:170:43:156:63",
+	 * ]);
+	 * console.log(array.length); // => 2
+	 * console.log(array[0] instanceof Polygons); // => true
+	 * @param data An array of KAGE data fragments (in which lines are delimited by `"$"`)
+	 *     to be rendered.
+	 * @returns An array of {@link Polygons} instances holding the rendered data
+	 *     of each KAGE data fragment.
+	 */
+	// Added by @kurgm
 	public makeGlyphSeparated(data: string[]): Polygons[] {
 		const strokesArrays = data.map((subdata) => this.getEachStrokes(subdata));
 		this.kFont.adjustStrokes(strokesArrays.reduce((left, right) => left.concat(right), []));
