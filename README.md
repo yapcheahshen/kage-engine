@@ -5,8 +5,8 @@
 [KAGE/engine](http://kamichi.jp/engine.html) (Kanji-glyph Automatic Generating Engine) is a set of scripts that can render kanji glyphs described in KAGE format.
 It is a part of [KAGE system](http://kamichi.jp/kage.html) which also includes a glyph design editor, a TrueType font generator, etc.
 
-くろごまが改変したKAGEエンジンです。  
-This repository contains KAGE engine modified by @kurgm. 
+くろごま（[利用者:twe](https://glyphwiki.org/wiki/User:twe)）が改変したKAGEエンジンです。  
+This repository contains KAGE engine modified by @kurgm (a.k.a. [User:twe](https://glyphwiki.org/wiki/User:twe)).
 
 [デモページ Demo page](https://kurgm.github.io/kage-engine/)
 
@@ -70,7 +70,7 @@ There are also other samples available in the [samples](samples/) directory.
 
 ### コードの整理について
 
-コードの整理については、いろいろなKAGEデータに対してそれぞれの出力が大きく違わない範囲で行っています。（大きく違わない、は「ポリゴン数と各ポリゴンの頂点数が同じであって各頂点のX・Y座標の差がどちらも0.5以内（ただしポリゴン同士の順序は考慮しない）」を目安としています。比較対象は、フォーク元から浮動小数点数の誤差を丸めるなどの変更を加えた `orig_node` ブランチです。）
+コードの整理については、いろいろなKAGEデータに対してそれぞれの出力が大きく違わない範囲で行っています。（大きく違わない、は「ポリゴン数と各ポリゴンの頂点数が同じであって各頂点のX・Y座標の差がどちらも0.5以内（ただしポリゴン同士の順序は考慮しない）」を目安としています。比較対象は、フォーク元から浮動小数点数の誤差を丸めるなどの変更を加えた [`orig_node` ブランチ](https://github.com/kurgm/kage-engine/tree/orig_node)です。）
 
 ただし、入力データには以下の仮定を置いており、これに反するデータの出力は大きく変わる可能性があります。
 
