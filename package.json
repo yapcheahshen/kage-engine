@@ -2,12 +2,12 @@
   "name": "kage-engine",
   "version": "1.0.0",
   "description": "An engine that generates glyph image file from KAGE data",
-  "main": "index.js",
+  "main": "src/index.js",
   "directories": {
     "doc": "docs"
   },
+  "type": "module",
   "scripts": {
-    "build": "babel src -d lib",
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,9 +22,6 @@
   },
   "homepage": "https://github.com/kurgm/kage-engine#readme",
   "devDependencies": {
-    "@babel/cli": "^7.10.4",
-    "@babel/core": "^7.10.4",
-    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
-    "eslint": "^7.4.0"
+    "eslint": "^8.6.0"
   }
 }

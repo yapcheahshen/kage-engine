@@ -1,7 +1,7 @@
-import {divide_curve, find_offcurve, get_candidate} from "./curve";
-import {Kage} from "./kage";
-import {Polygon} from "./polygon";
-import {round} from "./2d";
+import {divide_curve, find_offcurve, get_candidate} from "./curve.js";
+import {Kage} from "./kage.js";
+import {Polygon} from "./polygon.js";
+import {round} from "./2d.js";
 
 function cdDrawCurveU(kage, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, ta2) {
 	var rad,

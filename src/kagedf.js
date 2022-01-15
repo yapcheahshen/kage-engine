@@ -1,5 +1,5 @@
-import {cdDrawBezier, cdDrawCurve, cdDrawLine} from "./kagecd";
-import {round} from "./2d";
+import {cdDrawBezier, cdDrawCurve, cdDrawLine} from "./kagecd.js";
+import {round} from "./2d.js";
 
 export function dfDrawFont(kage, polygons, a1, a2, a3, x1, y1, x2, y2, x3, y3, x4, y4) {
 	var tx1,

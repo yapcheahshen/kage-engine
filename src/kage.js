@@ -1,7 +1,7 @@
-import {isCrossBoxWithOthers, isCrossWithOthers, round} from "./2d";
-import {Buhin} from "./buhin";
-import {Polygons} from "./polygons";
-import {dfDrawFont} from "./kagedf";
+import {isCrossBoxWithOthers, isCrossWithOthers, round} from "./2d.js";
+import {Buhin} from "./buhin.js";
+import {Polygons} from "./polygons.js";
+import {dfDrawFont} from "./kagedf.js";
 
 export function Kage(size) {
 	// method
