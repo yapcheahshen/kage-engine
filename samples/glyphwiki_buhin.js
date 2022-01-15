@@ -87,7 +87,7 @@ function getQuotedGlyphNames(data) {
  * すべてのデータが準備完了になったときに充足される promise
  */
 async function prepareBuhin(buhin, name) {
-	/** @type {Map<string, Promise<{ name: string; data: string}>>} */
+	/** @type {Map<string, Promise<{ name: string; data: string; }>>} */
 	const waitingMap = new Map();
 	function getGlyphDataIfNeeded(name) {
 		if (buhin.search(name) || waitingMap.has(name)) {
@@ -97,7 +97,7 @@ async function prepareBuhin(buhin, name) {
 	}
 	getGlyphDataIfNeeded(name);
 	while (waitingMap.size > 0) {
-		const { name, data } = await Promise.race(waitingMap.values())
+		const { name, data } = await Promise.race(waitingMap.values());
 		buhin.set(name, data);
 		waitingMap.delete(name);
 		for (const quoted of getQuotedGlyphNames(data)) {
