@@ -375,8 +375,11 @@ class Mincho implements Font {
 						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
 						&& round(Math.abs(stroke.x1 - stroke2.x1)) < this.kMinWidthT * this.kAdjustTateStep) {
 						stroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT);
-						if (stroke.tateAdjustment > this.kAdjustTateStep) {
+						if (stroke.tateAdjustment > this.kAdjustTateStep
+							|| stroke.tateAdjustment === this.kAdjustTateStep && (stroke.kirikuchiAdjustment !== 0 || stroke.a2_100 !== 0)
+							|| stroke.opt3 !== 0) {
 							stroke.tateAdjustment = this.kAdjustTateStep;
+							stroke.opt3 = 0;
 						}
 					}
 				});
