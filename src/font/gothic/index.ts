@@ -7,13 +7,20 @@ import { KShotai } from "../shotai";
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 import Mincho from "../mincho";
 
+interface GothicAdjustedStroke {
+	stroke: Stroke;
+
+	// These values are just for backward compatibility; adjustment is not supported yet and may result in buggy shapes!
+	haneAdjustment: number;
+	mageAdjustment: number;
+}
+
 function dfDrawFont(
 	font: Gothic, polygons: Polygons,
 	{
-		a1, x1, y1, x2, y2, x3, y3, x4, y4,
-		a2_100,
-		a3_100, haneAdjustment, mageAdjustment,
-	}: Stroke): void {
+		stroke: { a1, a2_100, a3_100, x1, y1, x2, y2, x3, y3, x4, y4 },
+		haneAdjustment, mageAdjustment,
+	}: GothicAdjustedStroke): void {
 
 	switch (a1 % 100) {
 		case 0:
@@ -123,8 +130,7 @@ function dfDrawFont(
 class Gothic extends Mincho implements Font {
 	public readonly shotai: KShotai = KShotai.kGothic;
 	public getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
-		this.adjustStrokes(strokesArray);
-		return strokesArray.map((stroke) => (polygons: Polygons) => {
+		return this.adjustStrokes(strokesArray).map((stroke) => (polygons: Polygons) => {
 			dfDrawFont(this, polygons, stroke);
 		});
 	}

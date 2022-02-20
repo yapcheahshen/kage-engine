@@ -8,6 +8,19 @@ import { KShotai } from "../shotai";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 
+interface MinchoAdjustedStroke {
+	stroke: Stroke;
+
+	kirikuchiAdjustment: number;
+	tateAdjustment: number;
+	opt3: number;
+
+	haneAdjustment: number;
+	urokoAdjustment: number;
+	kakatoAdjustment: number;
+	mageAdjustment: number;
+}
+
 function selectPolygonsRect(
 	polygons: Polygons, x1: number, y1: number, x2: number, y2: number
 ): Polygon[] {
@@ -19,10 +32,10 @@ function selectPolygonsRect(
 function dfDrawFont(
 	font: Mincho, polygons: Polygons,
 	{
-		a1, x1, y1, x2, y2, x3, y3, x4, y4,
-		a2_100, kirikuchiAdjustment, tateAdjustment, opt3,
-		a3_100, haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
-	}: Stroke): void {
+		stroke: { a1, a2_100, a3_100, x1, y1, x2, y2, x3, y3, x4, y4 },
+		kirikuchiAdjustment, tateAdjustment, opt3,
+		haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
+	}: MinchoAdjustedStroke): void {
 
 	switch (a1 % 100) { // ... no need to divide
 		case 0:
@@ -285,28 +298,54 @@ class Mincho implements Font {
 		}
 	}
 
-	public adjustStrokes(strokesArray: Stroke[]): Stroke[] {
-		this.adjustHane(strokesArray);
-		this.adjustMage(strokesArray);
-		this.adjustTate(strokesArray);
-		this.adjustKakato(strokesArray);
-		this.adjustUroko(strokesArray);
-		this.adjustUroko2(strokesArray);
-		this.adjustKirikuchi(strokesArray);
-		return strokesArray;
+	public adjustStrokes(strokesArray: Stroke[]): MinchoAdjustedStroke[] {
+		const adjustedStrokes = strokesArray.map((stroke): MinchoAdjustedStroke => {
+			const { a2_opt, a3_opt } = stroke;
+
+			// a2:
+			// - 100s place: adjustKirikuchi (when 2:X32);
+			// - 1000s place: adjustTate (when {1,3,7});
+			// - 10000s place: opt3
+			const kirikuchiAdjustment = a2_opt % 10;
+			const tateAdjustment = Math.floor(a2_opt / 10) % 10;
+			const opt3 = Math.floor(a2_opt / 100);
+
+			// a3:
+			// - 100s place: adjustHane (when {1,2,6}::X04), adjustUroko/adjustUroko2 (when 1::X00),
+			//               adjustKakato (when 1::X{13,23});
+			// - 1000s place: adjustMage (when 3)
+			const haneAdjustment = a3_opt % 10,
+				urokoAdjustment = haneAdjustment,
+				kakatoAdjustment = haneAdjustment;
+			const mageAdjustment = Math.floor(a3_opt / 10);
+
+			return {
+				stroke,
+				kirikuchiAdjustment, tateAdjustment, opt3,
+				haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
+			};
+		});
+		this.adjustHane(adjustedStrokes);
+		this.adjustMage(adjustedStrokes);
+		this.adjustTate(adjustedStrokes);
+		this.adjustKakato(adjustedStrokes);
+		this.adjustUroko(adjustedStrokes);
+		this.adjustUroko2(adjustedStrokes);
+		this.adjustKirikuchi(adjustedStrokes);
+		return adjustedStrokes;
 	}
 
 	public getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
-		this.adjustStrokes(strokesArray);
-		return strokesArray.map((stroke) => (polygons: Polygons) => {
-			dfDrawFont(this, polygons, stroke);
+		return this.adjustStrokes(strokesArray).map((adjStroke) => (polygons: Polygons) => {
+			dfDrawFont(this, polygons, adjStroke);
 		});
 	}
 
-	protected adjustHane(strokesArray: Stroke[]): Stroke[] {
-		strokesArray.forEach((stroke, i) => {
+	protected adjustHane(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
+		adjStrokes.forEach((adjStroke, i) => {
+			const { stroke } = adjStroke;
 			if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6)
-				&& stroke.a3_100 === 4 && stroke.haneAdjustment === 0 && stroke.mageAdjustment === 0) {
+				&& stroke.a3_100 === 4 && stroke.a3_opt === 0) {
 				let lpx: number; // lastPointX
 				let lpy: number; // lastPointY
 				if (stroke.a1 === 1) {
@@ -323,7 +362,7 @@ class Mincho implements Font {
 				if (lpx + 18 < 100) {
 					mn = lpx + 18;
 				}
-				strokesArray.forEach((stroke2, j) => {
+				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
 					if (i !== j
 						&& stroke2.a1 === 1
 						&& stroke2.x1 === stroke2.x2 && stroke2.x1 < lpx
@@ -334,17 +373,18 @@ class Mincho implements Font {
 					}
 				});
 				if (mn !== Infinity) {
-					stroke.haneAdjustment += 7 - Math.floor(mn / 15);
+					adjStroke.haneAdjustment += 7 - Math.floor(mn / 15);
 				}
 			}
 		});
-		return strokesArray;
+		return adjStrokes;
 	}
 
-	protected adjustMage(strokesArray: Stroke[]): Stroke[] {
-		strokesArray.forEach((stroke, i) => {
+	protected adjustMage(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
+		adjStrokes.forEach((adjStroke, i) => {
+			const { stroke } = adjStroke;
 			if (stroke.a1 === 3 && stroke.y2 === stroke.y3) {
-				strokesArray.forEach((stroke2, j) => {
+				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
 					if (i !== j && (
 						(
 							stroke2.a1 === 1
@@ -357,45 +397,48 @@ class Mincho implements Font {
 							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
 							&& round(Math.abs(stroke.y2 - stroke2.y2)) < this.kMinWidthT * this.kAdjustMageStep
 						))) {
-						stroke.mageAdjustment += this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT);
-						if (stroke.mageAdjustment > this.kAdjustMageStep) {
-							stroke.mageAdjustment = this.kAdjustMageStep;
+						adjStroke.mageAdjustment += this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT);
+						if (adjStroke.mageAdjustment > this.kAdjustMageStep) {
+							adjStroke.mageAdjustment = this.kAdjustMageStep;
 						}
 					}
 				});
 			}
 		});
-		return strokesArray;
+		return adjStrokes;
 	}
 
-	protected adjustTate(strokesArray: Stroke[]): Stroke[] {
-		strokesArray.forEach((stroke, i) => {
+	protected adjustTate(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
+		adjStrokes.forEach((adjStroke, i) => {
+			const { stroke } = adjStroke;
 			if ((stroke.a1 === 1 || stroke.a1 === 3 || stroke.a1 === 7)
 				&& stroke.x1 === stroke.x2) {
-				strokesArray.forEach((stroke2, j) => {
+				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
 					if (i !== j
 						&& (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
 						&& stroke2.x1 === stroke2.x2
 						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
 						&& round(Math.abs(stroke.x1 - stroke2.x1)) < this.kMinWidthT * this.kAdjustTateStep) {
-						stroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT);
-						if (stroke.tateAdjustment > this.kAdjustTateStep
-							|| stroke.tateAdjustment === this.kAdjustTateStep && (stroke.kirikuchiAdjustment !== 0 || stroke.a2_100 !== 0)
-							|| stroke.opt3 !== 0) {
-							stroke.tateAdjustment = this.kAdjustTateStep;
-							stroke.opt3 = 0;
+						adjStroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT);
+						if (adjStroke.tateAdjustment > this.kAdjustTateStep
+							|| adjStroke.tateAdjustment === this.kAdjustTateStep && (stroke.a2_opt % 10 !== 0 || stroke.a2_100 !== 0)
+							|| Math.floor(stroke.a2_opt / 100) !== 0) {
+							adjStroke.tateAdjustment = this.kAdjustTateStep;
+							adjStroke.opt3 = 0;
 						}
 					}
 				});
 			}
 		});
-		return strokesArray;
+		return adjStrokes;
 	}
 
-	protected adjustKakato(strokesArray: Stroke[]): Stroke[] {
-		strokesArray.forEach((stroke, i) => {
+	protected adjustKakato(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
+		const strokesArray = adjStrokes.map(({ stroke }) => stroke);
+		adjStrokes.forEach((adjStroke, i) => {
+			const { stroke } = adjStroke;
 			if (stroke.a1 === 1
-				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.kakatoAdjustment === 0 && stroke.mageAdjustment === 0) {
+				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.a3_opt === 0) {
 				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
 					if (isCrossBoxWithOthers(
 						strokesArray, i,
@@ -406,19 +449,21 @@ class Mincho implements Font {
 						|| round(stroke.y2 + this.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
 						|| round(stroke.y2 - stroke.y1) < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
-						stroke.kakatoAdjustment = 3 - k;
+						adjStroke.kakatoAdjustment = 3 - k;
 						break;
 					}
 				}
 			}
 		});
-		return strokesArray;
+		return adjStrokes;
 	}
 
-	protected adjustUroko(strokesArray: Stroke[]): Stroke[] {
-		strokesArray.forEach((stroke, i) => {
+	protected adjustUroko(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
+		const strokesArray = adjStrokes.map(({ stroke }) => stroke);
+		adjStrokes.forEach((adjStroke, i) => {
+			const { stroke } = adjStroke;
 			if (stroke.a1 === 1
-				&& stroke.a3_100 === 0 && stroke.urokoAdjustment === 0 && stroke.mageAdjustment === 0) { // no operation for TATE
+				&& stroke.a3_100 === 0 && stroke.a3_opt === 0) { // no operation for TATE
 				for (let k = 0; k < this.kAdjustUrokoLengthStep; k++) {
 					let tx;
 					let ty;
@@ -439,21 +484,22 @@ class Mincho implements Font {
 					}
 					if (round(tlen) < this.kAdjustUrokoLength[k]
 						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
-						stroke.urokoAdjustment = this.kAdjustUrokoLengthStep - k;
+						adjStroke.urokoAdjustment = this.kAdjustUrokoLengthStep - k;
 						break;
 					}
 				}
 			}
 		});
-		return strokesArray;
+		return adjStrokes;
 	}
 
-	protected adjustUroko2(strokesArray: Stroke[]): Stroke[] {
-		strokesArray.forEach((stroke, i) => {
-			if (stroke.a1 === 1 && stroke.a3_100 === 0 && stroke.urokoAdjustment === 0 && stroke.mageAdjustment === 0
+	protected adjustUroko2(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
+		adjStrokes.forEach((adjStroke, i) => {
+			const { stroke } = adjStroke;
+			if (stroke.a1 === 1 && stroke.a3_100 === 0 && adjStroke.urokoAdjustment === 0 && stroke.a3_opt === 0
 				&& stroke.y1 === stroke.y2) {
 				let pressure = 0;
-				strokesArray.forEach((stroke2, j) => {
+				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
 					if (i !== j && (
 						(
 							stroke2.a1 === 1
@@ -471,29 +517,30 @@ class Mincho implements Font {
 				});
 				// const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
 				// if (stroke.a3 < result) {
-				stroke.urokoAdjustment = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
+				adjStroke.urokoAdjustment = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
 				// }
 			}
 		});
-		return strokesArray;
+		return adjStrokes;
 	}
 
-	protected adjustKirikuchi(strokesArray: Stroke[]): Stroke[] {
-		strokesArray.forEach((stroke) => {
+	protected adjustKirikuchi(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
+		adjStrokes.forEach((adjStroke) => {
+			const { stroke } = adjStroke;
 			if (stroke.a1 === 2
-				&& stroke.a2_100 === 32 && stroke.kirikuchiAdjustment === 0 && stroke.tateAdjustment === 0 && stroke.opt3 === 0
+				&& stroke.a2_100 === 32 && stroke.a2_opt === 0
 				&& stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
-				for (const stroke2 of strokesArray) { // no need to skip when i == j
+				for (const { stroke: stroke2 } of adjStrokes) { // no need to skip when i == j
 					if (stroke2.a1 === 1
 						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1 && stroke2.y1 === stroke.y1
 						&& stroke2.y1 === stroke2.y2) {
-						stroke.kirikuchiAdjustment = 1;
+						adjStroke.kirikuchiAdjustment = 1;
 						break;
 					}
 				}
 			}
 		});
-		return strokesArray;
+		return adjStrokes;
 	}
 }
 
