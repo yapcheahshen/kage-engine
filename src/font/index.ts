@@ -2,13 +2,9 @@ import { Polygons } from "../polygons";
 import { Stroke } from "../stroke";
 import Mincho from "./mincho";
 import Gothic from "./gothic";
+import { KShotai } from "./shotai";
 
-export enum KShotai {
-	/** Mincho style font */
-	kMincho = 0,
-	/** Gothic style font */
-	kGothic = 1,
-}
+export { KShotai } from "./shotai";
 
 export type StrokeDrawer = (polygons: Polygons) => void;
 

@@ -3,7 +3,8 @@ import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
 import { hypot, normalize, round } from "../../util";
 import { isCrossBoxWithOthers, isCrossWithOthers } from "../../2d";
-import { KShotai, Font, StrokeDrawer } from "..";
+import { Font, StrokeDrawer } from "..";
+import { KShotai } from "../shotai";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 
