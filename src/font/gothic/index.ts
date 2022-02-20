@@ -1,7 +1,7 @@
 import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
 import { normalize } from "../../util";
-import { KShotai, Font } from "..";
+import { KShotai, Font, StrokeDrawer } from "..";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 import Mincho from "../mincho";
@@ -120,9 +120,12 @@ function dfDrawFont(
 
 /** Gothic style font. */
 class Gothic extends Mincho implements Font {
-	public shotai = KShotai.kGothic;
-	public draw(polygons: Polygons, stroke: Stroke): void {
-		dfDrawFont(this, polygons, stroke);
+	public readonly shotai: KShotai = KShotai.kGothic;
+	public getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
+		this.adjustStrokes(strokesArray);
+		return strokesArray.map((stroke) => (polygons: Polygons) => {
+			dfDrawFont(this, polygons, stroke);
+		});
 	}
 }
 

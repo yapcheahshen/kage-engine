@@ -10,12 +10,13 @@ export enum KShotai {
 	kGothic = 1,
 }
 
+export type StrokeDrawer = (polygons: Polygons) => void;
+
 export interface Font {
-	shotai: KShotai;
+	readonly shotai: KShotai;
 	kUseCurve: boolean;
-	draw(polygons: Polygons, stroke: Stroke): void;
 	setSize(size?: number): void;
-	adjustStrokes(strokes: Stroke[]): Stroke[];
+	getDrawers(strokes: Stroke[]): StrokeDrawer[];
 }
 
 export { default as Mincho } from "./mincho";

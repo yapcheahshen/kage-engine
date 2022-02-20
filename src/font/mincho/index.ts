@@ -3,7 +3,7 @@ import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
 import { hypot, normalize, round } from "../../util";
 import { isCrossBoxWithOthers, isCrossWithOthers } from "../../2d";
-import { KShotai, Font } from "..";
+import { KShotai, Font, StrokeDrawer } from "..";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 
@@ -189,7 +189,7 @@ function dfDrawFont(
 
 /** Mincho style font. */
 class Mincho implements Font {
-	public shotai = KShotai.kMincho;
+	public readonly shotai: KShotai = KShotai.kMincho;
 
 	public kRate: number = 100; // must divide 1000
 	public kMinWidthY: number;
@@ -230,10 +230,6 @@ class Mincho implements Font {
 
 	public constructor() {
 		this.setSize();
-	}
-
-	public draw(polygons: Polygons, stroke: Stroke): void {
-		dfDrawFont(this, polygons, stroke);
 	}
 
 	public setSize(size?: number): void {
@@ -297,6 +293,13 @@ class Mincho implements Font {
 		this.adjustUroko2(strokesArray);
 		this.adjustKirikuchi(strokesArray);
 		return strokesArray;
+	}
+
+	public getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
+		this.adjustStrokes(strokesArray);
+		return strokesArray.map((stroke) => (polygons: Polygons) => {
+			dfDrawFont(this, polygons, stroke);
+		});
 	}
 
 	protected adjustHane(strokesArray: Stroke[]): Stroke[] {

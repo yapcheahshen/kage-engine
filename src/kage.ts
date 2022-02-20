@@ -80,9 +80,9 @@ export class Kage {
 	public makeGlyph2(polygons: Polygons, data: string): void {
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
-			this.kFont.adjustStrokes(strokesArray);
-			strokesArray.forEach((stroke) => {
-				this.kFont.draw(polygons, stroke);
+			const drawers = this.kFont.getDrawers(strokesArray);
+			drawers.forEach((draw) => {
+				draw(polygons);
 			});
 		}
 	}
@@ -103,10 +103,10 @@ export class Kage {
 		const result: Polygons[] = [];
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
-			this.kFont.adjustStrokes(strokesArray);
-			strokesArray.forEach((stroke) => {
+			const drawers = this.kFont.getDrawers(strokesArray);
+			drawers.forEach((draw) => {
 				const polygons = new Polygons();
-				this.kFont.draw(polygons, stroke);
+				draw(polygons);
 				result.push(polygons);
 			});
 		}
@@ -133,13 +133,17 @@ export class Kage {
 	// Added by @kurgm
 	public makeGlyphSeparated(data: string[]): Polygons[] {
 		const strokesArrays = data.map((subdata) => this.getEachStrokes(subdata));
-		this.kFont.adjustStrokes(strokesArrays.reduce((left, right) => left.concat(right), []));
+		const drawers = this.kFont.getDrawers(
+			strokesArrays.reduce((left, right) => left.concat(right), [])
+		);
 		const polygons = new Polygons();
-		return strokesArrays.map((strokesArray) => {
+		let strokeIndex = 0;
+		return strokesArrays.map(({ length: strokeCount }) => {
 			const startIndex = polygons.array.length;
-			strokesArray.forEach((stroke) => {
-				this.kFont.draw(polygons, stroke);
+			drawers.slice(strokeIndex, strokeIndex + strokeCount).forEach((draw) => {
+				draw(polygons);
 			});
+			strokeIndex += strokeCount;
 			const result = new Polygons();
 			result.array = polygons.array.slice(startIndex);
 			return result;
