@@ -1,7 +1,13 @@
 /* eslint-disable no-console */
 
-const {Kage, Polygons} = require("../");
+const { Kage, Polygons } = require("../");
 
+/**
+ * @param {Record<string, string>} buhins
+ * @param {string} name
+ * @param {[number, number, boolean?][][]} result
+ * @param {boolean=} curve
+ */
 function testKage(buhins, name, result, curve = false) {
 	const kage = new Kage();
 	kage.kUseCurve = curve;
@@ -15,11 +21,14 @@ function testKage(buhins, name, result, curve = false) {
 	if (polygons.array.length !== result.length) {
 		throw new Error(`Different # of polygons in ${name}`);
 	}
+	/** @type {WeakMap<any, number>} */
+	const indexWMap = new WeakMap();
+	const getOrigIndex = (obj) => indexWMap.get(obj);
 	polygons.array.forEach((poly, i) => {
-		poly.index = i;
+		indexWMap.set(poly, i);
 	});
 	result.forEach((res, i) => {
-		res.index = i;
+		indexWMap.set(res, i);
 	});
 	polygons.array.sort((poly1, poly2) => {
 		const array1 = poly1.array;
@@ -51,11 +60,11 @@ function testKage(buhins, name, result, curve = false) {
 	});
 	for (let i = 0; i < polygons.array.length; i++) {
 		const polygon = polygons.array[i];
-		const {array} = polygon;
+		const { array } = polygon;
 		const res = result[i];
 		const indexStr = polygon.index === res.index
-			? `${polygon.index + 1}`
-			: `${polygon.index + 1}(${res.index + 1})`;
+			? `${getOrigIndex(polygon) + 1}`
+			: `${getOrigIndex(polygon) + 1}(${getOrigIndex(res) + 1})`;
 		if (array.length !== res.length) {
 			throw new Error(`Different # of points in a polygon ${indexStr} in ${name}`);
 		}
@@ -156,8 +165,8 @@ testKage({
 	[[43, 109.2], [46.4, 110.2], [42.5, 114.5]],
 	[[61.9, 148.6], [62.8, 153], [60.3, 156.9], [55.9, 157.8], [52, 155.3]],
 	[[57, 147], [59, 121], [57, 121], [51, 147]],
-	[[120.3, 103.9], [123.4, 106.1], [126.5, 107.9], [129.3, 109.7], [131.8, 111.5], [134, 113.3], [136, 115.2], [137.7, 117.1], [139.1, 119.1], [140.3, 121.4], [141, 124], [129, 123.9], [129.3, 123.6], [129.5, 122.7], [129.5, 121.5], [129, 119.8], [128.2, 117.9], [127.1, 115.7], [125.7, 113.3], [123.9, 110.7], [121.8, 107.9], [119.2, 105.3]],
-	[[129, 124], [130.8, 128.2], [135, 130], [139.2, 128.2], [141, 124]],
+	[[120.3, 103.9], [123.5, 106], [126.7, 107.8], [129.5, 109.5], [132.1, 111.3], [134.3, 113.1], [136.4, 114.9], [138.1, 116.9], [139.6, 118.9], [140.8, 121.3], [141.6, 124], [128.4, 124], [128.8, 123.7], [129.1, 122.9], [129, 121.7], [128.7, 120], [128, 118.1], [126.9, 115.9], [125.5, 113.5], [123.8, 110.9], [121.8, 108], [119.2, 105.3]],
+	[[141.6, 124], [128.4, 124], [141.6, 102.8]],
 	[[141, 124], [140.8, 126.5], [140.4, 129], [139.6, 131.4], [138.3, 133.7], [136.7, 135.7], [134.7, 137.3], [132.4, 138.6], [130, 139.4], [127.5, 139.8], [125, 140], [125, 128], [126.2, 127.9], [127.1, 127.7], [127.7, 127.5], [128, 127.4], [128.2, 127.2], [128.4, 127], [128.5, 126.7], [128.7, 126.1], [128.9, 125.2], [129, 124]],
 	[[125, 134], [125, 128], [105, 128], [105, 131]],
 	[[90.5, 106], [89.5, 108.1], [87.7, 111.8], [85.6, 115.4], [83.4, 119], [81, 122.6], [78.4, 126.1], [75.7, 129.5], [72.7, 132.9], [69.6, 136.2], [66.2, 139.4], [62.6, 142.5], [61.3, 141.4], [63.6, 137.3], [65.7, 133.3], [67.7, 129.4], [69.7, 125.6], [71.5, 121.8], [73.2, 118.1], [74.7, 114.5], [76.1, 110.9], [77.3, 107.3], [77.7, 106]],
