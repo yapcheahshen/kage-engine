@@ -298,6 +298,12 @@ class Mincho implements Font {
 		}
 	}
 
+	public getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
+		return this.adjustStrokes(strokesArray).map((adjStroke) => (polygons: Polygons) => {
+			dfDrawFont(this, polygons, adjStroke);
+		});
+	}
+
 	public adjustStrokes(strokesArray: Stroke[]): MinchoAdjustedStroke[] {
 		const adjustedStrokes = strokesArray.map((stroke): MinchoAdjustedStroke => {
 			const { a2_opt, a3_opt } = stroke;
@@ -333,12 +339,6 @@ class Mincho implements Font {
 		this.adjustUroko2(adjustedStrokes);
 		this.adjustKirikuchi(adjustedStrokes);
 		return adjustedStrokes;
-	}
-
-	public getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
-		return this.adjustStrokes(strokesArray).map((adjStroke) => (polygons: Polygons) => {
-			dfDrawFont(this, polygons, adjStroke);
-		});
 	}
 
 	protected adjustHane(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
@@ -496,7 +496,9 @@ class Mincho implements Font {
 	protected adjustUroko2(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
 		adjStrokes.forEach((adjStroke, i) => {
 			const { stroke } = adjStroke;
-			if (stroke.a1_100 === 1 && stroke.a1_opt === 0 && stroke.a3_100 === 0 && adjStroke.urokoAdjustment === 0 && stroke.a3_opt === 0
+			if (stroke.a1_100 === 1 && stroke.a1_opt === 0
+				&& stroke.a3_100 === 0 && stroke.a3_opt === 0
+				&& adjStroke.urokoAdjustment === 0
 				&& stroke.y1 === stroke.y2) {
 				let pressure = 0;
 				adjStrokes.forEach(({ stroke: stroke2 }, j) => {

@@ -21,6 +21,12 @@ export class Stroke {
 	public readonly a1_100: number;
 	public readonly a1_opt: number;
 
+	public readonly a2_100: number;
+	public readonly a2_opt: number;
+
+	public readonly a3_100: number;
+	public readonly a3_opt: number;
+
 	public x1: number;
 	public y1: number;
 	public x2: number;
@@ -29,12 +35,6 @@ export class Stroke {
 	public y3: number;
 	public x4: number;
 	public y4: number;
-
-	public readonly a2_100: number;
-	public readonly a3_100: number;
-
-	public readonly a2_opt: number;
-	public readonly a3_opt: number;
 
 	constructor(data: number[]) {
 		[
