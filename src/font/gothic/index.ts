@@ -8,7 +8,7 @@ import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 import Mincho from "../mincho";
 
 interface GothicAdjustedStroke {
-	stroke: Stroke;
+	readonly stroke: Stroke;
 
 	// These values are just for backward compatibility; adjustment is not supported yet and may result in buggy shapes!
 	haneAdjustment: number;

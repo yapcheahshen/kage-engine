@@ -9,7 +9,7 @@ import { KShotai } from "../shotai";
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 
 interface MinchoAdjustedStroke {
-	stroke: Stroke;
+	readonly stroke: Stroke;
 
 	kirikuchiAdjustment: number;
 	tateAdjustment: number;
@@ -342,7 +342,18 @@ class Mincho implements Font {
 	}
 
 	protected adjustHane(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
-		adjStrokes.forEach((adjStroke, i) => {
+		const vertSegments: { stroke: Stroke; x: number; y1: number; y2: number; }[] = [];
+		for (const { stroke } of adjStrokes) {
+			if (stroke.a1_100 === 1 && stroke.a1_opt === 0 && stroke.x1 === stroke.x2) {
+				vertSegments.push({
+					stroke,
+					x: stroke.x1,
+					y1: stroke.y1,
+					y2: stroke.y2,
+				});
+			}
+		}
+		adjStrokes.forEach((adjStroke) => {
 			const { stroke } = adjStroke;
 			if ((stroke.a1_100 === 1 || stroke.a1_100 === 2 || stroke.a1_100 === 6) && stroke.a1_opt === 0
 				&& stroke.a3_100 === 4 && stroke.a3_opt === 0) {
@@ -362,14 +373,11 @@ class Mincho implements Font {
 				if (lpx + 18 < 100) {
 					mn = lpx + 18;
 				}
-				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
-					if (i !== j
-						&& stroke2.a1_100 === 1 && stroke2.a1_opt === 0
-						&& stroke2.x1 === stroke2.x2 && stroke2.x1 < lpx
-						&& stroke2.y1 <= lpy && stroke2.y2 >= lpy) {
-						if (lpx - stroke2.x1 < 100) {
-							mn = Math.min(mn, lpx - stroke2.x1);
-						}
+				vertSegments.forEach(({ stroke: stroke2, x, y1, y2 }) => {
+					if (stroke !== stroke2
+						&& lpx - x < 100 && x < lpx
+						&& y1 <= lpy && y2 >= lpy) {
+						mn = Math.min(mn, lpx - x);
 					}
 				});
 				if (mn !== Infinity) {
@@ -381,23 +389,36 @@ class Mincho implements Font {
 	}
 
 	protected adjustMage(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
-		adjStrokes.forEach((adjStroke, i) => {
+		const horiSegments: { stroke: Stroke; adjStroke: MinchoAdjustedStroke; isTarget: boolean; y: number; x1: number; x2: number; }[] = [];
+		for (const adjStroke of adjStrokes) {
 			const { stroke } = adjStroke;
-			if (stroke.a1_100 === 3 && stroke.a1_opt === 0 && stroke.y2 === stroke.y3) {
-				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
-					if (i !== j && (
-						(
-							stroke2.a1_100 === 1 && stroke2.a1_opt === 0
-							&& stroke2.y1 === stroke2.y2
-							&& !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
-							&& round(Math.abs(stroke.y2 - stroke2.y1)) < this.kMinWidthT * this.kAdjustMageStep
-						) || (
-							stroke2.a1_100 === 3 && stroke2.a1_opt === 0
-							&& stroke2.y2 === stroke2.y3
-							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
-							&& round(Math.abs(stroke.y2 - stroke2.y2)) < this.kMinWidthT * this.kAdjustMageStep
-						))) {
-						adjStroke.mageAdjustment += this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / this.kMinWidthT);
+			if (stroke.a1_100 === 1 && stroke.a1_opt === 0 && stroke.y1 === stroke.y2) {
+				horiSegments.push({
+					stroke,
+					adjStroke,
+					isTarget: false,
+					y: stroke.y2,
+					x1: stroke.x1,
+					x2: stroke.x2,
+				});
+			} else if (stroke.a1_100 === 3 && stroke.a1_opt === 0 && stroke.y2 === stroke.y3) {
+				horiSegments.push({
+					stroke,
+					adjStroke,
+					isTarget: true,
+					y: stroke.y2,
+					x1: stroke.x2,
+					x2: stroke.x3,
+				});
+			}
+		}
+		horiSegments.forEach(({ adjStroke, stroke, isTarget, y, x1, x2 }) => {
+			if (isTarget) {
+				horiSegments.forEach(({ stroke: stroke2, y: other_y, x1: other_x1, x2: other_x2 }) => {
+					if (stroke !== stroke2
+						&& !(x1 + 1 > other_x2 || x2 - 1 < other_x1)
+						&& round(Math.abs(y - other_y)) < this.kMinWidthT * this.kAdjustMageStep) {
+						adjStroke.mageAdjustment += this.kAdjustMageStep - Math.floor(Math.abs(y - other_y) / this.kMinWidthT);
 						if (adjStroke.mageAdjustment > this.kAdjustMageStep) {
 							adjStroke.mageAdjustment = this.kAdjustMageStep;
 						}
@@ -409,26 +430,33 @@ class Mincho implements Font {
 	}
 
 	protected adjustTate(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
-		adjStrokes.forEach((adjStroke, i) => {
+		const vertSegments: { stroke: Stroke; adjStroke: MinchoAdjustedStroke; x: number; y1: number; y2: number; }[] = [];
+		for (const adjStroke of adjStrokes) {
 			const { stroke } = adjStroke;
-			if ((stroke.a1_100 === 1 || stroke.a1_100 === 3 || stroke.a1_100 === 7) && stroke.a1_opt === 0
-				&& stroke.x1 === stroke.x2) {
-				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
-					if (i !== j
-						&& (stroke2.a1_100 === 1 || stroke2.a1_100 === 3 || stroke2.a1_100 === 7) && stroke2.a1_opt === 0
-						&& stroke2.x1 === stroke2.x2
-						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
-						&& round(Math.abs(stroke.x1 - stroke2.x1)) < this.kMinWidthT * this.kAdjustTateStep) {
-						adjStroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / this.kMinWidthT);
-						if (adjStroke.tateAdjustment > this.kAdjustTateStep
-							|| adjStroke.tateAdjustment === this.kAdjustTateStep && (stroke.a2_opt % 10 !== 0 || stroke.a2_100 !== 0)
-							|| Math.floor(stroke.a2_opt / 100) !== 0) {
-							adjStroke.tateAdjustment = this.kAdjustTateStep;
-							adjStroke.opt3 = 0;
-						}
-					}
+			if ((stroke.a1_100 === 1 || stroke.a1_100 === 3 || stroke.a1_100 === 7) && stroke.a1_opt === 0 && stroke.x1 === stroke.x2) {
+				vertSegments.push({
+					stroke,
+					adjStroke,
+					x: stroke.x1,
+					y1: stroke.y1,
+					y2: stroke.y2,
 				});
 			}
+		}
+		vertSegments.forEach(({ adjStroke, stroke, x, y1, y2 }) => {
+			vertSegments.forEach(({ stroke: stroke2, x: other_x, y1: other_y1, y2: other_y2 }) => {
+				if (stroke !== stroke2
+					&& !(y1 + 1 > other_y2 || y2 - 1 < other_y1)
+					&& round(Math.abs(x - other_x)) < this.kMinWidthT * this.kAdjustTateStep) {
+					adjStroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(x - other_x) / this.kMinWidthT);
+					if (adjStroke.tateAdjustment > this.kAdjustTateStep
+						|| adjStroke.tateAdjustment === this.kAdjustTateStep && (stroke.a2_opt % 10 !== 0 || stroke.a2_100 !== 0)
+						|| Math.floor(stroke.a2_opt / 100) !== 0) {
+						adjStroke.tateAdjustment = this.kAdjustTateStep;
+						adjStroke.opt3 = 0;
+					}
+				}
+			});
 		});
 		return adjStrokes;
 	}
@@ -494,27 +522,39 @@ class Mincho implements Font {
 	}
 
 	protected adjustUroko2(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
-		adjStrokes.forEach((adjStroke, i) => {
+		const horiSegments: { stroke: Stroke; adjStroke: MinchoAdjustedStroke; isTarget: boolean; y: number; x1: number; x2: number }[] = [];
+		for (const adjStroke of adjStrokes) {
 			const { stroke } = adjStroke;
 			if (stroke.a1_100 === 1 && stroke.a1_opt === 0
-				&& stroke.a3_100 === 0 && stroke.a3_opt === 0
-				&& adjStroke.urokoAdjustment === 0
 				&& stroke.y1 === stroke.y2) {
+				horiSegments.push({
+					stroke,
+					adjStroke,
+					isTarget: stroke.a3_100 === 0 && stroke.a3_opt === 0 && adjStroke.urokoAdjustment === 0,
+					y: stroke.y1,
+					x1: stroke.x1,
+					x2: stroke.x2,
+				});
+			} else if (stroke.a1_100 === 3 && stroke.a1_opt === 0
+				&& stroke.y2 === stroke.y3) {
+				horiSegments.push({
+					stroke,
+					adjStroke,
+					isTarget: false,
+					y: stroke.y2,
+					x1: stroke.x2,
+					x2: stroke.x3,
+				});
+			}
+		}
+		horiSegments.forEach(({ adjStroke, stroke, isTarget, y, x1, x2 }) => {
+			if (isTarget) {
 				let pressure = 0;
-				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
-					if (i !== j && (
-						(
-							stroke2.a1_100 === 1 && stroke2.a1_opt === 0
-							&& stroke2.y1 === stroke2.y2
-							&& !(stroke.x1 + 1 > stroke2.x2 || stroke.x2 - 1 < stroke2.x1)
-							&& round(Math.abs(stroke.y1 - stroke2.y1)) < this.kAdjustUroko2Length
-						) || (
-							stroke2.a1_100 === 3 && stroke2.a1_opt === 0
-							&& stroke2.y2 === stroke2.y3
-							&& !(stroke.x1 + 1 > stroke2.x3 || stroke.x2 - 1 < stroke2.x2)
-							&& round(Math.abs(stroke.y1 - stroke2.y2)) < this.kAdjustUroko2Length
-						))) {
-						pressure += (this.kAdjustUroko2Length - Math.abs(stroke.y1 - stroke2.y2)) ** 1.1;
+				horiSegments.forEach(({ stroke: stroke2, y: other_y, x1: other_x1, x2: other_x2 }) => {
+					if (stroke !== stroke2
+						&& !(x1 + 1 > other_x2 || x2 - 1 < other_x1)
+						&& round(Math.abs(y - other_y)) < this.kAdjustUroko2Length) {
+						pressure += (this.kAdjustUroko2Length - Math.abs(y - other_y)) ** 1.1;
 					}
 				});
 				// const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
@@ -527,19 +567,25 @@ class Mincho implements Font {
 	}
 
 	protected adjustKirikuchi(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
+		const horiSegments: { y: number; x1: number; x2: number }[] = [];
+		for (const { stroke } of adjStrokes) {
+			if (stroke.a1_100 === 1 && stroke.a1_opt === 0 && stroke.y1 === stroke.y2) {
+				horiSegments.push({
+					y: stroke.y1,
+					x1: stroke.x1,
+					x2: stroke.x2,
+				});
+			}
+		}
 		adjStrokes.forEach((adjStroke) => {
 			const { stroke } = adjStroke;
 			if (stroke.a1_100 === 2 && stroke.a1_opt === 0
 				&& stroke.a2_100 === 32 && stroke.a2_opt === 0
-				&& stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
-				for (const { stroke: stroke2 } of adjStrokes) { // no need to skip when i == j
-					if (stroke2.a1_100 === 1 && stroke2.a1_opt === 0
-						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1 && stroke2.y1 === stroke.y1
-						&& stroke2.y1 === stroke2.y2) {
-						adjStroke.kirikuchiAdjustment = 1;
-						break;
-					}
-				}
+				&& stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2
+				&& horiSegments.some(({ y, x1, x2 }) => ( // no need to skip when i == j
+					x1 < stroke.x1 && x2 > stroke.x1 && y === stroke.y1
+				))) {
+				adjStroke.kirikuchiAdjustment = 1;
 			}
 		});
 		return adjStrokes;
