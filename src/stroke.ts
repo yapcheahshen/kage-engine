@@ -18,7 +18,8 @@ export function stretch(dp: number, sp: number, p: number, min: number, max: num
 }
 
 export class Stroke {
-	public readonly a1: number;
+	public readonly a1_100: number;
+	public readonly a1_opt: number;
 
 	public x1: number;
 	public y1: number;
@@ -37,7 +38,7 @@ export class Stroke {
 
 	constructor(data: number[]) {
 		[
-			this.a1,
+			this.a1_100,
 			this.a2_100,
 			this.a3_100,
 			this.x1,
@@ -50,6 +51,9 @@ export class Stroke {
 			this.y4,
 		] = data;
 
+		this.a1_opt = Math.floor(this.a1_100 / 100);
+		this.a1_100 %= 100;
+
 		this.a2_opt = Math.floor(this.a2_100 / 100);
 		this.a2_100 %= 100;
 
@@ -59,7 +63,10 @@ export class Stroke {
 
 	public getControlSegments(): [number, number, number, number][] {
 		const res: [number, number, number, number][] = [];
-		switch (this.a1) {
+		const a1 = this.a1_opt === 0
+			? this.a1_100
+			: 1; // ?????
+		switch (a1) {
 			case 0:
 			case 8:
 			case 9:
@@ -87,7 +94,7 @@ export class Stroke {
 		this.y1 = stretch(sy, sy2, this.y1, bminY, bmaxY);
 		this.x2 = stretch(sx, sx2, this.x2, bminX, bmaxX);
 		this.y2 = stretch(sy, sy2, this.y2, bminY, bmaxY);
-		if (this.a1 !== 99) { // always true
+		if (!(this.a1_100 === 99 && this.a1_opt === 0)) { // always true
 			this.x3 = stretch(sx, sx2, this.x3, bminX, bmaxX);
 			this.y3 = stretch(sy, sy2, this.y3, bminY, bmaxY);
 			this.x4 = stretch(sx, sx2, this.x4, bminX, bmaxX);
@@ -100,7 +107,10 @@ export class Stroke {
 		let minY = Infinity;
 		let maxX = -Infinity;
 		let maxY = -Infinity;
-		switch (this.a1) {
+		const a1 = this.a1_opt === 0
+			? this.a1_100
+			: 6; // ?????
+		switch (a1) {
 			default:
 				minX = Math.min(minX, this.x4);
 				maxX = Math.max(maxX, this.x4);

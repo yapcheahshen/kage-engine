@@ -32,12 +32,12 @@ function selectPolygonsRect(
 function dfDrawFont(
 	font: Mincho, polygons: Polygons,
 	{
-		stroke: { a1, a2_100, a3_100, x1, y1, x2, y2, x3, y3, x4, y4 },
+		stroke: { a1_100, a2_100, a3_100, x1, y1, x2, y2, x3, y3, x4, y4 },
 		kirikuchiAdjustment, tateAdjustment, opt3,
 		haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
 	}: MinchoAdjustedStroke): void {
 
-	switch (a1 % 100) { // ... no need to divide
+	switch (a1_100) { // ... no need to divide
 		case 0:
 			if (a2_100 === 98 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
 				const dx = x1 + x2, dy = 0;
@@ -344,14 +344,14 @@ class Mincho implements Font {
 	protected adjustHane(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
 		adjStrokes.forEach((adjStroke, i) => {
 			const { stroke } = adjStroke;
-			if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6)
+			if ((stroke.a1_100 === 1 || stroke.a1_100 === 2 || stroke.a1_100 === 6) && stroke.a1_opt === 0
 				&& stroke.a3_100 === 4 && stroke.a3_opt === 0) {
 				let lpx: number; // lastPointX
 				let lpy: number; // lastPointY
-				if (stroke.a1 === 1) {
+				if (stroke.a1_100 === 1) {
 					lpx = stroke.x2;
 					lpy = stroke.y2;
-				} else if (stroke.a1 === 2) {
+				} else if (stroke.a1_100 === 2) {
 					lpx = stroke.x3;
 					lpy = stroke.y3;
 				} else {
@@ -364,7 +364,7 @@ class Mincho implements Font {
 				}
 				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
 					if (i !== j
-						&& stroke2.a1 === 1
+						&& stroke2.a1_100 === 1 && stroke2.a1_opt === 0
 						&& stroke2.x1 === stroke2.x2 && stroke2.x1 < lpx
 						&& stroke2.y1 <= lpy && stroke2.y2 >= lpy) {
 						if (lpx - stroke2.x1 < 100) {
@@ -383,16 +383,16 @@ class Mincho implements Font {
 	protected adjustMage(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
 		adjStrokes.forEach((adjStroke, i) => {
 			const { stroke } = adjStroke;
-			if (stroke.a1 === 3 && stroke.y2 === stroke.y3) {
+			if (stroke.a1_100 === 3 && stroke.a1_opt === 0 && stroke.y2 === stroke.y3) {
 				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
 					if (i !== j && (
 						(
-							stroke2.a1 === 1
+							stroke2.a1_100 === 1 && stroke2.a1_opt === 0
 							&& stroke2.y1 === stroke2.y2
 							&& !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
 							&& round(Math.abs(stroke.y2 - stroke2.y1)) < this.kMinWidthT * this.kAdjustMageStep
 						) || (
-							stroke2.a1 === 3
+							stroke2.a1_100 === 3 && stroke2.a1_opt === 0
 							&& stroke2.y2 === stroke2.y3
 							&& !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
 							&& round(Math.abs(stroke.y2 - stroke2.y2)) < this.kMinWidthT * this.kAdjustMageStep
@@ -411,11 +411,11 @@ class Mincho implements Font {
 	protected adjustTate(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
 		adjStrokes.forEach((adjStroke, i) => {
 			const { stroke } = adjStroke;
-			if ((stroke.a1 === 1 || stroke.a1 === 3 || stroke.a1 === 7)
+			if ((stroke.a1_100 === 1 || stroke.a1_100 === 3 || stroke.a1_100 === 7) && stroke.a1_opt === 0
 				&& stroke.x1 === stroke.x2) {
 				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
 					if (i !== j
-						&& (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
+						&& (stroke2.a1_100 === 1 || stroke2.a1_100 === 3 || stroke2.a1_100 === 7) && stroke2.a1_opt === 0
 						&& stroke2.x1 === stroke2.x2
 						&& !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
 						&& round(Math.abs(stroke.x1 - stroke2.x1)) < this.kMinWidthT * this.kAdjustTateStep) {
@@ -437,7 +437,7 @@ class Mincho implements Font {
 		const strokesArray = adjStrokes.map(({ stroke }) => stroke);
 		adjStrokes.forEach((adjStroke, i) => {
 			const { stroke } = adjStroke;
-			if (stroke.a1 === 1
+			if (stroke.a1_100 === 1 && stroke.a1_opt === 0
 				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.a3_opt === 0) {
 				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
 					if (isCrossBoxWithOthers(
@@ -462,7 +462,7 @@ class Mincho implements Font {
 		const strokesArray = adjStrokes.map(({ stroke }) => stroke);
 		adjStrokes.forEach((adjStroke, i) => {
 			const { stroke } = adjStroke;
-			if (stroke.a1 === 1
+			if (stroke.a1_100 === 1 && stroke.a1_opt === 0
 				&& stroke.a3_100 === 0 && stroke.a3_opt === 0) { // no operation for TATE
 				for (let k = 0; k < this.kAdjustUrokoLengthStep; k++) {
 					let tx;
@@ -496,18 +496,18 @@ class Mincho implements Font {
 	protected adjustUroko2(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
 		adjStrokes.forEach((adjStroke, i) => {
 			const { stroke } = adjStroke;
-			if (stroke.a1 === 1 && stroke.a3_100 === 0 && adjStroke.urokoAdjustment === 0 && stroke.a3_opt === 0
+			if (stroke.a1_100 === 1 && stroke.a1_opt === 0 && stroke.a3_100 === 0 && adjStroke.urokoAdjustment === 0 && stroke.a3_opt === 0
 				&& stroke.y1 === stroke.y2) {
 				let pressure = 0;
 				adjStrokes.forEach(({ stroke: stroke2 }, j) => {
 					if (i !== j && (
 						(
-							stroke2.a1 === 1
+							stroke2.a1_100 === 1 && stroke2.a1_opt === 0
 							&& stroke2.y1 === stroke2.y2
 							&& !(stroke.x1 + 1 > stroke2.x2 || stroke.x2 - 1 < stroke2.x1)
 							&& round(Math.abs(stroke.y1 - stroke2.y1)) < this.kAdjustUroko2Length
 						) || (
-							stroke2.a1 === 3
+							stroke2.a1_100 === 3 && stroke2.a1_opt === 0
 							&& stroke2.y2 === stroke2.y3
 							&& !(stroke.x1 + 1 > stroke2.x3 || stroke.x2 - 1 < stroke2.x2)
 							&& round(Math.abs(stroke.y1 - stroke2.y2)) < this.kAdjustUroko2Length
@@ -527,11 +527,11 @@ class Mincho implements Font {
 	protected adjustKirikuchi(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
 		adjStrokes.forEach((adjStroke) => {
 			const { stroke } = adjStroke;
-			if (stroke.a1 === 2
+			if (stroke.a1_100 === 2 && stroke.a1_opt === 0
 				&& stroke.a2_100 === 32 && stroke.a2_opt === 0
 				&& stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
 				for (const { stroke: stroke2 } of adjStrokes) { // no need to skip when i == j
-					if (stroke2.a1 === 1
+					if (stroke2.a1_100 === 1 && stroke2.a1_opt === 0
 						&& stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1 && stroke2.y1 === stroke.y1
 						&& stroke2.y1 === stroke2.y2) {
 						adjStroke.kirikuchiAdjustment = 1;

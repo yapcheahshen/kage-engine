@@ -18,11 +18,11 @@ interface GothicAdjustedStroke {
 function dfDrawFont(
 	font: Gothic, polygons: Polygons,
 	{
-		stroke: { a1, a2_100, a3_100, x1, y1, x2, y2, x3, y3, x4, y4 },
+		stroke: { a1_100, a2_100, a3_100, x1, y1, x2, y2, x3, y3, x4, y4 },
 		haneAdjustment, mageAdjustment,
 	}: GothicAdjustedStroke): void {
 
-	switch (a1 % 100) {
+	switch (a1_100) {
 		case 0:
 			break;
 		case 1: {
