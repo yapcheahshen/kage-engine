@@ -39,36 +39,41 @@ function selectPolygonsRect(
 function dfDrawFont(
 	font: Mincho, polygons: Polygons,
 	{
-		stroke: { a1_100, a2_100, a3_100, x1, y1, x2, y2, x3, y3, x4, y4 },
+		stroke: {
+			a1_100,
+			a2_100, a2_opt, a2_opt_1, a2_opt_2, a2_opt_3,
+			a3_100, a3_opt, a3_opt_1, a3_opt_2,
+			x1, y1, x2, y2, x3, y3, x4, y4,
+		},
 		kirikuchiAdjustment, tateAdjustment, opt3,
 		haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
 	}: MinchoAdjustedStroke): void {
 
 	switch (a1_100) { // ... no need to divide
 		case 0:
-			if (a2_100 === 98 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+			if (a2_100 === 98 && a2_opt === 0) {
 				const dx = x1 + x2, dy = 0;
 				for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
 					polygon.scale(10).floor().reflectX().translate(dx * 10, dy * 10).scale(0.1);
 				}
-			} else if (a2_100 === 97 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+			} else if (a2_100 === 97 && a2_opt === 0) {
 				const dx = 0, dy = y1 + y2;
 				for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
 					polygon.scale(10).floor().reflectY().translate(dx * 10, dy * 10).scale(0.1);
 				}
-			} else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
-				if (a3_100 === 1 && haneAdjustment === 0 && mageAdjustment === 0) {
+			} else if (a2_100 === 99 && a2_opt === 0) {
+				if (a3_100 === 1 && a3_opt === 0) {
 					const dx = x1 + y2, dy = y1 - x1;
 					for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
 						// polygon.translate(-x1, -y2).rotate90().translate(x1, y1);
 						polygon.scale(10).floor().rotate90().translate(dx * 10, dy * 10).scale(0.1);
 					}
-				} else if (a3_100 === 2 && haneAdjustment === 0 && mageAdjustment === 0) {
+				} else if (a3_100 === 2 && a3_opt === 0) {
 					const dx = x1 + x2, dy = y1 + y2;
 					for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
 						polygon.scale(10).floor().rotate180().translate(dx * 10, dy * 10).scale(0.1);
 					}
-				} else if (a3_100 === 3 && haneAdjustment === 0 && mageAdjustment === 0) {
+				} else if (a3_100 === 3 && a3_opt === 0) {
 					const dx = x1 - y1, dy = y2 + x1;
 					for (const polygon of selectPolygonsRect(polygons, x1, y1, x2, y2)) {
 						// polygon.translate(-x1, -y1).rotate270().translate(x1, y2);
@@ -84,16 +89,16 @@ function dfDrawFont(
 					: normalize([x1 - x2, y1 - y2], font.kMage);
 				const tx1 = x2 + dx1;
 				const ty1 = y2 + dy1;
-				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
+				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 				cdDrawCurve(
 					font, polygons,
 					tx1, ty1, x2, y2,
 					x2 - font.kMage * (((font.kAdjustTateStep + 4) - tateAdjustment - opt3 * 10) / (font.kAdjustTateStep + 4)), y2,
-					1, 14, tateAdjustment, haneAdjustment, opt3, mageAdjustment);
+					1, 14, tateAdjustment, haneAdjustment, opt3, a3_opt_2);
 			} else {
 				cdDrawLine(
 					font, polygons, x1, y1, x2, y2,
-					a2_100 + kirikuchiAdjustment * 100, a3_100, tateAdjustment + opt3 * 10, urokoAdjustment, kakatoAdjustment, mageAdjustment);
+					a2_100 + a2_opt_1 * 100, a3_100, tateAdjustment + opt3 * 10, urokoAdjustment, kakatoAdjustment, a3_opt_2);
 			}
 			break;
 		}
@@ -109,13 +114,13 @@ function dfDrawFont(
 				const ty1 = y3 + dy1;
 				cdDrawCurve(
 					font, polygons, x1, y1, x2, y2, tx1, ty1,
-					a2_100 + kirikuchiAdjustment * 100, 0, tateAdjustment, 0, opt3, 0);
-				cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage, y3, 2, 14, tateAdjustment, haneAdjustment, 0, mageAdjustment);
+					a2_100 + kirikuchiAdjustment * 100, 0, a2_opt_2, 0, a2_opt_3, 0);
+				cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage, y3, 2, 14, a2_opt_2, haneAdjustment, 0, a3_opt_2);
 			} else {
 				cdDrawCurve(
 					font, polygons, x1, y1, x2, y2, x3, y3,
-					a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) ? 15 : a3_100,
-					tateAdjustment, haneAdjustment, opt3, mageAdjustment);
+					a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && a3_opt === 0) ? 15 : a3_100,
+					a2_opt_2, a3_opt_1, a2_opt_3, a3_opt_2);
 			}
 			break;
 		}
@@ -131,20 +136,20 @@ function dfDrawFont(
 			const tx2 = x2 + dx2;
 			const ty2 = y2 + dy2;
 
-			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment + opt3 * 10, mageAdjustment);
 
-			if (!(a3_100 === 5 && haneAdjustment === 0 && !((x2 < x3 && x3 - tx2 > 0) || (x2 > x3 && tx2 - x3 > 0)))) { // for closer position
+			if (!(a3_100 === 5 && a3_opt_1 === 0 && !((x2 < x3 && x3 - tx2 > 0) || (x2 > x3 && tx2 - x3 > 0)))) { // for closer position
 				cdDrawLine(font, polygons, tx2, ty2, x3, y3,
-					6, a3_100, mageAdjustment, urokoAdjustment, kakatoAdjustment, (a3_100 === 5 && haneAdjustment === 0) ? 0 : mageAdjustment); // bolder by force
+					6, a3_100, mageAdjustment, a3_opt_1, a3_opt_1, (a3_100 === 5 && a3_opt_1 === 0) ? 0 : mageAdjustment); // bolder by force
 			}
 			break;
 		}
 		case 12: {
 			cdDrawCurve(
 				font, polygons, x1, y1, x2, y2, x3, y3,
-				a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, urokoAdjustment, kakatoAdjustment, mageAdjustment);
+				a2_100 + a2_opt_1 * 100, 1, a2_opt_2, 0, a2_opt_3, 0);
+			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, a3_opt_1, a3_opt_1, a3_opt_2);
 			break;
 		}
 		case 4: {
@@ -163,11 +168,11 @@ function dfDrawFont(
 			const tx2 = x2 + dx2;
 			const ty2 = y2 + dy2;
 
-			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, a2_opt_2 + a2_opt_3 * 10, 0, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
 
-			if (!(a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0 && x3 - tx2 <= 0)) { // for closer position
-				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, urokoAdjustment, kakatoAdjustment, mageAdjustment); // bolder by force
+			if (!(a3_100 === 5 && a3_opt === 0 && x3 - tx2 <= 0)) { // for closer position
+				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, a3_opt_1, a3_opt_1, a3_opt_2); // bolder by force
 			}
 			break;
 		}
@@ -182,21 +187,21 @@ function dfDrawFont(
 				const ty1 = y4 + dy1;
 				cdDrawBezier(
 					font, polygons, x1, y1, x2, y2, x3, y3, tx1, ty1,
-					a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-				cdDrawCurve(font, polygons, tx1, ty1, x4, y4, x4 - font.kMage, y4, 1, 14, 0, haneAdjustment, 0, mageAdjustment);
+					a2_100 + a2_opt_1 * 100, 1, a2_opt_2, 0, a2_opt_3, 0);
+				cdDrawCurve(font, polygons, tx1, ty1, x4, y4, x4 - font.kMage, y4, 1, 14, 0, haneAdjustment, 0, a3_opt_2);
 			} else {
 				cdDrawBezier(
 					font, polygons, x1, y1, x2, y2, x3, y3, x4, y4,
-					a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) ? 15 : a3_100,
-					tateAdjustment, haneAdjustment, opt3, mageAdjustment);
+					a2_100 + a2_opt_1 * 100, (a3_100 === 5 && a3_opt === 0) ? 15 : a3_100,
+					a2_opt_2, a3_opt_1, a2_opt_3, a3_opt_2);
 			}
 			break;
 		}
 		case 7: {
-			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + a2_opt_1 * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
 			cdDrawCurve(
 				font, polygons, x2, y2, x3, y3, x4, y4,
-				1, a3_100, tateAdjustment, haneAdjustment, opt3, mageAdjustment);
+				1, a3_100, tateAdjustment, a3_opt_1, opt3, a3_opt_2);
 			break;
 		}
 		case 9: // may not be exist ... no need
