@@ -15,8 +15,6 @@ interface MinchoAdjustedStroke {
 	kirikuchiAdjustment: number;
 	/** Value computed by {@link Mincho.adjustTate} if a1 in {1,3,7} and x1 = x2; otherwise equals to a2_opt_2 */
 	tateAdjustment: number;
-	/** Value computed by {@link Mincho.adjustTate} if a1 in {1,3,7} and x1 = x2; otherwise equals to a2_opt_3 */
-	opt3: number;
 
 	/** Value computed by {@link Mincho.adjustHane} if a1 in {1,2,6} and a3_100 = 4; otherwise equals to a3_opt_1 */
 	haneAdjustment: number;
@@ -45,7 +43,7 @@ function dfDrawFont(
 			a3_100, a3_opt, a3_opt_1, a3_opt_2,
 			x1, y1, x2, y2, x3, y3, x4, y4,
 		},
-		kirikuchiAdjustment, tateAdjustment, opt3,
+		kirikuchiAdjustment, tateAdjustment,
 		haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
 	}: MinchoAdjustedStroke): void {
 
@@ -89,16 +87,16 @@ function dfDrawFont(
 					: normalize([x1 - x2, y1 - y2], font.kMage);
 				const tx1 = x2 + dx1;
 				const ty1 = y2 + dy1;
-				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
+				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0, 0);
 				cdDrawCurve(
 					font, polygons,
 					tx1, ty1, x2, y2,
-					x2 - font.kMage * (((font.kAdjustTateStep + 4) - tateAdjustment - opt3 * 10) / (font.kAdjustTateStep + 4)), y2,
-					1, 14, tateAdjustment, haneAdjustment, opt3, a3_opt_2);
+					x2 - font.kMage * (((font.kAdjustTateStep + 4) - tateAdjustment) / (font.kAdjustTateStep + 4)), y2,
+					1, 14, tateAdjustment % 10, haneAdjustment, Math.floor(tateAdjustment / 10), a3_opt_2);
 			} else {
 				cdDrawLine(
 					font, polygons, x1, y1, x2, y2,
-					a2_100 + a2_opt_1 * 100, a3_100, tateAdjustment + opt3 * 10, urokoAdjustment, kakatoAdjustment, a3_opt_2);
+					a2_100 + a2_opt_1 * 100, a3_100, tateAdjustment, urokoAdjustment, kakatoAdjustment, a3_opt_2);
 			}
 			break;
 		}
@@ -136,8 +134,8 @@ function dfDrawFont(
 			const tx2 = x2 + dx2;
 			const ty2 = y2 + dy2;
 
-			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
-			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment + opt3 * 10, mageAdjustment);
+			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0, 0);
+			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment, mageAdjustment);
 
 			if (!(a3_100 === 5 && a3_opt_1 === 0 && !((x2 < x3 && x3 - tx2 > 0) || (x2 > x3 && tx2 - x3 > 0)))) { // for closer position
 				cdDrawLine(font, polygons, tx2, ty2, x3, y3,
@@ -198,10 +196,10 @@ function dfDrawFont(
 			break;
 		}
 		case 7: {
-			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + a2_opt_1 * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0, 0);
 			cdDrawCurve(
 				font, polygons, x2, y2, x3, y3, x4, y4,
-				1, a3_100, tateAdjustment, a3_opt_1, opt3, a3_opt_2);
+				1, a3_100, tateAdjustment % 10, a3_opt_1, Math.floor(tateAdjustment / 10), a3_opt_2);
 			break;
 		}
 		case 9: // may not be exist ... no need
@@ -324,11 +322,9 @@ class Mincho implements Font {
 
 				// a2:
 				// - 100s place: adjustKirikuchi (when 2:X32);
-				// - 1000s place: adjustTate (when {1,3,7});
-				// - 10000s place: opt3
+				// - 1000s place: adjustTate (when {1,3,7})
 				kirikuchiAdjustment: a2_opt_1,
-				tateAdjustment: a2_opt_2,
-				opt3: a2_opt_3,
+				tateAdjustment: a2_opt_2 + a2_opt_3 * 10,
 
 				// a3:
 				// - 100s place: adjustHane (when {1,2,6}::X04), adjustUroko/adjustUroko2 (when 1::X00),
@@ -459,10 +455,8 @@ class Mincho implements Font {
 					&& round(Math.abs(x - other_x)) < this.kMinWidthT * this.kAdjustTateStep) {
 					adjStroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(x - other_x) / this.kMinWidthT);
 					if (adjStroke.tateAdjustment > this.kAdjustTateStep
-						|| adjStroke.tateAdjustment === this.kAdjustTateStep && (stroke.a2_opt_1 !== 0 || stroke.a2_100 !== 0)
-						|| stroke.a2_opt_3 !== 0) {
+						|| adjStroke.tateAdjustment === this.kAdjustTateStep && (stroke.a2_opt_1 !== 0 || stroke.a2_100 !== 0)) {
 						adjStroke.tateAdjustment = this.kAdjustTateStep;
-						adjStroke.opt3 = 0;
 					}
 				}
 			});
