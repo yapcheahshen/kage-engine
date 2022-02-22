@@ -23,9 +23,14 @@ export class Stroke {
 
 	public readonly a2_100: number;
 	public readonly a2_opt: number;
+	public readonly a2_opt_1: number;
+	public readonly a2_opt_2: number;
+	public readonly a2_opt_3: number;
 
 	public readonly a3_100: number;
 	public readonly a3_opt: number;
+	public readonly a3_opt_1: number;
+	public readonly a3_opt_2: number;
 
 	public x1: number;
 	public y1: number;
@@ -56,9 +61,14 @@ export class Stroke {
 
 		this.a2_opt = Math.floor(this.a2_100 / 100);
 		this.a2_100 %= 100;
+		this.a2_opt_1 = this.a2_opt % 10;
+		this.a2_opt_2 = Math.floor(this.a2_opt / 10) % 10;
+		this.a2_opt_3 = Math.floor(this.a2_opt / 100);
 
 		this.a3_opt = Math.floor(this.a3_100 / 100);
 		this.a3_100 %= 100;
+		this.a3_opt_1 = this.a3_opt % 10;
+		this.a3_opt_2 = Math.floor(this.a3_opt / 10);
 	}
 
 	public getControlSegments(): [number, number, number, number][] {

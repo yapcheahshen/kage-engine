@@ -11,13 +11,20 @@ import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 interface MinchoAdjustedStroke {
 	readonly stroke: Stroke;
 
+	/** Value computed by {@link Mincho.adjustKirikuchi} if a1 = 2 and a2_100 = 32 and x1 &gt; x2 and y1 &lt; y2; otherwise equals to a2_opt_1 */
 	kirikuchiAdjustment: number;
+	/** Value computed by {@link Mincho.adjustTate} if a1 in {1,3,7} and x1 = x2; otherwise equals to a2_opt_2 */
 	tateAdjustment: number;
+	/** Value computed by {@link Mincho.adjustTate} if a1 in {1,3,7} and x1 = x2; otherwise equals to a2_opt_3 */
 	opt3: number;
 
+	/** Value computed by {@link Mincho.adjustHane} if a1 in {1,2,6} and a3_100 = 4; otherwise equals to a3_opt_1 */
 	haneAdjustment: number;
+	/** Value computed by {@link Mincho.adjustUroko} or {@link Mincho.adjustUroko2} if a1 = 1 and a3_100 = 0; otherwise equals to a3_opt_1 */
 	urokoAdjustment: number;
+	/** Value computed by {@link Mincho.adjustKakato} if a1 = 1 and a3_100 in {13,23}; otherwise equals to a3_opt_1 */
 	kakatoAdjustment: number;
+	/** Value computed by {@link Mincho.adjustMage} if a1 = 3 and y2 = y3; otherwise equals to a3_opt_2 */
 	mageAdjustment: number;
 }
 
@@ -306,29 +313,26 @@ class Mincho implements Font {
 
 	public adjustStrokes(strokesArray: Stroke[]): MinchoAdjustedStroke[] {
 		const adjustedStrokes = strokesArray.map((stroke): MinchoAdjustedStroke => {
-			const { a2_opt, a3_opt } = stroke;
-
-			// a2:
-			// - 100s place: adjustKirikuchi (when 2:X32);
-			// - 1000s place: adjustTate (when {1,3,7});
-			// - 10000s place: opt3
-			const kirikuchiAdjustment = a2_opt % 10;
-			const tateAdjustment = Math.floor(a2_opt / 10) % 10;
-			const opt3 = Math.floor(a2_opt / 100);
-
-			// a3:
-			// - 100s place: adjustHane (when {1,2,6}::X04), adjustUroko/adjustUroko2 (when 1::X00),
-			//               adjustKakato (when 1::X{13,23});
-			// - 1000s place: adjustMage (when 3)
-			const haneAdjustment = a3_opt % 10,
-				urokoAdjustment = haneAdjustment,
-				kakatoAdjustment = haneAdjustment;
-			const mageAdjustment = Math.floor(a3_opt / 10);
-
+			const { a2_opt_1, a2_opt_2, a2_opt_3, a3_opt_1, a3_opt_2 } = stroke;
 			return {
 				stroke,
-				kirikuchiAdjustment, tateAdjustment, opt3,
-				haneAdjustment, urokoAdjustment, kakatoAdjustment, mageAdjustment,
+
+				// a2:
+				// - 100s place: adjustKirikuchi (when 2:X32);
+				// - 1000s place: adjustTate (when {1,3,7});
+				// - 10000s place: opt3
+				kirikuchiAdjustment: a2_opt_1,
+				tateAdjustment: a2_opt_2,
+				opt3: a2_opt_3,
+
+				// a3:
+				// - 100s place: adjustHane (when {1,2,6}::X04), adjustUroko/adjustUroko2 (when 1::X00),
+				//               adjustKakato (when 1::X{13,23});
+				// - 1000s place: adjustMage (when 3)
+				haneAdjustment: a3_opt_1,
+				urokoAdjustment: a3_opt_1,
+				kakatoAdjustment: a3_opt_1,
+				mageAdjustment: a3_opt_2,
 			};
 		});
 		this.adjustHane(adjustedStrokes);
@@ -450,8 +454,8 @@ class Mincho implements Font {
 					&& round(Math.abs(x - other_x)) < this.kMinWidthT * this.kAdjustTateStep) {
 					adjStroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(x - other_x) / this.kMinWidthT);
 					if (adjStroke.tateAdjustment > this.kAdjustTateStep
-						|| adjStroke.tateAdjustment === this.kAdjustTateStep && (stroke.a2_opt % 10 !== 0 || stroke.a2_100 !== 0)
-						|| Math.floor(stroke.a2_opt / 100) !== 0) {
+						|| adjStroke.tateAdjustment === this.kAdjustTateStep && (stroke.a2_opt_1 !== 0 || stroke.a2_100 !== 0)
+						|| stroke.a2_opt_3 !== 0) {
 						adjStroke.tateAdjustment = this.kAdjustTateStep;
 						adjStroke.opt3 = 0;
 					}
