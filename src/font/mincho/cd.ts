@@ -2,6 +2,7 @@ import { divide_curve, find_offcurve, generateFattenCurve } from "../../curve";
 import { Polygon } from "../../polygon";
 import { Polygons } from "../../polygons";
 import { hypot, normalize, round } from "../../util";
+import { Pen } from "../../pen";
 import Mincho from ".";
 
 function cdDrawCurveU(
@@ -466,40 +467,41 @@ export function cdDrawLine(
 		const [cosrad, sinrad] = (x1 === x2)
 			? [0, 1] // ?????
 			: normalize([x2 - x1, y2 - y1]);
+
+		const pen1 = new Pen(x1, y1);
+		const pen2 = new Pen(x2, y2);
+		// if (x1 !== x2) { // ?????
+		// 	pen1.setDown(x2, y2);
+		// 	pen2.setUp(x1, y1);
+		// }
+		pen1.setMatrix2(sinrad, -cosrad);
+		pen2.setMatrix2(sinrad, -cosrad);
+
 		if (!((a2 === 13 || a2 === 23) && mageAdjustment !== 0)) { // for backward compatibility...
 			const poly = new Polygon(4);
 			switch (a1) {
 				case 0:
-					poly.set(0,
-						x1 + sinrad * kMinWidthT + cosrad * font.kMinWidthY / 2,
-						y1 - cosrad * kMinWidthT + sinrad * font.kMinWidthY / 2);
-					poly.set(3,
-						x1 - sinrad * kMinWidthT - cosrad * font.kMinWidthY / 2,
-						y1 + cosrad * kMinWidthT - sinrad * font.kMinWidthY / 2);
+					poly.setPoint(0, pen1.getPoint(kMinWidthT, font.kMinWidthY / 2));
+					poly.setPoint(3, pen1.getPoint(-kMinWidthT, -font.kMinWidthY / 2));
 					break;
 				case 1:
 				case 6: // ... no need
-					poly.set(0, x1 + sinrad * kMinWidthT, y1 - cosrad * kMinWidthT);
-					poly.set(3, x1 - sinrad * kMinWidthT, y1 + cosrad * kMinWidthT);
+					poly.setPoint(0, pen1.getPoint(kMinWidthT, 0));
+					poly.setPoint(3, pen1.getPoint(-kMinWidthT, 0));
 					break;
 				case 12:
-					poly.set(0,
-						x1 + sinrad * kMinWidthT - cosrad * font.kMinWidthY,
-						y1 - cosrad * kMinWidthT - sinrad * font.kMinWidthY);
-					poly.set(3,
-						x1 - sinrad * kMinWidthT - cosrad * (kMinWidthT + font.kMinWidthY),
-						y1 + cosrad * kMinWidthT - sinrad * (kMinWidthT + font.kMinWidthY));
+					poly.setPoint(0, pen1.getPoint(kMinWidthT, -font.kMinWidthY));
+					poly.setPoint(3, pen1.getPoint(-kMinWidthT, -font.kMinWidthY - kMinWidthT));
 					break;
 				case 22:
 					if (x1 === x2) {
 						poly.set(0, x1 + kMinWidthT, y1);
 						poly.set(3, x1 - kMinWidthT, y1);
 					} else {
-						const rad = Math.atan((y2 - y1) / (x2 - x1));
 						const v = x1 > x2 ? -1 : 1;
-						// TODO: why " + 1" ???
-						poly.set(0, x1 + (kMinWidthT * v + 1) / Math.sin(rad), y1 + 1);
-						poly.set(3, x1 - (kMinWidthT * v) / Math.sin(rad), y1);
+						// TODO: why " + v", " + 1" ???
+						poly.set(0, x1 + (kMinWidthT + v) / sinrad, y1 + 1);
+						poly.set(3, x1 - kMinWidthT / sinrad, y1);
 					}
 					break;
 				case 32:
@@ -516,15 +518,11 @@ export function cdDrawLine(
 			switch (a2) {
 				case 0:
 					if (a1 === 6) { // KAGI's tail ... no need
-						poly.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-						poly.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
+						poly.setPoint(1, pen2.getPoint(kMinWidthT, 0));
+						poly.setPoint(2, pen2.getPoint(-kMinWidthT, 0));
 					} else {
-						poly.set(1,
-							x2 + sinrad * kMinWidthT - cosrad * kMinWidthT / 2,
-							y2 - cosrad * kMinWidthT - sinrad * kMinWidthT / 2);
-						poly.set(2,
-							x2 - sinrad * kMinWidthT + cosrad * kMinWidthT / 2,
-							y2 + cosrad * kMinWidthT + sinrad * kMinWidthT / 2);
+						poly.setPoint(1, pen2.getPoint(kMinWidthT, -kMinWidthT / 2));
+						poly.setPoint(2, pen2.getPoint(-kMinWidthT, kMinWidthT / 2));
 					}
 					break;
 				case 5:
@@ -533,24 +531,16 @@ export function cdDrawLine(
 					}
 				// falls through
 				case 1: // is needed?
-					poly.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-					poly.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
+					poly.setPoint(1, pen2.getPoint(kMinWidthT, 0));
+					poly.setPoint(2, pen2.getPoint(-kMinWidthT, 0));
 					break;
 				case 13:
-					poly.set(1,
-						x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoL[kakatoAdjustment],
-						y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoL[kakatoAdjustment]);
-					poly.set(2,
-						x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoL[kakatoAdjustment] + kMinWidthT),
-						y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoL[kakatoAdjustment] + kMinWidthT));
+					poly.setPoint(1, pen2.getPoint(kMinWidthT, font.kAdjustKakatoL[kakatoAdjustment]));
+					poly.setPoint(2, pen2.getPoint(-kMinWidthT, font.kAdjustKakatoL[kakatoAdjustment] + kMinWidthT));
 					break;
 				case 23:
-					poly.set(1,
-						x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoR[kakatoAdjustment],
-						y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoR[kakatoAdjustment]);
-					poly.set(2,
-						x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoR[kakatoAdjustment] + kMinWidthT),
-						y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoR[kakatoAdjustment] + kMinWidthT));
+					poly.setPoint(1, pen2.getPoint(kMinWidthT, font.kAdjustKakatoR[kakatoAdjustment]));
+					poly.setPoint(2, pen2.getPoint(-kMinWidthT, font.kAdjustKakatoR[kakatoAdjustment] + kMinWidthT));
 					break;
 				case 24: // for T/H design
 				case 32:
@@ -636,26 +626,16 @@ export function cdDrawLine(
 				break;
 			}
 			case 0: { // beginning of the stroke
-				const poly = new Polygon([
-					{
-						x: +kMinWidthT * sinrad + font.kMinWidthY * 0.5 * cosrad,
-						y: +kMinWidthT * -cosrad + font.kMinWidthY * 0.5 * sinrad,
-					},
-					{
-						x: +(kMinWidthT + kMinWidthT * 0.5) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * cosrad,
-						y: +(kMinWidthT + kMinWidthT * 0.5) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * sinrad,
-					},
-					(x1 === x2) // ?????
-						? {
-							x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * cosrad,
-							y: +(kMinWidthT - 2) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * sinrad,
-						}
-						: {
-							x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * cosrad,
-							y: +(kMinWidthT + 1) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * sinrad, // ?????
-						},
+				const poly = pen1.getPolygon([
+					{ x: kMinWidthT, y: font.kMinWidthY * 0.5 },
+					{ x: kMinWidthT + kMinWidthT * 0.5, y: font.kMinWidthY * 0.5 + font.kMinWidthY },
+					{ x: kMinWidthT - 2, y: font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1 },
 				]);
-				poly.translate(x1, y1);
+				if (x1 !== x2) { // ?????
+					poly.set(2,
+						x1 + (kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * cosrad,
+						y1 + (kMinWidthT + 1) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * sinrad); // ?????
+				}
 				polygons.push(poly);
 				break;
 			}
@@ -775,11 +755,19 @@ export function cdDrawLine(
 			? [1, 0] // ?????
 			: normalize([x2 - x1, y2 - y1]);
 		// always same
+		const pen1 = new Pen(x1, y1);
+		const pen2 = new Pen(x2, y2);
+		// if (y1 !== y2) { // ?????
+		// 	pen1.setRight(x2, y2);
+		// 	pen2.setLeft(x1, y1);
+		// }
+		pen1.setMatrix2(cosrad, sinrad);
+		pen2.setMatrix2(cosrad, sinrad);
 		const poly = new Polygon([
-			{ x: x1 + sinrad * font.kMinWidthY, y: y1 - cosrad * font.kMinWidthY },
-			{ x: x2 + sinrad * font.kMinWidthY, y: y2 - cosrad * font.kMinWidthY },
-			{ x: x2 - sinrad * font.kMinWidthY, y: y2 + cosrad * font.kMinWidthY },
-			{ x: x1 - sinrad * font.kMinWidthY, y: y1 + cosrad * font.kMinWidthY },
+			pen1.getPoint(0, -font.kMinWidthY),
+			pen2.getPoint(0, -font.kMinWidthY),
+			pen2.getPoint(0, font.kMinWidthY),
+			pen1.getPoint(0, font.kMinWidthY),
 		]);
 		polygons.push(poly);
 
@@ -788,12 +776,14 @@ export function cdDrawLine(
 			case 0:
 				if (mageAdjustment === 0) {
 					const urokoScale = (font.kMinWidthU / font.kMinWidthY - 1.0) / 4.0 + 1.0;
-					const poly2 = new Polygon([
-						{ x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
-						{ x: -cosrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale, y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale },
-						{ x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] * urokoScale / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] * urokoScale }, // ?????
+					const poly2 = pen2.getPolygon([
+						{ x: 0, y: -font.kMinWidthY },
+						{ x: -font.kAdjustUrokoX[urokoAdjustment] * urokoScale, y: 0 },
 					]);
-					poly2.translate(x2, y2);
+					poly2.push(
+						x2 - (cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] * urokoScale / 2,
+						y2 - (sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] * urokoScale
+					);
 					polygons.push(poly2);
 				}
 				break;

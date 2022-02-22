@@ -93,6 +93,17 @@ export class Polygon {
 	}
 
 	/**
+	 * Mutates a point in its contour.
+	 * @param index The index in the contour of the point to be mutated.
+	 * @param point A point of the new coordinate values. Omitting `off` property makes
+	 *     the point an on-curve point (as if `off: false` were specified).
+	 */
+	// Added by @kurgm
+	public setPoint(index: number, point: PointOptOff): void {
+		this.set(index, point.x, point.y, point.off);
+	}
+
+	/**
 	 * Retrieves a point in its contour.
 	 * @param index The index in the contour of the point to be retrieved.
 	 * @returns A read-only point object. Modifications made to the returned
