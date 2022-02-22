@@ -80,6 +80,15 @@ export class Polygon {
 	}
 
 	/**
+	 * Appends a point at the end of its contour.
+	 * @param point The appended point.
+	 */
+	// Added by @kurgm
+	public pushPoint(point: PointOptOff): void {
+		this.push(point.x, point.y, point.off);
+	}
+
+	/**
 	 * Mutates a point in its contour.
 	 * @param index The index in the contour of the point to be mutated.
 	 * @param x The new x-coordinate of the point.
