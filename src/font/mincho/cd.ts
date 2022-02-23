@@ -46,11 +46,14 @@ function cdDrawCurveU(
 		x1 += dx1;
 		y1 += dy1;
 	}
+
 	let cornerOffset = 0;
-	const contourLength = hypot(sx1 - x1, sy1 - y1) + hypot(sx2 - sx1, sy2 - sy1) + hypot(x2 - sx2, y2 - sy2);
-	if ((a1 === 22 || a1 === 27) && a2 === 7 && contourLength < 100) {
-		cornerOffset = (kMinWidthT > 6) ? (kMinWidthT - 6) * ((100 - contourLength) / 100) : 0;
-		x1 += cornerOffset;
+	if ((a1 === 22 || a1 === 27) && a2 === 7 && kMinWidthT > 6) {
+		const contourLength = hypot(sx1 - x1, sy1 - y1) + hypot(sx2 - sx1, sy2 - sy1) + hypot(x2 - sx2, y2 - sy2);
+		if (contourLength < 100) {
+			cornerOffset = (kMinWidthT - 6) * ((100 - contourLength) / 100);
+			x1 += cornerOffset;
+		}
 	}
 
 	let delta2;
