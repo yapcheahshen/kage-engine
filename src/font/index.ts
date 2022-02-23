@@ -6,8 +6,10 @@ import { KShotai } from "./shotai";
 
 export { KShotai } from "./shotai";
 
+/** @internal */
 export type StrokeDrawer = (polygons: Polygons) => void;
 
+/** @internal */
 export interface FontInterface {
 	readonly shotai: KShotai;
 	kUseCurve: boolean;

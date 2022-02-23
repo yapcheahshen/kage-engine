@@ -180,6 +180,7 @@ export class Polygon {
 	 * @param dx The x-amount of translation.
 	 * @param dy The y-amount of translation.
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public translate(dx: number, dy: number): this {
@@ -198,6 +199,7 @@ export class Polygon {
 	 * ```
 	 * where `x` and `y` are old coordinates and `x'` and `y'` are new coordinates.
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public transformMatrix(a: number, b: number, c: number, d: number): this {
@@ -217,6 +219,7 @@ export class Polygon {
 	 * applying uniform scaling by the factor hypot(x, y) and rotating by the angle
 	 * atan2(y, x), or multiplying (x+yi) on the complex plane.
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public transformMatrix2(x: number, y: number): this {
@@ -228,6 +231,7 @@ export class Polygon {
 	 * Equivalent to calling {@link transformMatrix}(factor, 0, 0, factor).
 	 * @param factor The scaling factor.
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public scale(factor: number): this {
@@ -242,6 +246,7 @@ export class Polygon {
 	 * Flips the sign of the x-coordinate of each point in the contour.
 	 * Equivalent to calling {@link transformMatrix}(-1, 0, 0, 1).
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public reflectX(): this {
@@ -255,6 +260,7 @@ export class Polygon {
 	 * Flips the sign of the y-coordinate of each point in the contour.
 	 * Equivalent to calling {@link transformMatrix}(1, 0, 0, -1).
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public reflectY(): this {
@@ -268,6 +274,7 @@ export class Polygon {
 	 * Rotates the whole polygon by 90 degrees clockwise.
 	 * Equivalent to calling {@link transformMatrix}(0, -1, 1, 0).
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public rotate90(): this {
@@ -284,6 +291,7 @@ export class Polygon {
 	 * Equivalent to calling {@link transformMatrix}(-1, 0, 0, -1), or
 	 * {@link scale}(-1).
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public rotate180(): this {
@@ -294,6 +302,7 @@ export class Polygon {
 	 * Rotates the whole polygon by 270 degrees clockwise.
 	 * Equivalent to calling {@link transformMatrix}(0, 1, -1, 0).
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public rotate270(): this {
@@ -308,6 +317,7 @@ export class Polygon {
 	/**
 	 * Applies the floor function to all the coordinate values in the contour.
 	 * @returns This object (for chaining).
+	 * @internal
 	 */
 	// for backward compatibility...
 	public floor(): this {

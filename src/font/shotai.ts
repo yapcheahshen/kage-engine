@@ -1,3 +1,4 @@
+/** Enum of the supported fonts. */
 export enum KShotai {
 	/** Mincho style font */
 	kMincho = 0,

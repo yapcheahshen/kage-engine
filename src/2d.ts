@@ -68,6 +68,7 @@ function isCrossBox(
 	return false;
 }
 
+/** @internal */
 export function isCrossBoxWithOthers(
 	strokesArray: Stroke[], i: number,
 	bx1: number, by1: number, bx2: number, by2: number): boolean {
@@ -79,6 +80,7 @@ export function isCrossBoxWithOthers(
 	));
 }
 
+/** @internal */
 export function isCrossWithOthers(
 	strokesArray: Stroke[], i: number,
 	bx1: number, by1: number, bx2: number, by2: number): boolean {

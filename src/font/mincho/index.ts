@@ -215,41 +215,74 @@ function dfDrawFont(
 class Mincho implements FontInterface {
 	public readonly shotai: KShotai = KShotai.kMincho;
 
+	/**
+	 * Precision for polygon approximation of curving strokes.
+	 * It must be a positive divisor of 1000. The smaller `kRate` will give
+	 * smoother curves approximated with the larger number of points (roughly
+	 * 2 × 1000 / `kRate` per one curve stroke).
+	 */
 	public kRate: number = 100; // must divide 1000
+	/** Half of the width of mincho-style horizontal (thinner) strokes. */
 	public kMinWidthY: number;
 	public kMinWidthU: number;
+	/** Half of the width of mincho-style vertical (thicker) strokes. */
 	public kMinWidthT: number;
+	/**
+	 * Half of the width of gothic-style strokes.
+	 * Also used to determine the size of mincho's ornamental elements.
+	 */
 	public kWidth: number;
+	/** Size of カカト in gothic. */
 	public kKakato: number;
+	/** Width at the end of 右払い relative to `2 * kMinWidthT`. */
 	public kL2RDfatten: number;
+	/** Size of curve at the end of 左ハネ, and at the middle of 折れ and 乙線 strokes. */
 	public kMage: number;
+	/**
+	 * Whether to use off-curve points to approximate curving strokes
+	 * with quadratic Bézier curve (experimental).
+	 */
 	public kUseCurve: boolean;
 
-	/** for KAKATO adjustment 000,100,200,300,400 */
+	/** Length of 左下カド's カカト in mincho for each shortening level (0 to 3) and 413 (左下zh用新). */
+	// for KAKATO adjustment 000,100,200,300,400
 	public kAdjustKakatoL: number[];
-	/** for KAKATO adjustment 000,100,200,300 */
+	/** Length of 右下カド's カカト in mincho for each shortening level (0 to 3). */
+	// for KAKATO adjustment 000,100,200,300
 	public kAdjustKakatoR: number[];
-	/** check area width */
+	/** Width of the collision box below カカト for shortening adjustment. */
+	// check area width
 	public kAdjustKakatoRangeX: number;
-	/** 3 steps of checking */
+	/** Height of the collision box below カカト for each shortening adjustment level (0 to 3). */
+	// 3 steps of checking
 	public kAdjustKakatoRangeY: number[];
-	/** number of steps */
+	/** Number of カカト shortening levels. Must be set to 3. */
+	// number of steps
 	public kAdjustKakatoStep: number;
 
-	/** for UROKO adjustment 000,100,200,300 */
+	/** Size of ウロコ at the 開放 end of mincho-style horizontal strokes for each shrinking level (0 to max({@link kAdjustUrokoLengthStep}, {@link kAdjustUroko2Step})). */
+	// for UROKO adjustment 000,100,200,300
 	public kAdjustUrokoX: number[];
-	/** for UROKO adjustment 000,100,200,300 */
+	/** Size of ウロコ at the 開放 end of mincho-style horizontal strokes for each shrinking level (0 to max({@link kAdjustUrokoLengthStep}, {@link kAdjustUroko2Step})). */
+	// for UROKO adjustment 000,100,200,300
 	public kAdjustUrokoY: number[];
-	/** length for checking */
+	/** Threshold length of horizontal strokes for shrinking its ウロコ for each adjustment level ({@link kAdjustUrokoLengthStep} to 1). */
+	// length for checking
 	public kAdjustUrokoLength: number[];
-	/** number of steps */
+	/** Number of ウロコ shrinking levels by adjustment using collision detection. */
+	// number of steps
 	public kAdjustUrokoLengthStep: number;
-	/** check for crossing. corresponds to length */
+	/** Size of the collision box to the left of ウロコ at the 開放 end of mincho-style horizontal strokes for each shrinking adjustment level ({@link kAdjustUrokoLengthStep} to 1). */
+	// check for crossing. corresponds to length
 	public kAdjustUrokoLine: number[];
 
+	/** Number of ウロコ shrinking levels by adjustment using density of horizontal strokes. */
 	public kAdjustUroko2Step: number;
+	/** Parameter for shrinking adjustment of ウロコ using density of horizontal strokes. */
 	public kAdjustUroko2Length: number;
+	/** Parameter for thinning adjustment of mincho-style vertical strokes. */
 	public kAdjustTateStep: number;
+	/** Parameter for thinning adjustment of latter half of mincho-style 折れ strokes. */
 	public kAdjustMageStep: number;
 
 	public constructor() {
@@ -308,12 +341,14 @@ class Mincho implements FontInterface {
 		}
 	}
 
+	/** @internal */
 	public getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
 		return this.adjustStrokes(strokesArray).map((adjStroke) => (polygons: Polygons) => {
 			dfDrawFont(this, polygons, adjStroke);
 		});
 	}
 
+	/** @internal */
 	public adjustStrokes(strokesArray: Stroke[]): MinchoAdjustedStroke[] {
 		const adjustedStrokes = strokesArray.map((stroke): MinchoAdjustedStroke => {
 			const { a2_opt_1, a2_opt_2, a2_opt_3, a3_opt_1, a3_opt_2 } = stroke;

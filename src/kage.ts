@@ -6,17 +6,26 @@ import { KShotai, Font, select as selectFont } from "./font";
 export { KShotai };
 
 export class Kage {
-	static Buhin = Buhin;
-	static Polygons = Polygons;
+	static readonly Buhin = Buhin;
+	static readonly Polygons = Polygons;
 
-	// TODO: should be static
-	public kMincho = KShotai.kMincho;
-	public kGothic = KShotai.kGothic;
+	public readonly kMincho = KShotai.kMincho;
+	public readonly kGothic = KShotai.kGothic;
 
+	/**
+	 * Provides the way to configure parameters of the currently selected font.
+	 * Its parameters are reset to the default values when {@link Kage.kShotai} is set.
+	 * @example
+	 * const kage = new Kage();
+	 * kage.kFont.kRate = 50;
+	 * kage.kFont.kWidth = 3;
+	 */
 	public kFont: Font = selectFont(KShotai.kMincho);
 
 	// properties
 	/**
+	 * Gets or sets the font as {@link KShotai}. Setting this property resets all the
+	 * font parameters in {@link Kage.kFont}.
 	 * @example
 	 * const kage = new Kage();
 	 * kage.kShotai = kage.kGothic;
@@ -41,7 +50,7 @@ export class Kage {
 	/** A storage from which components are looked up. */
 	public kBuhin: Buhin;
 
-	public stretch = stretch;
+	readonly stretch = stretch;
 
 	constructor(size?: number) {
 		this.kFont.setSize(size);

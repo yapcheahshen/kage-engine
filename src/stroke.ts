@@ -17,6 +17,7 @@ export function stretch(dp: number, sp: number, p: number, min: number, max: num
 	return Math.floor(((p - p1) / (p2 - p1)) * (p4 - p3) + p3);
 }
 
+/** @internal */
 export class Stroke {
 	public readonly a1_100: number;
 	public readonly a1_opt: number;

@@ -133,6 +133,7 @@ function dfDrawFont(
 /** Gothic style font. */
 class Gothic extends Mincho implements FontInterface {
 	public readonly shotai: KShotai = KShotai.kGothic;
+	/** @internal */
 	public getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
 		return this.adjustStrokes(strokesArray).map((stroke) => (polygons: Polygons) => {
 			dfDrawFont(this, polygons, stroke);
