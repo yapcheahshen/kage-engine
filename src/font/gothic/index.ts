@@ -1,7 +1,7 @@
 import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
 import { normalize } from "../../util";
-import { Font, StrokeDrawer } from "..";
+import { FontInterface, StrokeDrawer } from "..";
 import { KShotai } from "../shotai";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
@@ -131,7 +131,7 @@ function dfDrawFont(
 }
 
 /** Gothic style font. */
-class Gothic extends Mincho implements Font {
+class Gothic extends Mincho implements FontInterface {
 	public readonly shotai: KShotai = KShotai.kGothic;
 	public getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
 		return this.adjustStrokes(strokesArray).map((stroke) => (polygons: Polygons) => {

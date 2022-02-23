@@ -8,7 +8,7 @@ export { KShotai } from "./shotai";
 
 export type StrokeDrawer = (polygons: Polygons) => void;
 
-export interface Font {
+export interface FontInterface {
 	readonly shotai: KShotai;
 	kUseCurve: boolean;
 	setSize(size?: number): void;
@@ -17,6 +17,8 @@ export interface Font {
 
 export { default as Mincho } from "./mincho";
 export { default as Gothic } from "./gothic";
+
+export type Font = Mincho | Gothic;
 
 export function select(shotai: KShotai): Font {
 	switch (shotai) {

@@ -3,7 +3,7 @@ import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
 import { hypot, normalize, round } from "../../util";
 import { isCrossBoxWithOthers, isCrossWithOthers } from "../../2d";
-import { Font, StrokeDrawer } from "..";
+import { FontInterface, StrokeDrawer } from "..";
 import { KShotai } from "../shotai";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
@@ -212,7 +212,7 @@ function dfDrawFont(
 }
 
 /** Mincho style font. */
-class Mincho implements Font {
+class Mincho implements FontInterface {
 	public readonly shotai: KShotai = KShotai.kMincho;
 
 	public kRate: number = 100; // must divide 1000
