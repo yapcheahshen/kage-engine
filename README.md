@@ -14,11 +14,11 @@ This repository contains KAGE engine modified by @kurgm (a.k.a. [User:twe](https
 
 ### Installation
 
-You can install to your project using npm:
+You can install the package to your project using npm:
 ```sh
 $ npm install @kurgm/kage-engine
 ```
-Then you can import or require the engine like:
+Then you can import or require to use it in your code:
 ```js
 // ES style
 import { Kage, Polygons } from "@kurgm/kage-engine";
@@ -27,7 +27,7 @@ import { Kage, Polygons } from "@kurgm/kage-engine";
 const { Kage, Polygons } = require("@kurgm/kage-engine");
 ```
 
-You can also load from CDN to your HTML page:
+Alternatively, you can also load the bundled file from CDN to your web page:
 ```html
 <script src="https://unpkg.com/@kurgm/kage-engine@0.3.1/dist/kage.min.js"></script>
 ```
@@ -38,6 +38,8 @@ const Buhin = Kage.Buhin;
 ```
 
 ### Drawing glyphs
+
+*The [docs](docs/) directory contains detailed API documentations of development version.*
 
 ```js
 // First create a Kage instance
