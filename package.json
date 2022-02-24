@@ -14,6 +14,7 @@
     "build": "npm run build:lib && npm run build:dist",
     "build:lib": "tsc",
     "build:dist": "mkdir -p dist && rollup -c",
+    "build:doc": "typedoc",
     "clean": "rm -r lib dist",
     "lint": "eslint 'src/**/*.ts'",
     "test": "node test/index.js"
@@ -35,6 +36,8 @@
     "eslint": "^8.6.0",
     "rollup": "^2.64.0",
     "rollup-plugin-terser": "^7.0.2",
+    "typedoc": "^0.22.12",
+    "typedoc-plugin-markdown": "^3.11.14",
     "typescript": "^4.5.4"
   }
 }
