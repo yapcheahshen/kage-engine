@@ -7,6 +7,7 @@ export class Polygons {
 	/**
 	 * Stores the rendered glyph as an array of instances of {@link Polygon}.
 	 * @example
+	 * ```ts
 	 * const polygons = new Polygons();
 	 * kage.makeGlyph(polygons, someGlyphName);
 	 * for (const poly of polygons.array) {
@@ -18,6 +19,7 @@ export class Polygons {
 	 * 	}
 	 * 	ctx.closePath();
 	 * }
+	 * ```
 	 */
 	public array: Polygon[];
 
@@ -71,7 +73,8 @@ export class Polygons {
 	 * Generates a string in SVG format that represents the rendered glyph.
 	 * @param curve Set to true to use `<path />` format or set to false to use
 	 *     `<polygon />` format. Must be set to true if the glyph was rendered with
-	 *     `kage.kFont.kUseCurve = true`. `<polygon />` is used if unspecified.
+	 *     `kage.kFont.kUseCurve = true`. The `<polygon />` format is used if
+	 *     unspecified.
 	 * @returns The string representation of the rendered glyph in SVG format.
 	 */
 	public generateSVG(curve?: boolean): string {

@@ -1,3 +1,4 @@
+/** Represents an element of {@link Polygon}. */
 export interface Point {
 	/** The x-coordinate of the point. */
 	x: number;
@@ -10,6 +11,11 @@ export interface Point {
 	off: boolean;
 }
 
+/**
+ * The same as {@link Point} except that the `off` property is optional.
+ * When `off` is omitted, it is treated as an on-curve point (`off: false`).
+ * Used as the parameter type of {@link Polygon}'s methods.
+ */
 export type PointOptOff = Omit<Point, "off"> & Partial<Pick<Point, "off">>;
 
 /**
@@ -26,6 +32,34 @@ export class Polygon {
 	 *
 	 * Modifications to this array do NOT affect the contour;
 	 * call {@link set} method to modify the contour.
+	 *
+	 * @example
+	 * ```ts
+	 * for (const point of polygons.array) {
+	 * 	// ...
+	 * }
+	 * ```
+	 *
+	 * Note that computation of rounded coordinates of all the points is performed
+	 * every time this property is accessed. To get a better performance, consider
+	 * caching the result in a variable when you need to access the array repeatedly.
+	 * ```ts
+	 * // DO:
+	 * const array = polygon.array;
+	 * for (let i = 0; i < array.length; i++) {
+	 * 	const point = array[i];
+	 * 	// ...
+	 * }
+	 * 
+	 * // DON'T:
+	 * for (let i = 0; i < polygon.array.length; i++) {
+	 * 	const point = polygon.array[i];
+	 * 	// ...
+	 * }
+	 * ```
+	 *
+	 * @see {@link Polygon.length} is faster if you only need the length.
+	 * @see {@link Polygon.get} is faster if you need just one element.
 	 */
 	// resolution : 0.1
 	public get array(): ReadonlyArray<Readonly<Point>> {
@@ -82,6 +116,7 @@ export class Polygon {
 	/**
 	 * Appends a point at the end of its contour.
 	 * @param point The appended point.
+	 * @internal
 	 */
 	// Added by @kurgm
 	public pushPoint(point: PointOptOff): void {
@@ -106,6 +141,7 @@ export class Polygon {
 	 * @param index The index in the contour of the point to be mutated.
 	 * @param point A point of the new coordinate values. Omitting `off` property makes
 	 *     the point an on-curve point (as if `off: false` were specified).
+	 * @internal
 	 */
 	// Added by @kurgm
 	public setPoint(index: number, point: PointOptOff): void {
@@ -113,12 +149,21 @@ export class Polygon {
 	}
 
 	/**
-	 * Retrieves a point in its contour.
+	 * Retrieves a point in its contour. If the index is out of bounds,
+	 * throws an error.
 	 * @param index The index in the contour of the point to be retrieved.
 	 * @returns A read-only point object. Modifications made to the returned
 	 *     object do NOT affect the values of the point in the contour;
 	 *     call {@link set} method to modify the contour.
+	 * @example
+	 * ```ts
+	 * for (let i = 0; i < polygon.length; i++) {
+	 * 	const point = polygon.get(i);
+	 * 	// ...
+	 * }
+	 * ```
 	 */
+	// Added by @kurgm
 	public get(index: number): Readonly<Point> {
 		const { x, y, off } = this._array[index];
 		return {
