@@ -224,6 +224,7 @@ class Mincho implements FontInterface {
 	public kRate: number = 100; // must divide 1000
 	/** Half of the width of mincho-style horizontal (thinner) strokes. */
 	public kMinWidthY: number;
+	/** Determines the size of ウロコ at the 開放 end of mincho-style horizontal strokes. */
 	public kMinWidthU: number;
 	/** Half of the width of mincho-style vertical (thicker) strokes. */
 	public kMinWidthT: number;
