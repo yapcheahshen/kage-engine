@@ -1,0 +1,140 @@
+[@kurgm/kage-engine](../README.md) / Polygons
+
+# Class: Polygons
+
+Represents the rendered glyph.
+
+## Table of contents
+
+### Constructors
+
+- [constructor](Polygons.md#constructor)
+
+### Properties
+
+- [array](Polygons.md#array)
+
+### Methods
+
+- [clear](Polygons.md#clear)
+- [generateEPS](Polygons.md#generateeps)
+- [generateSVG](Polygons.md#generatesvg)
+- [push](Polygons.md#push)
+
+## Constructors
+
+### constructor
+
+• **new Polygons**()
+
+#### Defined in
+
+[polygons.ts:26](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L26)
+
+## Properties
+
+### array
+
+• **array**: [`Polygon`](Polygon.md)[]
+
+Stores the rendered glyph as an array of instances of [Polygon](Polygon.md).
+
+**`example`**
+```ts
+const polygons = new Polygons();
+kage.makeGlyph(polygons, someGlyphName);
+for (const poly of polygons.array) {
+	let first = true;
+	for (const { x, y } of poly.array) {
+		if (first) ctx.moveTo(x, y);
+		else ctx.lineTo(x, y);
+		first = false;
+	}
+	ctx.closePath();
+}
+```
+
+#### Defined in
+
+[polygons.ts:24](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L24)
+
+## Methods
+
+### clear
+
+▸ **clear**(): `void`
+
+Clears the content.
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[polygons.ts:32](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L32)
+
+___
+
+### generateEPS
+
+▸ **generateEPS**(): `string`
+
+Generates a string in EPS format that represents the rendered glyph.
+
+#### Returns
+
+`string`
+
+The string representation of the rendered glyph in EPS format.
+
+#### Defined in
+
+[polygons.ts:117](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L117)
+
+___
+
+### generateSVG
+
+▸ **generateSVG**(`curve?`): `string`
+
+Generates a string in SVG format that represents the rendered glyph.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `curve?` | `boolean` | Set to true to use `<path />` format or set to false to use     `<polygon />` format. Must be set to true if the glyph was rendered with     `kage.kFont.kUseCurve = true`. The `<polygon />` format is used if     unspecified. |
+
+#### Returns
+
+`string`
+
+The string representation of the rendered glyph in SVG format.
+
+#### Defined in
+
+[polygons.ts:80](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L80)
+
+___
+
+### push
+
+▸ **push**(`polygon`): `void`
+
+Appends a new [Polygon](Polygon.md) to the end of the array.
+Nothing is performed if `polygon` is not a valid polygon.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `polygon` | [`Polygon`](Polygon.md) | An instance of [Polygon](Polygon.md) to be appended. |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[polygons.ts:41](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L41)
