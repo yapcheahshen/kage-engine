@@ -3,8 +3,6 @@ import { Polygons } from "./polygons";
 import { stretch, Stroke } from "./stroke";
 import { KShotai, Font, select as selectFont } from "./font";
 
-export { KShotai };
-
 export class Kage {
 	static readonly Buhin = Buhin;
 	static readonly Polygons = Polygons;
