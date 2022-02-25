@@ -9,10 +9,10 @@ function cdDrawCurveU(
 	font: Gothic, polygons: Polygons,
 	x1: number, y1: number, sx1: number, sy1: number,
 	sx2: number, sy2: number, x2: number, y2: number,
-	ta1: number, ta2: number) {
+	_ta1: number, _ta2: number) {
 
-	const a1 = ta1;
-	const a2 = ta2;
+	let a1: number;
+	let a2: number;
 
 	let delta1 = 0;
 	switch (a1 % 10) {
