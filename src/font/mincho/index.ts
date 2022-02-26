@@ -11,16 +11,16 @@ import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 interface MinchoAdjustedStroke {
 	readonly stroke: Stroke;
 
-	/** Value computed by {@link Mincho.adjustKirikuchi} if a1 = 2 and a2_100 = 32 and x1 &gt; x2 and y1 &lt; y2; otherwise equals to a2_opt_1 */
+	/** Value computed by {@link Mincho.adjustKirikuchi} if a1 = 2 and a2 = 32 and x1 &gt; x2 and y1 &lt; y2; otherwise equals to a2_opt_1 */
 	kirikuchiAdjustment: number;
-	/** Value computed by {@link Mincho.adjustTate} if a1 in {1,3,7} and x1 = x2; otherwise equals to a2_opt_2 */
+	/** Value computed by {@link Mincho.adjustTate} if a1 in {1,3,7} and x1 = x2; otherwise equals to a2_opt_2 + a2_opt_3 * 10 */
 	tateAdjustment: number;
 
-	/** Value computed by {@link Mincho.adjustHane} if a1 in {1,2,6} and a3_100 = 4; otherwise equals to a3_opt_1 */
+	/** Value computed by {@link Mincho.adjustHane} if a1 in {1,2,6} and a3 = 4; otherwise equals to a3_opt_1 */
 	haneAdjustment: number;
-	/** Value computed by {@link Mincho.adjustUroko} or {@link Mincho.adjustUroko2} if a1 = 1 and a3_100 = 0; otherwise equals to a3_opt_1 */
+	/** Value computed by {@link Mincho.adjustUroko} or {@link Mincho.adjustUroko2} if a1 = 1 and a3 = 0; otherwise equals to a3_opt */
 	urokoAdjustment: number;
-	/** Value computed by {@link Mincho.adjustKakato} if a1 = 1 and a3_100 in {13,23}; otherwise equals to a3_opt_1 */
+	/** Value computed by {@link Mincho.adjustKakato} if a1 = 1 and a3 in {13,23}; otherwise equals to a3_opt */
 	kakatoAdjustment: number;
 	/** Value computed by {@link Mincho.adjustMage} if a1 = 3 and y2 = y3; otherwise equals to a3_opt_2 */
 	mageAdjustment: number;
@@ -87,7 +87,7 @@ function dfDrawFont(
 					: normalize([x1 - x2, y1 - y2], font.kMage);
 				const tx1 = x2 + dx1;
 				const ty1 = y2 + dy1;
-				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0, 0);
+				cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0);
 				cdDrawCurve(
 					font, polygons,
 					tx1, ty1, x2, y2,
@@ -96,7 +96,7 @@ function dfDrawFont(
 			} else {
 				cdDrawLine(
 					font, polygons, x1, y1, x2, y2,
-					a2_100 + a2_opt_1 * 100, a3_100, tateAdjustment, urokoAdjustment, kakatoAdjustment, a3_opt_2);
+					a2_100 + a2_opt_1 * 100, a3_100, tateAdjustment, urokoAdjustment, kakatoAdjustment);
 			}
 			break;
 		}
@@ -134,12 +134,13 @@ function dfDrawFont(
 			const tx2 = x2 + dx2;
 			const ty2 = y2 + dy2;
 
-			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment, mageAdjustment);
 
 			if (!(a3_100 === 5 && a3_opt_1 === 0 && !((x2 < x3 && x3 - tx2 > 0) || (x2 > x3 && tx2 - x3 > 0)))) { // for closer position
+				const opt2 = (a3_100 === 5 && a3_opt_1 === 0) ? 0 : a3_opt_1 + mageAdjustment * 10;
 				cdDrawLine(font, polygons, tx2, ty2, x3, y3,
-					6, a3_100, mageAdjustment, a3_opt_1, a3_opt_1, (a3_100 === 5 && a3_opt_1 === 0) ? 0 : mageAdjustment); // bolder by force
+					6, a3_100, mageAdjustment, opt2, opt2); // bolder by force
 			}
 			break;
 		}
@@ -147,7 +148,7 @@ function dfDrawFont(
 			cdDrawCurve(
 				font, polygons, x1, y1, x2, y2, x3, y3,
 				a2_100 + a2_opt_1 * 100, 1, a2_opt_2, 0, a2_opt_3, 0);
-			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, a3_opt_1, a3_opt_1, a3_opt_2);
+			cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, a3_opt, a3_opt);
 			break;
 		}
 		case 4: {
@@ -166,11 +167,11 @@ function dfDrawFont(
 			const tx2 = x2 + dx2;
 			const ty2 = y2 + dy2;
 
-			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, a2_opt_2 + a2_opt_3 * 10, 0, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, a2_opt_2 + a2_opt_3 * 10, 0, 0);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
 
 			if (!(a3_100 === 5 && a3_opt === 0 && x3 - tx2 <= 0)) { // for closer position
-				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, a3_opt_1, a3_opt_1, a3_opt_2); // bolder by force
+				cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, a3_opt, a3_opt); // bolder by force
 			}
 			break;
 		}
@@ -196,7 +197,7 @@ function dfDrawFont(
 			break;
 		}
 		case 7: {
-			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0, 0);
+			cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0);
 			cdDrawCurve(
 				font, polygons, x2, y2, x3, y3, x4, y4,
 				1, a3_100, tateAdjustment % 10, a3_opt_1, Math.floor(tateAdjustment / 10), a3_opt_2);
@@ -352,7 +353,7 @@ class Mincho implements FontInterface {
 	/** @internal */
 	public adjustStrokes(strokesArray: Stroke[]): MinchoAdjustedStroke[] {
 		const adjustedStrokes = strokesArray.map((stroke): MinchoAdjustedStroke => {
-			const { a2_opt_1, a2_opt_2, a2_opt_3, a3_opt_1, a3_opt_2 } = stroke;
+			const { a2_opt_1, a2_opt_2, a2_opt_3, a3_opt, a3_opt_1, a3_opt_2 } = stroke;
 			return {
 				stroke,
 
@@ -367,8 +368,8 @@ class Mincho implements FontInterface {
 				//               adjustKakato (when 1::X{13,23});
 				// - 1000s place: adjustMage (when 3)
 				haneAdjustment: a3_opt_1,
-				urokoAdjustment: a3_opt_1,
-				kakatoAdjustment: a3_opt_1,
+				urokoAdjustment: a3_opt,
+				kakatoAdjustment: a3_opt,
 				mageAdjustment: a3_opt_2,
 			};
 		});
