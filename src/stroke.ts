@@ -1,3 +1,5 @@
+import { isCross, isCrossBox } from "./2d";
+
 export function stretch(dp: number, sp: number, p: number, min: number, max: number): number {
 	let p1;
 	let p2;
@@ -96,6 +98,18 @@ export class Stroke {
 				res.unshift([this.x1, this.y1, this.x2, this.y2]);
 		}
 		return res;
+	}
+
+	public isCross(bx1: number, by1: number, bx2: number, by2: number): boolean {
+		return this.getControlSegments().some(([x1, y1, x2, y2]) => (
+			isCross(x1, y1, x2, y2, bx1, by1, bx2, by2)
+		));
+	}
+
+	public isCrossBox(bx1: number, by1: number, bx2: number, by2: number): boolean {
+		return this.getControlSegments().some(([x1, y1, x2, y2]) => (
+			isCrossBox(x1, y1, x2, y2, bx1, by1, bx2, by2)
+		));
 	}
 
 	public stretch(

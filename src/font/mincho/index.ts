@@ -2,7 +2,6 @@ import { Polygon } from "../../polygon";
 import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
 import { hypot, normalize, round } from "../../util";
-import { isCrossBoxWithOthers, isCrossWithOthers } from "../../2d";
 import { FontInterface, StrokeDrawer } from "..";
 import { KShotai } from "../shotai";
 
@@ -502,18 +501,18 @@ class Mincho implements FontInterface {
 	}
 
 	protected adjustKakato(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
-		const strokesArray = adjStrokes.map(({ stroke }) => stroke);
-		adjStrokes.forEach((adjStroke, i) => {
+		adjStrokes.forEach((adjStroke) => {
 			const { stroke } = adjStroke;
 			if (stroke.a1_100 === 1 && stroke.a1_opt === 0
 				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.a3_opt === 0) {
 				for (let k = 0; k < this.kAdjustKakatoStep; k++) {
-					if (isCrossBoxWithOthers(
-						strokesArray, i,
-						stroke.x2 - this.kAdjustKakatoRangeX / 2,
-						stroke.y2 + this.kAdjustKakatoRangeY[k],
-						stroke.x2 + this.kAdjustKakatoRangeX / 2,
-						stroke.y2 + this.kAdjustKakatoRangeY[k + 1])
+					if (adjStrokes.some(({ stroke: stroke2 }) =>
+						stroke !== stroke2 &&
+						stroke2.isCrossBox(
+							stroke.x2 - this.kAdjustKakatoRangeX / 2,
+							stroke.y2 + this.kAdjustKakatoRangeY[k],
+							stroke.x2 + this.kAdjustKakatoRangeX / 2,
+							stroke.y2 + this.kAdjustKakatoRangeY[k + 1]))
 						|| round(stroke.y2 + this.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
 						|| round(stroke.y2 - stroke.y1) < this.kAdjustKakatoRangeY[k + 1] // for thin box
 					) {
@@ -527,14 +526,13 @@ class Mincho implements FontInterface {
 	}
 
 	protected adjustUroko(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
-		const strokesArray = adjStrokes.map(({ stroke }) => stroke);
-		adjStrokes.forEach((adjStroke, i) => {
+		adjStrokes.forEach((adjStroke) => {
 			const { stroke } = adjStroke;
 			if (stroke.a1_100 === 1 && stroke.a1_opt === 0
 				&& stroke.a3_100 === 0 && stroke.a3_opt === 0) { // no operation for TATE
 				for (let k = 0; k < this.kAdjustUrokoLengthStep; k++) {
-					let tx;
-					let ty;
+					let tx: number;
+					let ty: number;
 					let tlen;
 					if (stroke.y1 === stroke.y2) { // YOKO
 						tx = stroke.x2 - this.kAdjustUrokoLine[k];
@@ -551,7 +549,7 @@ class Mincho implements FontInterface {
 						tlen = hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
 					}
 					if (round(tlen) < this.kAdjustUrokoLength[k]
-						|| isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
+						|| adjStrokes.some(({ stroke: stroke2 }) => stroke !== stroke2 && stroke2.isCross(tx, ty, stroke.x2, stroke.y2))) {
 						adjStroke.urokoAdjustment = this.kAdjustUrokoLengthStep - k;
 						break;
 					}
