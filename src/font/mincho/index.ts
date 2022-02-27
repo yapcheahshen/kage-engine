@@ -531,23 +531,17 @@ class Mincho implements FontInterface {
 			if (stroke.a1_100 === 1 && stroke.a1_opt === 0
 				&& stroke.a3_100 === 0 && stroke.a3_opt === 0) { // no operation for TATE
 				for (let k = 0; k < this.kAdjustUrokoLengthStep; k++) {
-					let tx: number;
-					let ty: number;
-					let tlen;
-					if (stroke.y1 === stroke.y2) { // YOKO
-						tx = stroke.x2 - this.kAdjustUrokoLine[k];
-						ty = stroke.y2 - 0.5;
-						tlen = stroke.x2 - stroke.x1; // should be Math.abs(...)?
-					} else {
-						const [cosrad, sinrad] = (stroke.x1 === stroke.x2)
-							? [0, (stroke.y2 - stroke.y1) / (stroke.x2 - stroke.x1) > 0 ? 1 : -1] // maybe unnecessary?
-							: (stroke.x2 - stroke.x1 < 0)
-								? normalize([stroke.x1 - stroke.x2, stroke.y1 - stroke.y2]) // for backward compatibility...
-								: normalize([stroke.x2 - stroke.x1, stroke.y2 - stroke.y1]);
-						tx = stroke.x2 - this.kAdjustUrokoLine[k] * cosrad - 0.5 * sinrad;
-						ty = stroke.y2 - this.kAdjustUrokoLine[k] * sinrad - 0.5 * cosrad;
-						tlen = hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
-					}
+					const [cosrad, sinrad] = (stroke.y1 === stroke.y2) // YOKO
+						? [1, 0] // ?????
+						: (stroke.x2 - stroke.x1 < 0)
+							? normalize([stroke.x1 - stroke.x2, stroke.y1 - stroke.y2]) // for backward compatibility...
+							: normalize([stroke.x2 - stroke.x1, stroke.y2 - stroke.y1]);
+					const tx = stroke.x2 - this.kAdjustUrokoLine[k] * cosrad - 0.5 * sinrad; // typo? (sinrad should be -sinrad ?)
+					const ty = stroke.y2 - this.kAdjustUrokoLine[k] * sinrad - 0.5 * cosrad;
+
+					const tlen = (stroke.y1 === stroke.y2) // YOKO
+						? stroke.x2 - stroke.x1 // should be Math.abs(...)?
+						: hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
 					if (round(tlen) < this.kAdjustUrokoLength[k]
 						|| adjStrokes.some(({ stroke: stroke2 }) => stroke !== stroke2 && stroke2.isCross(tx, ty, stroke.x2, stroke.y2))) {
 						adjStroke.urokoAdjustment = this.kAdjustUrokoLengthStep - k;
