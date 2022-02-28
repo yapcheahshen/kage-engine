@@ -14,12 +14,20 @@ export interface Point {
 /**
  * The same as {@link Point} except that the `off` property is optional.
  * When `off` is omitted, it is treated as an on-curve point (`off: false`).
- * Used as the parameter type of {@link Polygon}'s methods.
+ * Used in the parameter type of {@link Polygon}'s constructor.
  */
 export type PointOptOff = Omit<Point, "off"> & Partial<Pick<Point, "off">>;
 
 /**
  * Represents a single contour of a rendered glyph.
+ *
+ * A contour that a Polygon represents is a closed curve made up of straight line
+ * segments or quadratic Bézier curve segments. A Polygon is represented as a
+ * series of {@link Point}'s, each of which is an on-curve point or an off-curve
+ * point. Two consecutive on-curve points define a line segment. A sequence of
+ * two on-curve points with an off-curve point in between defines a curve segment.
+ * The last point and the first point of a Polygon define a line segment that closes
+ * the loop (if the two points differ).
  *
  * It internally maintains the coordinate values with original precision as
  * set by the constructor, {@link set}, {@link push} or {@link unshift} methods,

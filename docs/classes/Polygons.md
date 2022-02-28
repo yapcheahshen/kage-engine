@@ -4,6 +4,9 @@
 
 Represents the rendered glyph.
 
+A glyph is represented as a series of [Polygon](Polygon.md)'s.
+The contained [Polygon](Polygon.md)'s can be accessed by the [array](Polygons.md#array) property.
+
 ## Table of contents
 
 ### Constructors
@@ -12,6 +15,7 @@ Represents the rendered glyph.
 
 ### Properties
 
+- [[iterator]](Polygons.md#[iterator])
 - [array](Polygons.md#array)
 
 ### Methods
@@ -29,9 +33,38 @@ Represents the rendered glyph.
 
 #### Defined in
 
-[polygons.ts:26](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L26)
+[polygons.ts:29](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L29)
 
 ## Properties
+
+### [iterator]
+
+• **[iterator]**: () => `IterableIterator`<[`Polygon`](Polygon.md)\>
+
+#### Type declaration
+
+▸ (): `IterableIterator`<[`Polygon`](Polygon.md)\>
+
+Iterates over its contours.
+
+**`example`**
+```ts
+for (const polygon of polygons) {
+	// ...
+}
+```
+
+##### Returns
+
+`IterableIterator`<[`Polygon`](Polygon.md)\>
+
+An iterator of its [Polygon](Polygon.md) elements.
+
+#### Defined in
+
+[polygons.ts:158](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L158)
+
+___
 
 ### array
 
@@ -56,7 +89,7 @@ for (const poly of polygons.array) {
 
 #### Defined in
 
-[polygons.ts:24](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L24)
+[polygons.ts:27](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L27)
 
 ## Methods
 
@@ -72,7 +105,7 @@ Clears the content.
 
 #### Defined in
 
-[polygons.ts:32](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L32)
+[polygons.ts:35](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L35)
 
 ___
 
@@ -90,7 +123,7 @@ The string representation of the rendered glyph in EPS format.
 
 #### Defined in
 
-[polygons.ts:117](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L117)
+[polygons.ts:120](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L120)
 
 ___
 
@@ -114,7 +147,7 @@ The string representation of the rendered glyph in SVG format.
 
 #### Defined in
 
-[polygons.ts:80](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L80)
+[polygons.ts:83](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L83)
 
 ___
 
@@ -137,4 +170,4 @@ Nothing is performed if `polygon` is not a valid polygon.
 
 #### Defined in
 
-[polygons.ts:41](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L41)
+[polygons.ts:44](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L44)

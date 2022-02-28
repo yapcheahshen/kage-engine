@@ -54,7 +54,7 @@ ___
 
 The same as [Point](interfaces/Point.md) except that the `off` property is optional.
 When `off` is omitted, it is treated as an on-curve point (`off: false`).
-Used as the parameter type of [Polygon](classes/Polygon.md)'s methods.
+Used in the parameter type of [Polygon](classes/Polygon.md)'s constructor.
 
 #### Defined in
 

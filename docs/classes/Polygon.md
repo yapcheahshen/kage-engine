@@ -4,6 +4,14 @@
 
 Represents a single contour of a rendered glyph.
 
+A contour that a Polygon represents is a closed curve made up of straight line
+segments or quadratic Bézier curve segments. A Polygon is represented as a
+series of [Point](../interfaces/Point.md)'s, each of which is an on-curve point or an off-curve
+point. Two consecutive on-curve points define a line segment. A sequence of
+two on-curve points with an off-curve point in between defines a curve segment.
+The last point and the first point of a Polygon define a line segment that closes
+the loop (if the two points differ).
+
 It internally maintains the coordinate values with original precision as
 set by the constructor, [set](Polygon.md#set), [push](Polygon.md#push) or [unshift](Polygon.md#unshift) methods,
 but the [array](Polygon.md#array) getter or [get](Polygon.md#get) method returns the values rounded
@@ -14,6 +22,10 @@ to the first decimal place toward -infinity (for backward compatibility).
 ### Constructors
 
 - [constructor](Polygon.md#constructor)
+
+### Properties
+
+- [[iterator]](Polygon.md#[iterator])
 
 ### Accessors
 
@@ -50,7 +62,7 @@ no points.
 
 #### Defined in
 
-[polygon.ts:81](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L81)
+[polygon.ts:89](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L89)
 
 • **new Polygon**(`points`)
 
@@ -64,7 +76,36 @@ Construct the `Polygon` object with the given points as its contour.
 
 #### Defined in
 
-[polygon.ts:86](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L86)
+[polygon.ts:94](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L94)
+
+## Properties
+
+### [iterator]
+
+• **[iterator]**: () => `Iterator`<[`Point`](../interfaces/Point.md), `any`, `undefined`\>
+
+#### Type declaration
+
+▸ (): `Iterator`<[`Point`](../interfaces/Point.md), `any`, `undefined`\>
+
+Iterates over its points.
+
+**`example`**
+```ts
+for (const { x, y, off } of polygon) {
+	// ...
+}
+```
+
+##### Returns
+
+`Iterator`<[`Point`](../interfaces/Point.md), `any`, `undefined`\>
+
+An iterator of its [Point](../interfaces/Point.md)s.
+
+#### Defined in
+
+[polygon.ts:242](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L242)
 
 ## Accessors
 
@@ -79,7 +120,7 @@ call [set](Polygon.md#set) method to modify the contour.
 
 **`example`**
 ```ts
-for (const point of polygons.array) {
+for (const point of polygon.array) {
 	// ...
 }
 ```
@@ -112,7 +153,7 @@ readonly `Readonly`<[`Point`](../interfaces/Point.md)\>[]
 
 #### Defined in
 
-[polygon.ts:65](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L65)
+[polygon.ts:73](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L73)
 
 ___
 
@@ -128,7 +169,7 @@ The number of points in this contour.
 
 #### Defined in
 
-[polygon.ts:70](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L70)
+[polygon.ts:78](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L78)
 
 ## Methods
 
@@ -146,7 +187,7 @@ A new [Polygon](Polygon.md) instance.
 
 #### Defined in
 
-[polygon.ts:215](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L215)
+[polygon.ts:223](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L223)
 
 ___
 
@@ -169,7 +210,7 @@ this contour. The other Polygon is not mutated.
 
 #### Defined in
 
-[polygon.ts:188](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L188)
+[polygon.ts:196](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L196)
 
 ___
 
@@ -204,7 +245,7 @@ A read-only point object. Modifications made to the returned
 
 #### Defined in
 
-[polygon.ts:167](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L167)
+[polygon.ts:175](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L175)
 
 ___
 
@@ -228,7 +269,7 @@ Appends a point at the end of its contour.
 
 #### Defined in
 
-[polygon.ts:112](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L112)
+[polygon.ts:120](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L120)
 
 ___
 
@@ -244,7 +285,7 @@ Reverses the points in its contour.
 
 #### Defined in
 
-[polygon.ts:179](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L179)
+[polygon.ts:187](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L187)
 
 ___
 
@@ -269,7 +310,7 @@ Mutates a point in its contour.
 
 #### Defined in
 
-[polygon.ts:133](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L133)
+[polygon.ts:141](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L141)
 
 ___
 
@@ -286,7 +327,7 @@ nothing is performed.
 
 #### Defined in
 
-[polygon.ts:196](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L196)
+[polygon.ts:204](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L204)
 
 ___
 
@@ -310,4 +351,4 @@ Inserts a new point at the start of its contour.
 
 #### Defined in
 
-[polygon.ts:206](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L206)
+[polygon.ts:214](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L214)

@@ -2,6 +2,9 @@ import { Polygon } from "./polygon";
 
 /**
  * Represents the rendered glyph.
+ *
+ * A glyph is represented as a series of {@link Polygon}'s.
+ * The contained {@link Polygon}'s can be accessed by the {@link array} property.
  */
 export class Polygons {
 	/**

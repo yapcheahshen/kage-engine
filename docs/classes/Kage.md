@@ -2,6 +2,21 @@
 
 # Class: Kage
 
+The entry point for KAGE engine (Kanji-glyph Automatic Generating Engine).
+It generates glyph outlines from a kanji's stroke data described in a dedicated
+intermediate format called KAGE data.
+
+KAGE data may contain references to other glyphs (components), which are
+resolved using a storage at its [kBuhin](Kage.md#kbuhin) property. The data for the
+referenced glyphs must be registered to the storage prior to generating the outline.
+
+The font (mincho or gothic) can be changed with its [kShotai](Kage.md#kshotai) property.
+The font parameters (stroke width, etc.) can be configured with properties of
+[kFont](Kage.md#kfont).
+
+**`see`** [Kage.makeGlyph](Kage.md#makeglyph), [Kage.makeGlyph2](Kage.md#makeglyph2), [Kage.makeGlyph3](Kage.md#makeglyph3) and
+    [Kage.makeGlyphSeparated](Kage.md#makeglyphseparated) for usage examples.
+
 ## Table of contents
 
 ### Constructors
@@ -43,7 +58,7 @@
 
 #### Defined in
 
-[kage.ts:61](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L61)
+[kage.ts:86](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L86)
 
 ## Properties
 
@@ -55,7 +70,7 @@ A storage from which components are looked up.
 
 #### Defined in
 
-[kage.ts:55](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L55)
+[kage.ts:80](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L80)
 
 ___
 
@@ -75,7 +90,7 @@ kage.kFont.kWidth = 3;
 
 #### Defined in
 
-[kage.ts:25](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L25)
+[kage.ts:49](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L49)
 
 ___
 
@@ -83,11 +98,13 @@ ___
 
 • `Readonly` **kGothic**: [`kGothic`](../enums/KShotai.md#kgothic) = `KShotai.kGothic`
 
-**`see`** [Kage.kFont](Kage.md#kfont)
+An alias of [KShotai.kGothic](../enums/KShotai.md#kgothic).
+
+**`see`** [Kage.kShotai](Kage.md#kshotai) for usage.
 
 #### Defined in
 
-[kage.ts:13](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L13)
+[kage.ts:37](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L37)
 
 ___
 
@@ -95,11 +112,13 @@ ___
 
 • `Readonly` **kMincho**: [`kMincho`](../enums/KShotai.md#kmincho) = `KShotai.kMincho`
 
-**`see`** [Kage.kFont](Kage.md#kfont)
+An alias of [KShotai.kMincho](../enums/KShotai.md#kmincho).
+
+**`see`** [Kage.kShotai](Kage.md#kshotai) for usage.
 
 #### Defined in
 
-[kage.ts:11](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L11)
+[kage.ts:32](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L32)
 
 ___
 
@@ -107,9 +126,11 @@ ___
 
 ▪ `Static` `Readonly` **Buhin**: typeof [`Buhin`](Buhin.md) = `Buhin`
 
+An alias of Buhin constructor.
+
 #### Defined in
 
-[kage.ts:7](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L7)
+[kage.ts:24](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L24)
 
 ___
 
@@ -117,9 +138,11 @@ ___
 
 ▪ `Static` `Readonly` **Polygons**: typeof [`Polygons`](Polygons.md) = `Polygons`
 
+An alias of Polygons constructor.
+
 #### Defined in
 
-[kage.ts:8](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L8)
+[kage.ts:26](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L26)
 
 ## Accessors
 
@@ -128,7 +151,7 @@ ___
 • `get` **kShotai**(): [`KShotai`](../enums/KShotai.md)
 
 Gets or sets the font as [KShotai](../enums/KShotai.md). Setting this property resets all the
-font parameters in [Kage.kFont](Kage.md#kfont).
+font parameters in [Kage.kFont](Kage.md#kfont). Defaults to [KShotai.kMincho](../enums/KShotai.md#kmincho).
 
 **`example`**
 ```ts
@@ -142,12 +165,12 @@ kage.kShotai = kage.kGothic;
 
 #### Defined in
 
-[kage.ts:37](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L37)
+[kage.ts:61](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L61)
 
 • `set` **kShotai**(`shotai`): `void`
 
 Gets or sets the font as [KShotai](../enums/KShotai.md). Setting this property resets all the
-font parameters in [Kage.kFont](Kage.md#kfont).
+font parameters in [Kage.kFont](Kage.md#kfont). Defaults to [KShotai.kMincho](../enums/KShotai.md#kmincho).
 
 **`example`**
 ```ts
@@ -167,7 +190,7 @@ kage.kShotai = kage.kGothic;
 
 #### Defined in
 
-[kage.ts:40](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L40)
+[kage.ts:64](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L64)
 
 ___
 
@@ -175,7 +198,8 @@ ___
 
 • `get` **kUseCurve**(): `boolean`
 
-Whether to render the glyph with contours with off-curve points.
+Whether to generate contours with off-curve points.
+An alias of [Kage.kFont](Kage.md#kfont).kUseCurve.
 
 #### Returns
 
@@ -183,11 +207,12 @@ Whether to render the glyph with contours with off-curve points.
 
 #### Defined in
 
-[kage.ts:47](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L47)
+[kage.ts:72](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L72)
 
 • `set` **kUseCurve**(`value`): `void`
 
-Whether to render the glyph with contours with off-curve points.
+Whether to generate contours with off-curve points.
+An alias of [Kage.kFont](Kage.md#kfont).kUseCurve.
 
 #### Parameters
 
@@ -201,7 +226,7 @@ Whether to render the glyph with contours with off-curve points.
 
 #### Defined in
 
-[kage.ts:50](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L50)
+[kage.ts:75](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L75)
 
 ## Methods
 
@@ -234,7 +259,7 @@ const svg = polygons.generateSVG(); // now `svg` has the string of the rendered 
 
 #### Defined in
 
-[kage.ts:81](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L81)
+[kage.ts:106](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L106)
 
 ___
 
@@ -266,7 +291,7 @@ const svg = polygons.generateSVG(); // now `svg` has the string of the rendered 
 
 #### Defined in
 
-[kage.ts:99](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L99)
+[kage.ts:124](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L124)
 
 ___
 
@@ -300,7 +325,7 @@ An array of [Polygons](Kage.md#polygons) instances holding the rendered data
 
 #### Defined in
 
-[kage.ts:123](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L123)
+[kage.ts:148](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L148)
 
 ___
 
@@ -338,4 +363,4 @@ An array of [Polygons](Kage.md#polygons) instances holding the rendered data
 
 #### Defined in
 
-[kage.ts:157](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L157)
+[kage.ts:182](https://github.com/kurgm/kage-engine/blob/master/src/kage.ts#L182)

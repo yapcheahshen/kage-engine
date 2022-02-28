@@ -3,13 +3,37 @@ import { Polygons } from "./polygons";
 import { stretch, Stroke } from "./stroke";
 import { KShotai, Font, select as selectFont } from "./font";
 
+/**
+ * The entry point for KAGE engine (Kanji-glyph Automatic Generating Engine).
+ * It generates glyph outlines from a kanji's stroke data described in a dedicated
+ * intermediate format called KAGE data.
+ *
+ * KAGE data may contain references to other glyphs (components), which are
+ * resolved using a storage at its {@link kBuhin} property. The data for the
+ * referenced glyphs must be registered to the storage prior to generating the outline.
+ *
+ * The font (mincho or gothic) can be changed with its {@link kShotai} property.
+ * The font parameters (stroke width, etc.) can be configured with properties of
+ * {@link kFont}.
+ *
+ * @see {@link Kage.makeGlyph}, {@link Kage.makeGlyph2}, {@link Kage.makeGlyph3} and
+ *     {@link Kage.makeGlyphSeparated} for usage examples.
+ */
 export class Kage {
+	/** An alias of Buhin constructor. */
 	static readonly Buhin = Buhin;
+	/** An alias of Polygons constructor. */
 	static readonly Polygons = Polygons;
 
-	/** @see {@link Kage.kFont} */
+	/**
+	 * An alias of {@link KShotai.kMincho}.
+	 * @see {@link Kage.kShotai} for usage.
+	 */
 	public readonly kMincho = KShotai.kMincho;
-	/** @see {@link Kage.kFont} */
+	/**
+	 * An alias of {@link KShotai.kGothic}.
+	 * @see {@link Kage.kShotai} for usage.
+	 */
 	public readonly kGothic = KShotai.kGothic;
 
 	/**
@@ -27,7 +51,7 @@ export class Kage {
 	// properties
 	/**
 	 * Gets or sets the font as {@link KShotai}. Setting this property resets all the
-	 * font parameters in {@link Kage.kFont}.
+	 * font parameters in {@link Kage.kFont}. Defaults to {@link KShotai.kMincho}.
 	 * @example
 	 * ```ts
 	 * const kage = new Kage();
@@ -42,7 +66,8 @@ export class Kage {
 	}
 
 	/**
-	 * Whether to render the glyph with contours with off-curve points.
+	 * Whether to generate contours with off-curve points.
+	 * An alias of {@link Kage.kFont}.kUseCurve.
 	 */
 	public get kUseCurve(): boolean {
 		return this.kFont.kUseCurve;

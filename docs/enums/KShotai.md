@@ -19,9 +19,11 @@ Enum of the supported fonts.
 
 Gothic style font.
 
+**`see`** [Gothic](../classes/Gothic.md) for its corresponding font class.
+
 #### Defined in
 
-[font/shotai.ts:6](https://github.com/kurgm/kage-engine/blob/master/src/font/shotai.ts#L6)
+[font/shotai.ts:12](https://github.com/kurgm/kage-engine/blob/master/src/font/shotai.ts#L12)
 
 ___
 
@@ -31,6 +33,8 @@ ___
 
 Mincho style font.
 
+**`see`** [Mincho](../classes/Mincho.md) for its corresponding font class.
+
 #### Defined in
 
-[font/shotai.ts:4](https://github.com/kurgm/kage-engine/blob/master/src/font/shotai.ts#L4)
+[font/shotai.ts:7](https://github.com/kurgm/kage-engine/blob/master/src/font/shotai.ts#L7)
