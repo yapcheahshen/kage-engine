@@ -35,7 +35,7 @@ export class Polygon {
 	 *
 	 * @example
 	 * ```ts
-	 * for (const point of polygons.array) {
+	 * for (const point of polygon.array) {
 	 * 	// ...
 	 * }
 	 * ```
@@ -218,6 +218,37 @@ export class Polygon {
 			newpolygon.push(x, y, off);
 		});
 		return newpolygon;
+	}
+
+	/**
+	 * Iterates over its points.
+	 * @returns An iterator of its {@link Point}s.
+	 * @example
+	 * ```ts
+	 * for (const { x, y, off } of polygon) {
+	 * 	// ...
+	 * }
+	 * ```
+	 */
+	// Added by @kurgm
+	public [Symbol.iterator]: (this: this) => Iterator<Point>;
+	static {
+		if (typeof Symbol !== "undefined" && Symbol.iterator) {
+			Polygon.prototype[Symbol.iterator] = function () {
+				let i = 0;
+				return {
+					next: () => {
+						if (i < this._array.length) {
+							return {
+								done: false,
+								value: this.get(i++),
+							};
+						}
+						return { done: true, value: undefined };
+					},
+				};
+			};
+		}
 	}
 
 	/**

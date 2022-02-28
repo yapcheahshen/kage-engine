@@ -140,4 +140,24 @@ export class Polygons {
 		buffer += "%%EOF\n";
 		return buffer;
 	}
+
+	/**
+	 * Iterates over its contours.
+	 * @returns An iterator of its {@link Polygon} elements.
+	 * @example
+	 * ```ts
+	 * for (const polygon of polygons) {
+	 * 	// ...
+	 * }
+	 * ```
+	 */
+	// Added by @kurgm
+	public [Symbol.iterator]: (this: this) => IterableIterator<Polygon>;
+	static {
+		if (typeof Symbol !== "undefined" && Symbol.iterator) {
+			Polygons.prototype[Symbol.iterator] = function () {
+				return this.array[Symbol.iterator]();
+			};
+		}
+	}
 }
