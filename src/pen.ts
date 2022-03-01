@@ -62,7 +62,7 @@ export class Pen {
 			off,
 		};
 	}
-	getPolygon(localPoints: PointOptOff[]): Polygon {
+	getPolygon(localPoints: readonly PointOptOff[]): Polygon {
 		return new Polygon(localPoints.map(({ x, y, off }) => this.getPoint(x, y, off)));
 	}
 }

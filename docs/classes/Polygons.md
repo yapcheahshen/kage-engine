@@ -62,7 +62,7 @@ An iterator of its [Polygon](Polygon.md) elements.
 
 #### Defined in
 
-[polygons.ts:158](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L158)
+[polygons.ts:159](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L159)
 
 ___
 
@@ -123,7 +123,7 @@ The string representation of the rendered glyph in EPS format.
 
 #### Defined in
 
-[polygons.ts:120](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L120)
+[polygons.ts:121](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L121)
 
 ___
 
@@ -147,7 +147,7 @@ The string representation of the rendered glyph in SVG format.
 
 #### Defined in
 
-[polygons.ts:83](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L83)
+[polygons.ts:84](https://github.com/kurgm/kage-engine/blob/master/src/polygons.ts#L84)
 
 ___
 

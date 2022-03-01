@@ -28,7 +28,6 @@
 ### Type aliases
 
 - [Font](README.md#font)
-- [PointOptOff](README.md#pointoptoff)
 
 ## References
 
@@ -45,17 +44,3 @@ Renames and re-exports [Kage](classes/Kage.md)
 #### Defined in
 
 [font/index.ts:23](https://github.com/kurgm/kage-engine/blob/master/src/font/index.ts#L23)
-
-___
-
-### PointOptOff
-
-Ƭ **PointOptOff**: `Omit`<[`Point`](interfaces/Point.md), ``"off"``\> & `Partial`<`Pick`<[`Point`](interfaces/Point.md), ``"off"``\>\>
-
-The same as [Point](interfaces/Point.md) except that the `off` property is optional.
-When `off` is omitted, it is treated as an on-curve point (`off: false`).
-Used in the parameter type of [Polygon](classes/Polygon.md)'s constructor.
-
-#### Defined in
-
-[polygon.ts:19](https://github.com/kurgm/kage-engine/blob/master/src/polygon.ts#L19)

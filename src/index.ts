@@ -4,4 +4,4 @@ export { Buhin } from "./buhin";
 export { KShotai } from "./font";
 
 export type { Font, Mincho, Gothic } from "./font";
-export type { Polygon, Point, PointOptOff } from "./polygon";
+export type { Polygon, Point } from "./polygon";

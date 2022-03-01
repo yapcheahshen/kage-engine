@@ -179,7 +179,7 @@ export class Kage {
 	 *     of each KAGE data fragment.
 	 */
 	// Added by @kurgm
-	public makeGlyphSeparated(data: string[]): Polygons[] {
+	public makeGlyphSeparated(data: readonly string[]): Polygons[] {
 		const strokesArrays = data.map((subdata) => this.getEachStrokes(subdata));
 		const drawers = this.kFont.getDrawers(
 			strokesArrays.reduce((left, right) => left.concat(right), [])

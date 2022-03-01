@@ -204,6 +204,8 @@ function cdDrawCurveU(
 
 		// suiheisen ni setsuzoku
 		if (a1 === 132 || a1 === 22 && (isQuadratic ? (y1 > y2) : (x1 > sx1))) { // ?????
+			poly.floor();
+			poly2.floor();
 			for (let index = 0, length = poly2.length; index + 1 < length; index++) {
 				const point1 = poly2.get(index);
 				const point2 = poly2.get(index + 1);

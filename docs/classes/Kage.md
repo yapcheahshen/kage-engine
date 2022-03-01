@@ -352,7 +352,7 @@ console.log(array[0] instanceof Polygons); // => true
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `data` | `string`[] | An array of KAGE data fragments (in which lines are delimited by `"$"`)     to be rendered. |
+| `data` | readonly `string`[] | An array of KAGE data fragments (in which lines are delimited by `"$"`)     to be rendered. |
 
 #### Returns
 

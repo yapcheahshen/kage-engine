@@ -28,13 +28,11 @@ export type PointOptOff = Omit<Point, "off"> & Partial<Pick<Point, "off">>;
  * two on-curve points with an off-curve point in between defines a curve segment.
  * The last point and the first point of a Polygon define a line segment that closes
  * the loop (if the two points differ).
- *
- * It internally maintains the coordinate values with original precision as
- * set by the constructor, {@link set}, {@link push} or {@link unshift} methods,
- * but the {@link array} getter or {@link get} method returns the values rounded
- * to the first decimal place toward -infinity (for backward compatibility).
  */
 export class Polygon {
+	protected readonly _precision: number = 10;
+	protected _array: Point[];
+
 	/**
 	 * A read-only array consisting of the points in this contour.
 	 *
@@ -48,7 +46,7 @@ export class Polygon {
 	 * }
 	 * ```
 	 *
-	 * Note that computation of rounded coordinates of all the points is performed
+	 * Note that the computation of coordinates of all the points is performed
 	 * every time this property is accessed. To get a better performance, consider
 	 * caching the result in a variable when you need to access the array repeatedly.
 	 * ```ts
@@ -69,7 +67,6 @@ export class Polygon {
 	 * @see {@link Polygon.length} is faster if you only need the length.
 	 * @see {@link Polygon.get} is faster if you need just one element.
 	 */
-	// resolution : 0.1
 	public get array(): ReadonlyArray<Readonly<Point>> {
 		return this._array.map((_, i) => this.get(i));
 	}
@@ -78,7 +75,6 @@ export class Polygon {
 	public get length(): number {
 		return this._array.length;
 	}
-	protected _array: Point[];
 	/**
 	 * Construct the `Polygon` object. If the argument `length` is given,
 	 * constructed object has contour of size `length` whose members are all
@@ -90,10 +86,12 @@ export class Polygon {
 	/**
 	 * Construct the `Polygon` object with the given points as its contour.
 	 * @param points The points in the contour.
+	 * @internal
 	 */
-	constructor(points: PointOptOff[]);
+	// Added by @kurgm
+	constructor(points: readonly PointOptOff[]);
 
-	constructor(param?: number | PointOptOff[]) {
+	constructor(param?: number | readonly PointOptOff[]) {
 		// property
 		this._array = [];
 		// initialize
@@ -118,7 +116,7 @@ export class Polygon {
 	 * @param off Whether the appended point is an off-curve point. Defaults to `false`.
 	 */
 	public push(x: number, y: number, off: boolean = false): void {
-		this._array.push({ x, y, off });
+		this._array.push(this.createInternalPoint(x, y, off));
 	}
 
 	/**
@@ -139,9 +137,7 @@ export class Polygon {
 	 * @param off Whether the new point is an off-curve point. Defaults to `false`.
 	 */
 	public set(index: number, x: number, y: number, off: boolean = false): void {
-		this._array[index].x = x;
-		this._array[index].y = y;
-		this._array[index].off = off;
+		this._array[index] = this.createInternalPoint(x, y, off);
 	}
 
 	/**
@@ -174,9 +170,12 @@ export class Polygon {
 	// Added by @kurgm
 	public get(index: number): Readonly<Point> {
 		const { x, y, off } = this._array[index];
+		if (this._precision === 0) {
+			return { x, y, off };
+		}
 		return {
-			x: Math.floor(x * 10) / 10, // should be Math.round?
-			y: Math.floor(y * 10) / 10, // should be Math.round?
+			x: x / this._precision,
+			y: y / this._precision,
 			off,
 		};
 	}
@@ -194,6 +193,9 @@ export class Polygon {
 	 * @param poly The other {@link Polygon} to be appended.
 	 */
 	public concat(poly: Polygon): void {
+		if (this._precision !== poly._precision) {
+			throw new TypeError("Cannot concat polygon's with different precisions");
+		}
 		this._array = this._array.concat(poly._array);
 	}
 
@@ -212,7 +214,7 @@ export class Polygon {
 	 * @param off Whether the inserted point is an off-curve point. Defaults to `false`.
 	 */
 	public unshift(x: number, y: number, off: boolean = false): void {
-		this._array.unshift({ x, y, off });
+		this._array.unshift(this.createInternalPoint(x, y, off));
 	}
 
 	/**
@@ -221,11 +223,7 @@ export class Polygon {
 	 */
 	// Added by @kurgm
 	public clone(): Polygon {
-		const newpolygon = new Polygon();
-		for (const { x, y, off } of this._array) {
-			newpolygon.push(x, y, off);
-		}
-		return newpolygon;
+		return new Polygon(this.array);
 	}
 
 	/**
@@ -259,6 +257,17 @@ export class Polygon {
 		}
 	}
 
+	protected createInternalPoint(x: number, y: number, off: boolean = false): Point {
+		if (this._precision === 0) {
+			return { x, y, off };
+		}
+		return {
+			x: x * this._precision,
+			y: y * this._precision,
+			off,
+		};
+	}
+
 	/**
 	 * Translates the whole polygon by the given amount.
 	 * @param dx The x-amount of translation.
@@ -268,67 +277,19 @@ export class Polygon {
 	 */
 	// Added by @kurgm
 	public translate(dx: number, dy: number): this {
+		if (this._precision !== 0) {
+			dx *= this._precision;
+			dy *= this._precision;
+		}
 		for (const point of this._array) {
 			point.x += dx;
 			point.y += dy;
 		}
-		return this; // for chaining
-	}
-
-	/**
-	 * Transforms the whole polygon by applying a transform matrix. The coordinates of
-	 * transformed points are defined by:
-	 * ```math
-	 * x' = a x + b y, y' = c x + d y
-	 * ```
-	 * where `x` and `y` are old coordinates and `x'` and `y'` are new coordinates.
-	 * @returns This object (for chaining).
-	 * @internal
-	 */
-	// Added by @kurgm
-	public transformMatrix(a: number, b: number, c: number, d: number): this {
-		for (const point of this._array) {
-			const { x, y } = point;
-			point.x = a * x + b * y;
-			point.y = c * x + d * y;
-		}
-		return this; // for chaining
-	}
-
-	/**
-	 * Transforms the whole polygon by a uniform scaling and a rotation.
-	 * The transformation is such that it maps the origin point (0, 0) to the origin
-	 * point (0, 0) and the point (0, 1) to the point (x, y). Equivalent to calling
-	 * {@link transformMatrix}(x, -y, y, x). Mathematically equivalent to
-	 * applying uniform scaling by the factor hypot(x, y) and rotating by the angle
-	 * atan2(y, x), or multiplying (x+yi) on the complex plane.
-	 * @returns This object (for chaining).
-	 * @internal
-	 */
-	// Added by @kurgm
-	public transformMatrix2(x: number, y: number): this {
-		return this.transformMatrix(x, -y, y, x);
-	}
-
-	/**
-	 * Applies uniform scaling to the whole polygon.
-	 * Equivalent to calling {@link transformMatrix}(factor, 0, 0, factor).
-	 * @param factor The scaling factor.
-	 * @returns This object (for chaining).
-	 * @internal
-	 */
-	// Added by @kurgm
-	public scale(factor: number): this {
-		for (const point of this._array) {
-			point.x *= factor;
-			point.y *= factor;
-		}
-		return this; // for chaining
+		return this;
 	}
 
 	/**
 	 * Flips the sign of the x-coordinate of each point in the contour.
-	 * Equivalent to calling {@link transformMatrix}(-1, 0, 0, 1).
 	 * @returns This object (for chaining).
 	 * @internal
 	 */
@@ -337,12 +298,11 @@ export class Polygon {
 		for (const point of this._array) {
 			point.x *= -1;
 		}
-		return this; // for chaining
+		return this;
 	}
 
 	/**
 	 * Flips the sign of the y-coordinate of each point in the contour.
-	 * Equivalent to calling {@link transformMatrix}(1, 0, 0, -1).
 	 * @returns This object (for chaining).
 	 * @internal
 	 */
@@ -351,12 +311,11 @@ export class Polygon {
 		for (const point of this._array) {
 			point.y *= -1;
 		}
-		return this; // for chaining
+		return this;
 	}
 
 	/**
 	 * Rotates the whole polygon by 90 degrees clockwise.
-	 * Equivalent to calling {@link transformMatrix}(0, -1, 1, 0).
 	 * @returns This object (for chaining).
 	 * @internal
 	 */
@@ -372,19 +331,21 @@ export class Polygon {
 
 	/**
 	 * Rotates the whole polygon by 180 degrees.
-	 * Equivalent to calling {@link transformMatrix}(-1, 0, 0, -1), or
 	 * {@link scale}(-1).
 	 * @returns This object (for chaining).
 	 * @internal
 	 */
 	// Added by @kurgm
 	public rotate180(): this {
-		return this.scale(-1); // for chaining
+		for (const point of this._array) {
+			point.x *= -1;
+			point.y *= -1;
+		}
+		return this;
 	}
 
 	/**
 	 * Rotates the whole polygon by 270 degrees clockwise.
-	 * Equivalent to calling {@link transformMatrix}(0, 1, -1, 0).
 	 * @returns This object (for chaining).
 	 * @internal
 	 */
@@ -399,12 +360,14 @@ export class Polygon {
 	}
 
 	/**
-	 * Applies the floor function to all the coordinate values in the contour.
 	 * @returns This object (for chaining).
 	 * @internal
 	 */
-	// for backward compatibility...
+	// Added by @kurgm
 	public floor(): this {
+		if (this._precision === 0) {
+			return this;
+		}
 		for (const point of this._array) {
 			const { x, y } = point;
 			point.x = Math.floor(x);

@@ -50,6 +50,7 @@ export class Polygons {
 		if (polygon.length < 3) {
 			return;
 		}
+		polygon.floor();
 		for (const { x, y } of polygon.array) {
 			if (x < minx) {
 				minx = x;
