@@ -1,6 +1,13 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Added TSDoc to the public APIs in the type definition files (`lib/*.d.ts`). Internal methods are now marked `@internal`.
+
+### Fixed
+- Fixed incompatibility with the original engine on some edge cases.
+- Fixed the type definition of `Polygons.generateSVG(curve)`: its parameter is now optional (defaults to `false`).
+- Fixed the type definition of `Kage.kFont` so that the font parameters (`kage.kFont.kMinWidthU` etc.) are correctly typed.
 
 ## [0.3.1] - 2020-07-19
 ### Added
