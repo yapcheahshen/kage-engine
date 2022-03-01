@@ -62,7 +62,7 @@ function testKage(buhins, name, result, curve = false) {
 		const polygon = polygons.array[i];
 		const { array } = polygon;
 		const res = result[i];
-		const indexStr = polygon.index === res.index
+		const indexStr = getOrigIndex(polygon) === getOrigIndex(res)
 			? `${getOrigIndex(polygon) + 1}`
 			: `${getOrigIndex(polygon) + 1}(${getOrigIndex(res) + 1})`;
 		if (array.length !== res.length) {
