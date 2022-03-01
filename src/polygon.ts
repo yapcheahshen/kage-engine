@@ -103,9 +103,9 @@ export class Polygon {
 					this.push(0, 0, false);
 				}
 			} else {
-				param.forEach(({ x, y, off }) => {
+				for (const { x, y, off } of param) {
 					this.push(x, y, off);
-				});
+				}
 			}
 		}
 	}
@@ -222,9 +222,9 @@ export class Polygon {
 	// Added by @kurgm
 	public clone(): Polygon {
 		const newpolygon = new Polygon();
-		this._array.forEach(({ x, y, off }) => {
+		for (const { x, y, off } of this._array) {
 			newpolygon.push(x, y, off);
-		});
+		}
 		return newpolygon;
 	}
 
@@ -268,10 +268,10 @@ export class Polygon {
 	 */
 	// Added by @kurgm
 	public translate(dx: number, dy: number): this {
-		this._array.forEach((point) => {
+		for (const point of this._array) {
 			point.x += dx;
 			point.y += dy;
-		});
+		}
 		return this; // for chaining
 	}
 
@@ -287,11 +287,11 @@ export class Polygon {
 	 */
 	// Added by @kurgm
 	public transformMatrix(a: number, b: number, c: number, d: number): this {
-		this._array.forEach((point) => {
+		for (const point of this._array) {
 			const { x, y } = point;
 			point.x = a * x + b * y;
 			point.y = c * x + d * y;
-		});
+		}
 		return this; // for chaining
 	}
 
@@ -319,10 +319,10 @@ export class Polygon {
 	 */
 	// Added by @kurgm
 	public scale(factor: number): this {
-		this._array.forEach((point) => {
+		for (const point of this._array) {
 			point.x *= factor;
 			point.y *= factor;
-		});
+		}
 		return this; // for chaining
 	}
 
@@ -334,9 +334,9 @@ export class Polygon {
 	 */
 	// Added by @kurgm
 	public reflectX(): this {
-		this._array.forEach((point) => {
+		for (const point of this._array) {
 			point.x *= -1;
-		});
+		}
 		return this; // for chaining
 	}
 
@@ -348,9 +348,9 @@ export class Polygon {
 	 */
 	// Added by @kurgm
 	public reflectY(): this {
-		this._array.forEach((point) => {
+		for (const point of this._array) {
 			point.y *= -1;
-		});
+		}
 		return this; // for chaining
 	}
 
@@ -362,11 +362,11 @@ export class Polygon {
 	 */
 	// Added by @kurgm
 	public rotate90(): this {
-		this._array.forEach((point) => {
+		for (const point of this._array) {
 			const { x, y } = point;
 			point.x = -y;
 			point.y = x;
-		});
+		}
 		return this;
 	}
 
@@ -390,11 +390,11 @@ export class Polygon {
 	 */
 	// Added by @kurgm
 	public rotate270(): this {
-		this._array.forEach((point) => {
+		for (const point of this._array) {
 			const { x, y } = point;
 			point.x = y;
 			point.y = -x;
-		});
+		}
 		return this;
 	}
 
@@ -405,11 +405,11 @@ export class Polygon {
 	 */
 	// for backward compatibility...
 	public floor(): this {
-		this._array.forEach((point) => {
+		for (const point of this._array) {
 			const { x, y } = point;
 			point.x = Math.floor(x);
 			point.y = Math.floor(y);
-		});
+		}
 		return this;
 	}
 }

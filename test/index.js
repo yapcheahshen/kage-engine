@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable */
 
 const { Kage, Polygons } = require("../");
 
@@ -11,9 +11,9 @@ const { Kage, Polygons } = require("../");
 function testKage(buhins, name, result, curve = false) {
 	const kage = new Kage();
 	kage.kUseCurve = curve;
-	Object.keys(buhins).forEach((key) => {
-		kage.kBuhin.push(key, buhins[key]);
-	});
+	for (const [key, value] of Object.entries(buhins)) {
+		kage.kBuhin.push(key, value);
+	}
 
 	const polygons = new Polygons();
 	kage.makeGlyph(polygons, name);
@@ -24,12 +24,12 @@ function testKage(buhins, name, result, curve = false) {
 	/** @type {WeakMap<any, number>} */
 	const indexWMap = new WeakMap();
 	const getOrigIndex = (obj) => indexWMap.get(obj);
-	polygons.array.forEach((poly, i) => {
+	for (const [i, poly] of polygons.array.entries()) {
 		indexWMap.set(poly, i);
-	});
-	result.forEach((res, i) => {
+	}
+	for (const [i, res] of result.entries()) {
 		indexWMap.set(res, i);
-	});
+	}
 	polygons.array.sort((poly1, poly2) => {
 		const array1 = poly1.array;
 		const array2 = poly2.array;

@@ -394,7 +394,7 @@ class Mincho implements FontInterface {
 				});
 			}
 		}
-		adjStrokes.forEach((adjStroke) => {
+		for (const adjStroke of adjStrokes) {
 			const { stroke } = adjStroke;
 			if ((stroke.a1_100 === 1 || stroke.a1_100 === 2 || stroke.a1_100 === 6) && stroke.a1_opt === 0
 				&& stroke.a3_100 === 4 && stroke.a3_opt === 0) {
@@ -414,18 +414,18 @@ class Mincho implements FontInterface {
 				if (lpx + 18 < 100) {
 					mn = lpx + 18;
 				}
-				vertSegments.forEach(({ stroke: stroke2, x, y1, y2 }) => {
+				for (const { stroke: stroke2, x, y1, y2 } of vertSegments) {
 					if (stroke !== stroke2
 						&& lpx - x < 100 && x < lpx
 						&& y1 <= lpy && y2 >= lpy) {
 						mn = Math.min(mn, lpx - x);
 					}
-				});
+				}
 				if (mn !== Infinity) {
 					adjStroke.haneAdjustment += 7 - Math.floor(mn / 15);
 				}
 			}
-		});
+		}
 		return adjStrokes;
 	}
 
@@ -453,9 +453,9 @@ class Mincho implements FontInterface {
 				});
 			}
 		}
-		horiSegments.forEach(({ adjStroke, stroke, isTarget, y, x1, x2 }) => {
+		for (const { adjStroke, stroke, isTarget, y, x1, x2 } of horiSegments) {
 			if (isTarget) {
-				horiSegments.forEach(({ stroke: stroke2, y: other_y, x1: other_x1, x2: other_x2 }) => {
+				for (const { stroke: stroke2, y: other_y, x1: other_x1, x2: other_x2 } of horiSegments) {
 					if (stroke !== stroke2
 						&& !(x1 + 1 > other_x2 || x2 - 1 < other_x1)
 						&& round(Math.abs(y - other_y)) < this.kMinWidthT * this.kAdjustMageStep) {
@@ -464,9 +464,9 @@ class Mincho implements FontInterface {
 							adjStroke.mageAdjustment = this.kAdjustMageStep;
 						}
 					}
-				});
+				}
 			}
-		});
+		}
 		return adjStrokes;
 	}
 
@@ -484,8 +484,8 @@ class Mincho implements FontInterface {
 				});
 			}
 		}
-		vertSegments.forEach(({ adjStroke, stroke, x, y1, y2 }) => {
-			vertSegments.forEach(({ stroke: stroke2, x: other_x, y1: other_y1, y2: other_y2 }) => {
+		for (const { adjStroke, stroke, x, y1, y2 } of vertSegments) {
+			for (const { stroke: stroke2, x: other_x, y1: other_y1, y2: other_y2 } of vertSegments) {
 				if (stroke !== stroke2
 					&& !(y1 + 1 > other_y2 || y2 - 1 < other_y1)
 					&& round(Math.abs(x - other_x)) < this.kMinWidthT * this.kAdjustTateStep) {
@@ -495,13 +495,13 @@ class Mincho implements FontInterface {
 						adjStroke.tateAdjustment = this.kAdjustTateStep;
 					}
 				}
-			});
-		});
+			}
+		}
 		return adjStrokes;
 	}
 
 	protected adjustKakato(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
-		adjStrokes.forEach((adjStroke) => {
+		for (const adjStroke of adjStrokes) {
 			const { stroke } = adjStroke;
 			if (stroke.a1_100 === 1 && stroke.a1_opt === 0
 				&& (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.a3_opt === 0) {
@@ -521,12 +521,12 @@ class Mincho implements FontInterface {
 					}
 				}
 			}
-		});
+		}
 		return adjStrokes;
 	}
 
 	protected adjustUroko(adjStrokes: MinchoAdjustedStroke[]): MinchoAdjustedStroke[] {
-		adjStrokes.forEach((adjStroke) => {
+		for (const adjStroke of adjStrokes) {
 			const { stroke } = adjStroke;
 			if (stroke.a1_100 === 1 && stroke.a1_opt === 0
 				&& stroke.a3_100 === 0 && stroke.a3_opt === 0) { // no operation for TATE
@@ -549,7 +549,7 @@ class Mincho implements FontInterface {
 					}
 				}
 			}
-		});
+		}
 		return adjStrokes;
 	}
 
@@ -579,22 +579,22 @@ class Mincho implements FontInterface {
 				});
 			}
 		}
-		horiSegments.forEach(({ adjStroke, stroke, isTarget, y, x1, x2 }) => {
+		for (const { adjStroke, stroke, isTarget, y, x1, x2 } of horiSegments) {
 			if (isTarget) {
 				let pressure = 0;
-				horiSegments.forEach(({ stroke: stroke2, y: other_y, x1: other_x1, x2: other_x2 }) => {
+				for (const { stroke: stroke2, y: other_y, x1: other_x1, x2: other_x2 } of horiSegments) {
 					if (stroke !== stroke2
 						&& !(x1 + 1 > other_x2 || x2 - 1 < other_x1)
 						&& round(Math.abs(y - other_y)) < this.kAdjustUroko2Length) {
 						pressure += (this.kAdjustUroko2Length - Math.abs(y - other_y)) ** 1.1;
 					}
-				});
+				}
 				// const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
 				// if (stroke.a3 < result) {
 				adjStroke.urokoAdjustment = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
 				// }
 			}
-		});
+		}
 		return adjStrokes;
 	}
 
@@ -609,7 +609,7 @@ class Mincho implements FontInterface {
 				});
 			}
 		}
-		adjStrokes.forEach((adjStroke) => {
+		for (const adjStroke of adjStrokes) {
 			const { stroke } = adjStroke;
 			if (stroke.a1_100 === 2 && stroke.a1_opt === 0
 				&& stroke.a2_100 === 32 && stroke.a2_opt === 0
@@ -619,7 +619,7 @@ class Mincho implements FontInterface {
 				))) {
 				adjStroke.kirikuchiAdjustment = 1;
 			}
-		});
+		}
 		return adjStrokes;
 	}
 }

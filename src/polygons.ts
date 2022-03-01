@@ -84,7 +84,7 @@ export class Polygons {
 		let buffer = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
 			+ 'version="1.1" baseProfile="full" viewBox="0 0 200 200" width="200" height="200">\n';
 		if (curve) {
-			this.array.forEach(({ array }) => {
+			for (const { array } of this.array) {
 				let mode = "L";
 				buffer += '<path d="';
 				for (let j = 0; j < array.length; j++) {
@@ -101,7 +101,7 @@ export class Polygons {
 					buffer += `${array[j].x},${array[j].y} `;
 				}
 				buffer += 'Z" fill="black" />\n';
-			});
+			}
 		} else {
 			buffer += '<g fill="black">\n';
 			buffer += this.array.map(({ array }) => `<polygon points="${
@@ -129,7 +129,7 @@ export class Polygons {
 %%EndComments
 %%EndProlog
 `;
-		this.array.forEach(({ array }) => {
+		for (const { array } of this.array) {
 			for (let j = 0; j < array.length; j++) {
 				buffer += `${array[j].x * 5} ${1000 - array[j].y * 5 - 200} `;
 				if (j === 0) {
@@ -139,7 +139,7 @@ export class Polygons {
 				}
 			}
 			buffer += "closepath\nfill\n";
-		});
+		}
 		buffer += "%%EOF\n";
 		return buffer;
 	}

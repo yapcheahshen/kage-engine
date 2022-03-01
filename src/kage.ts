@@ -125,9 +125,9 @@ export class Kage {
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
 			const drawers = this.kFont.getDrawers(strokesArray);
-			drawers.forEach((draw) => {
+			for (const draw of drawers) {
 				draw(polygons);
-			});
+			}
 		}
 	}
 
@@ -150,11 +150,11 @@ export class Kage {
 		if (data !== "") {
 			const strokesArray = this.getEachStrokes(data);
 			const drawers = this.kFont.getDrawers(strokesArray);
-			drawers.forEach((draw) => {
+			for (const draw of drawers) {
 				const polygons = new Polygons();
 				draw(polygons);
 				result.push(polygons);
-			});
+			}
 		}
 		return result;
 	}
@@ -188,9 +188,9 @@ export class Kage {
 		let strokeIndex = 0;
 		return strokesArrays.map(({ length: strokeCount }) => {
 			const startIndex = polygons.array.length;
-			drawers.slice(strokeIndex, strokeIndex + strokeCount).forEach((draw) => {
+			for (const draw of drawers.slice(strokeIndex, strokeIndex + strokeCount)) {
 				draw(polygons);
-			});
+			}
 			strokeIndex += strokeCount;
 			const result = new Polygons();
 			result.array = polygons.array.slice(startIndex);
@@ -201,7 +201,7 @@ export class Kage {
 	protected getEachStrokes(glyphData: string): Stroke[] {
 		let strokesArray: Stroke[] = [];
 		const strokes = glyphData.split("$");
-		strokes.forEach((stroke) => {
+		for (const stroke of strokes) {
 			const columns = stroke.split(":");
 			if (Math.floor(+columns[0]) !== 99) {
 				strokesArray.push(new Stroke([
@@ -228,7 +228,7 @@ export class Kage {
 						Math.floor(+columns[9]), Math.floor(+columns[10])));
 				}
 			}
-		});
+		}
 		return strokesArray;
 	}
 
@@ -248,7 +248,7 @@ export class Kage {
 				sy2 = 0;
 			}
 		}
-		strokes.forEach((stroke) => {
+		for (const stroke of strokes) {
 			if (sx !== 0 || sy !== 0) {
 				stroke.stretch(sx, sx2, sy, sy2, box.minX, box.maxX, box.minY, box.maxY);
 			}
@@ -260,7 +260,7 @@ export class Kage {
 			stroke.y3 = y1 + stroke.y3 * (y2 - y1) / 200;
 			stroke.x4 = x1 + stroke.x4 * (x2 - x1) / 200;
 			stroke.y4 = y1 + stroke.y4 * (y2 - y1) / 200;
-		});
+		}
 		return strokes;
 	}
 
@@ -270,7 +270,7 @@ export class Kage {
 		let maxX = 0;
 		let maxY = 0;
 
-		strokes.forEach((stroke) => {
+		for (const stroke of strokes) {
 			const {
 				minX: sminX,
 				maxX: smaxX,
@@ -281,7 +281,7 @@ export class Kage {
 			maxX = Math.max(maxX, smaxX);
 			minY = Math.min(minY, sminY);
 			maxY = Math.max(maxY, smaxY);
-		});
+		}
 		return { minX, maxX, minY, maxY };
 	}
 }
