@@ -1,4 +1,3 @@
-import { Stroke } from "./stroke";
 import { round } from "./util";
 
 // Reference : http://www.cam.hi-ho.ne.jp/strong_warriors/teacher/chapter0{4,5}.html
@@ -30,9 +29,10 @@ function cross(x1: number, y1: number, x2: number, y2: number) {
 // 	return new Point((c1 * b2 - c2 * b1) / temp, (a1 * c2 - a2 * c1) / temp);
 // }
 
-function isCross(
+/** @internal */
+export function isCross(
 	x11: number, y11: number, x12: number, y12: number,
-	x21: number, y21: number, x22: number, y22: number) {
+	x21: number, y21: number, x22: number, y22: number): boolean {
 	const cross_1112_2122 = cross(x12 - x11, y12 - y11, x22 - x21, y22 - y21);
 	if (isNaN(cross_1112_2122)) {
 		return true; // for backward compatibility...
@@ -50,9 +50,10 @@ function isCross(
 	return round(cross_1112_1121 * cross_1112_1122, 1E5) <= 0 && round(cross_2122_2111 * cross_2122_2112, 1E5) <= 0;
 }
 
-function isCrossBox(
+/** @internal */
+export function isCrossBox(
 	x1: number, y1: number, x2: number, y2: number,
-	bx1: number, by1: number, bx2: number, by2: number) {
+	bx1: number, by1: number, bx2: number, by2: number): boolean {
 	if (isCross(x1, y1, x2, y2, bx1, by1, bx2, by1)) {
 		return true;
 	}
@@ -66,26 +67,4 @@ function isCrossBox(
 		return true;
 	}
 	return false;
-}
-
-export function isCrossBoxWithOthers(
-	strokesArray: Stroke[], i: number,
-	bx1: number, by1: number, bx2: number, by2: number): boolean {
-	return strokesArray.some((stroke, j) => (
-		i !== j
-		&& stroke.getControlSegments().some(([x1, y1, x2, y2]) => (
-			isCrossBox(x1, y1, x2, y2, bx1, by1, bx2, by2)
-		))
-	));
-}
-
-export function isCrossWithOthers(
-	strokesArray: Stroke[], i: number,
-	bx1: number, by1: number, bx2: number, by2: number): boolean {
-	return strokesArray.some((stroke, j) => (
-		i !== j
-		&& stroke.getControlSegments().some(([x1, y1, x2, y2]) => (
-			isCross(x1, y1, x2, y2, bx1, by1, bx2, by2)
-		))
-	));
 }

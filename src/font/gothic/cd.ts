@@ -2,16 +2,17 @@ import { generateFattenCurve } from "../../curve";
 import { Polygon } from "../../polygon";
 import { Polygons } from "../../polygons";
 import { normalize, round } from "../../util";
+import { Pen } from "../../pen";
 import Gothic from ".";
 
 function cdDrawCurveU(
 	font: Gothic, polygons: Polygons,
 	x1: number, y1: number, sx1: number, sy1: number,
 	sx2: number, sy2: number, x2: number, y2: number,
-	ta1: number, ta2: number) {
+	_ta1: number, _ta2: number) {
 
-	const a1 = ta1;
-	const a2 = ta2;
+	let a1: number;
+	let a2: number;
 
 	let delta1 = 0;
 	switch (a1 % 10) {
@@ -114,46 +115,38 @@ export function cdDrawLine(
 		a1 = ta1;
 		a2 = ta2;
 	}
-	const [dx, dy] = (x1 === x2 && y1 === y2)
-		? [0, 1] // ?????
-		: normalize([x2 - x1, y2 - y1]);
 
-	let delta1 = 0;
+	const pen1 = new Pen(x1, y1);
+	const pen2 = new Pen(x2, y2);
+	if (x1 !== x2 || y1 !== y2) { // ?????
+		pen1.setDown(x2, y2);
+		pen2.setUp(x1, y1);
+	}
+
 	switch (a1 % 10) {
 		case 2:
-			delta1 = font.kWidth;
+			pen1.move(0, -font.kWidth);
 			break;
 		case 3:
-			delta1 = font.kWidth * font.kKakato;
+			pen1.move(0, -font.kWidth * font.kKakato);
 			break;
 	}
 
-	if (delta1 !== 0) {
-		x1 -= dx * delta1;
-		y1 -= dy * delta1;
-	}
-
-	let delta2 = 0;
 	switch (a2 % 10) {
 		case 2:
-			delta2 = font.kWidth;
+			pen2.move(0, font.kWidth);
 			break;
 		case 3:
-			delta2 = font.kWidth * font.kKakato;
+			pen2.move(0, font.kWidth * font.kKakato);
 			break;
-	}
-
-	if (delta2 !== 0) {
-		x2 += dx * delta2;
-		y2 += dy * delta2;
 	}
 
 	// SUICHOKU NO ICHI ZURASHI HA Math.sin TO Math.cos NO IREKAE + x-axis MAINASU KA
 	const poly = new Polygon([
-		{ x: x1 + dy * font.kWidth, y: y1 - dx * font.kWidth },
-		{ x: x2 + dy * font.kWidth, y: y2 - dx * font.kWidth },
-		{ x: x2 - dy * font.kWidth, y: y2 + dx * font.kWidth },
-		{ x: x1 - dy * font.kWidth, y: y1 + dx * font.kWidth },
+		pen1.getPoint(font.kWidth, 0),
+		pen2.getPoint(font.kWidth, 0),
+		pen2.getPoint(-font.kWidth, 0),
+		pen1.getPoint(-font.kWidth, 0),
 	]);
 	if (tx1 === tx2) {
 		poly.reverse(); // ?????

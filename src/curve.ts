@@ -1,5 +1,6 @@
 import { normalize, quadraticBezier, quadraticBezierDeriv, cubicBezier, cubicBezierDeriv, ternarySearchMin } from "./util";
 
+/** @internal */
 export function divide_curve(
 	x1: number, y1: number,
 	sx1: number, sy1: number,
@@ -22,6 +23,7 @@ export function divide_curve(
 }
 
 // ------------------------------------------------------------------
+/** @internal */
 export function find_offcurve(
 	curve: [number, number][], sx: number, sy: number): number[] {
 	const [nx1, ny1] = curve[0];
@@ -47,6 +49,7 @@ export function find_offcurve(
 }
 
 // ------------------------------------------------------------------
+/** @internal */
 export function generateFattenCurve(
 	x1: number, y1: number, sx1: number, sy1: number,
 	sx2: number, sy2: number, x2: number, y2: number,

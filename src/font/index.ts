@@ -1,19 +1,26 @@
-import { KShotai } from "../kage";
 import { Polygons } from "../polygons";
 import { Stroke } from "../stroke";
 import Mincho from "./mincho";
 import Gothic from "./gothic";
+import { KShotai } from "./shotai";
 
-export interface Font {
-	shotai: KShotai;
+export { KShotai } from "./shotai";
+
+/** @internal */
+export type StrokeDrawer = (polygons: Polygons) => void;
+
+/** @internal */
+export interface FontInterface {
+	readonly shotai: KShotai;
 	kUseCurve: boolean;
-	draw(polygons: Polygons, stroke: Stroke): void;
 	setSize(size?: number): void;
-	adjustStrokes(strokes: Stroke[]): Stroke[];
+	getDrawers(strokes: Stroke[]): StrokeDrawer[];
 }
 
 export { default as Mincho } from "./mincho";
 export { default as Gothic } from "./gothic";
+
+export type Font = Mincho | Gothic;
 
 export function select(shotai: KShotai): Font {
 	switch (shotai) {

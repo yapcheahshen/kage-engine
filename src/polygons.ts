@@ -1,6 +1,29 @@
 import { Polygon } from "./polygon";
 
+/**
+ * Represents the rendered glyph.
+ *
+ * A glyph is represented as a series of {@link Polygon}'s.
+ * The contained {@link Polygon}'s can be accessed by the {@link array} property.
+ */
 export class Polygons {
+	/**
+	 * Stores the rendered glyph as an array of instances of {@link Polygon}.
+	 * @example
+	 * ```ts
+	 * const polygons = new Polygons();
+	 * kage.makeGlyph(polygons, someGlyphName);
+	 * for (const poly of polygons.array) {
+	 * 	let first = true;
+	 * 	for (const { x, y } of poly.array) {
+	 * 		if (first) ctx.moveTo(x, y);
+	 * 		else ctx.lineTo(x, y);
+	 * 		first = false;
+	 * 	}
+	 * 	ctx.closePath();
+	 * }
+	 * ```
+	 */
 	public array: Polygon[];
 
 	constructor() {
@@ -8,10 +31,16 @@ export class Polygons {
 		this.array = [];
 	}
 	// method
+	/** Clears the content. */
 	public clear(): void {
 		this.array = [];
 	}
 
+	/**
+	 * Appends a new {@link Polygon} to the end of the array.
+	 * Nothing is performed if `polygon` is not a valid polygon.
+	 * @param polygon An instance of {@link Polygon} to be appended.
+	 */
 	public push(polygon: Polygon): void {
 		// only a simple check
 		let minx = 200;
@@ -21,6 +50,7 @@ export class Polygons {
 		if (polygon.length < 3) {
 			return;
 		}
+		polygon.floor();
 		for (const { x, y } of polygon.array) {
 			if (x < minx) {
 				minx = x;
@@ -43,11 +73,19 @@ export class Polygons {
 		}
 	}
 
-	public generateSVG(curve: boolean): string {
+	/**
+	 * Generates a string in SVG format that represents the rendered glyph.
+	 * @param curve Set to true to use `<path />` format or set to false to use
+	 *     `<polygon />` format. Must be set to true if the glyph was rendered with
+	 *     `kage.kFont.kUseCurve = true`. The `<polygon />` format is used if
+	 *     unspecified.
+	 * @returns The string representation of the rendered glyph in SVG format.
+	 */
+	public generateSVG(curve?: boolean): string {
 		let buffer = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
 			+ 'version="1.1" baseProfile="full" viewBox="0 0 200 200" width="200" height="200">\n';
 		if (curve) {
-			this.array.forEach(({ array }) => {
+			for (const { array } of this.array) {
 				let mode = "L";
 				buffer += '<path d="';
 				for (let j = 0; j < array.length; j++) {
@@ -64,7 +102,7 @@ export class Polygons {
 					buffer += `${array[j].x},${array[j].y} `;
 				}
 				buffer += 'Z" fill="black" />\n';
-			});
+			}
 		} else {
 			buffer += '<g fill="black">\n';
 			buffer += this.array.map(({ array }) => `<polygon points="${
@@ -76,6 +114,10 @@ export class Polygons {
 		return buffer;
 	}
 
+	/**
+	 * Generates a string in EPS format that represents the rendered glyph.
+	 * @returns The string representation of the rendered glyph in EPS format.
+	 */
 	public generateEPS(): string {
 		let buffer = "";
 		buffer += `\
@@ -88,7 +130,7 @@ export class Polygons {
 %%EndComments
 %%EndProlog
 `;
-		this.array.forEach(({ array }) => {
+		for (const { array } of this.array) {
 			for (let j = 0; j < array.length; j++) {
 				buffer += `${array[j].x * 5} ${1000 - array[j].y * 5 - 200} `;
 				if (j === 0) {
@@ -98,8 +140,28 @@ export class Polygons {
 				}
 			}
 			buffer += "closepath\nfill\n";
-		});
+		}
 		buffer += "%%EOF\n";
 		return buffer;
+	}
+
+	/**
+	 * Iterates over its contours.
+	 * @returns An iterator of its {@link Polygon} elements.
+	 * @example
+	 * ```ts
+	 * for (const polygon of polygons) {
+	 * 	// ...
+	 * }
+	 * ```
+	 */
+	// Added by @kurgm
+	public [Symbol.iterator]: (this: this) => IterableIterator<Polygon>;
+	static {
+		if (typeof Symbol !== "undefined" && Symbol.iterator) {
+			Polygons.prototype[Symbol.iterator] = function () {
+				return this.array[Symbol.iterator]();
+			};
+		}
 	}
 }

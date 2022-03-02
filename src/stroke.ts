@@ -1,3 +1,5 @@
+import { isCross, isCrossBox } from "./2d";
+
 export function stretch(dp: number, sp: number, p: number, min: number, max: number): number {
 	let p1;
 	let p2;
@@ -17,20 +19,22 @@ export function stretch(dp: number, sp: number, p: number, min: number, max: num
 	return Math.floor(((p - p1) / (p2 - p1)) * (p4 - p3) + p3);
 }
 
+/** @internal */
 export class Stroke {
-	public a1: number;
-	// /**
-	//  * 100s place: adjustKirikuchi (when 2:X32);
-	//  * 1000s place: adjustTate (when {1,3,7});
-	//  * 10000s place: opt3
-	//  */
-	// public get a2() { return this.a2_100 + this.kirikuchiAdjustment * 100 + this.tateAdjustment * 1000 + this.opt3 * 10000; }
-	// /**
-	//  * 100s place: adjustHane (when {1,2,6}::X04), adjustUroko/adjustUroko2 (when 1::X00),
-	//  *             adjustKakato (when 1::X{13,23});
-	//  * 1000s place: adjustMage (when 3)
-	//  */
-	// public get a3() { return this.a3_100 + (this.haneAdjustment || this.urokoAdjustment || this.kakatoAdjustment) * 100 + this.mageAdjustment * 1000; }
+	public readonly a1_100: number;
+	public readonly a1_opt: number;
+
+	public readonly a2_100: number;
+	public readonly a2_opt: number;
+	public readonly a2_opt_1: number;
+	public readonly a2_opt_2: number;
+	public readonly a2_opt_3: number;
+
+	public readonly a3_100: number;
+	public readonly a3_opt: number;
+	public readonly a3_opt_1: number;
+	public readonly a3_opt_2: number;
+
 	public x1: number;
 	public y1: number;
 	public x2: number;
@@ -40,21 +44,9 @@ export class Stroke {
 	public x4: number;
 	public y4: number;
 
-	public kirikuchiAdjustment: number;
-	public tateAdjustment: number;
-	public opt3: number;
-
-	public haneAdjustment: number;
-	public urokoAdjustment: number;
-	public kakatoAdjustment: number;
-	public mageAdjustment: number;
-
-	public readonly a2_100: number;
-	public readonly a3_100: number;
-
 	constructor(data: number[]) {
 		[
-			this.a1,
+			this.a1_100,
 			this.a2_100,
 			this.a3_100,
 			this.x1,
@@ -67,19 +59,27 @@ export class Stroke {
 			this.y4,
 		] = data;
 
-		this.kirikuchiAdjustment = Math.floor(this.a2_100 / 100) % 10;
-		this.tateAdjustment = Math.floor(this.a2_100 / 1000) % 10;
-		this.opt3 = Math.floor(this.a2_100 / 10000);
-		this.a2_100 %= 100;
+		this.a1_opt = Math.floor(this.a1_100 / 100);
+		this.a1_100 %= 100;
 
-		this.haneAdjustment = this.urokoAdjustment = this.kakatoAdjustment = Math.floor(this.a3_100 / 100) % 10;
-		this.mageAdjustment = Math.floor(this.a3_100 / 1000);
+		this.a2_opt = Math.floor(this.a2_100 / 100);
+		this.a2_100 %= 100;
+		this.a2_opt_1 = this.a2_opt % 10;
+		this.a2_opt_2 = Math.floor(this.a2_opt / 10) % 10;
+		this.a2_opt_3 = Math.floor(this.a2_opt / 100);
+
+		this.a3_opt = Math.floor(this.a3_100 / 100);
 		this.a3_100 %= 100;
+		this.a3_opt_1 = this.a3_opt % 10;
+		this.a3_opt_2 = Math.floor(this.a3_opt / 10);
 	}
 
 	public getControlSegments(): [number, number, number, number][] {
 		const res: [number, number, number, number][] = [];
-		switch (this.a1) {
+		const a1 = this.a1_opt === 0
+			? this.a1_100
+			: 1; // ?????
+		switch (a1) {
 			case 0:
 			case 8:
 			case 9:
@@ -100,6 +100,18 @@ export class Stroke {
 		return res;
 	}
 
+	public isCross(bx1: number, by1: number, bx2: number, by2: number): boolean {
+		return this.getControlSegments().some(([x1, y1, x2, y2]) => (
+			isCross(x1, y1, x2, y2, bx1, by1, bx2, by2)
+		));
+	}
+
+	public isCrossBox(bx1: number, by1: number, bx2: number, by2: number): boolean {
+		return this.getControlSegments().some(([x1, y1, x2, y2]) => (
+			isCrossBox(x1, y1, x2, y2, bx1, by1, bx2, by2)
+		));
+	}
+
 	public stretch(
 		sx: number, sx2: number, sy: number, sy2: number,
 		bminX: number, bmaxX: number, bminY: number, bmaxY: number): void {
@@ -107,7 +119,7 @@ export class Stroke {
 		this.y1 = stretch(sy, sy2, this.y1, bminY, bmaxY);
 		this.x2 = stretch(sx, sx2, this.x2, bminX, bmaxX);
 		this.y2 = stretch(sy, sy2, this.y2, bminY, bmaxY);
-		if (this.a1 !== 99) { // always true
+		if (!(this.a1_100 === 99 && this.a1_opt === 0)) { // always true
 			this.x3 = stretch(sx, sx2, this.x3, bminX, bmaxX);
 			this.y3 = stretch(sy, sy2, this.y3, bminY, bmaxY);
 			this.x4 = stretch(sx, sx2, this.x4, bminX, bmaxX);
@@ -120,7 +132,10 @@ export class Stroke {
 		let minY = Infinity;
 		let maxX = -Infinity;
 		let maxY = -Infinity;
-		switch (this.a1) {
+		const a1 = this.a1_opt === 0
+			? this.a1_100
+			: 6; // ?????
+		switch (a1) {
 			default:
 				minX = Math.min(minX, this.x4);
 				maxX = Math.max(maxX, this.x4);

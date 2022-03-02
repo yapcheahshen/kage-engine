@@ -1,25 +1,36 @@
-import { KShotai } from "../../kage";
 import { Polygons } from "../../polygons";
 import { Stroke } from "../../stroke";
 import { normalize } from "../../util";
-import { Font } from "..";
+import { FontInterface, StrokeDrawer } from "..";
+import { KShotai } from "../shotai";
 
 import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
 import Mincho from "../mincho";
 
+interface GothicAdjustedStroke {
+	readonly stroke: Stroke;
+
+	// These values are just for backward compatibility; adjustment is not supported yet and may result in buggy shapes!
+	haneAdjustment: number;
+	mageAdjustment: number;
+}
+
 function dfDrawFont(
 	font: Gothic, polygons: Polygons,
 	{
-		a1, x1, y1, x2, y2, x3, y3, x4, y4,
-		a2_100,
-		a3_100, haneAdjustment, mageAdjustment,
-	}: Stroke): void {
+		stroke: {
+			a1_100, a2_100,
+			a3_100, a3_opt, a3_opt_1, a3_opt_2,
+			x1, y1, x2, y2, x3, y3, x4, y4,
+		},
+		haneAdjustment, mageAdjustment,
+	}: GothicAdjustedStroke): void {
 
-	switch (a1 % 100) {
+	switch (a1_100) {
 		case 0:
 			break;
 		case 1: {
-			if (a3_100 === 4 && haneAdjustment === 0 && mageAdjustment === 0) {
+			if (a3_100 === 4 && haneAdjustment === 0 && a3_opt_2 === 0) {
 				const [dx1, dy1] = (x1 === x2 && y1 === y2)
 					? [0, font.kMage] // ?????
 					: normalize([x1 - x2, y1 - y2], font.kMage);
@@ -34,7 +45,7 @@ function dfDrawFont(
 		}
 		case 2:
 		case 12: {
-			if (a3_100 === 4 && haneAdjustment === 0 && mageAdjustment === 0) {
+			if (a3_100 === 4 && haneAdjustment === 0 && a3_opt_2 === 0) {
 				const [dx1, dy1] = (x2 === x3)
 					? [0, -font.kMage] // ?????
 					: (y2 === y3)
@@ -44,7 +55,7 @@ function dfDrawFont(
 				const ty1 = y3 + dy1;
 				cdDrawCurve(font, polygons, x1, y1, x2, y2, tx1, ty1, a2_100, 1);
 				cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage * 2, y3 - font.kMage * 0.5, 1, 0);
-			} else if (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) {
+			} else if (a3_100 === 5 && a3_opt === 0) {
 				const tx1 = x3 + font.kMage;
 				const ty1 = y3;
 				const tx2 = tx1 + font.kMage * 0.5;
@@ -71,7 +82,7 @@ function dfDrawFont(
 			cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100, 1);
 			cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1);
 
-			if (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) {
+			if (a3_100 === 5 && a3_opt_1 === 0 && mageAdjustment === 0) {
 				const tx3 = x3 - font.kMage;
 				const ty3 = y3;
 				const tx4 = x3 + font.kMage * 0.5;
@@ -85,7 +96,7 @@ function dfDrawFont(
 			break;
 		}
 		case 6: {
-			if (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) {
+			if (a3_100 === 5 && a3_opt === 0) {
 				const tx1 = x4 - font.kMage;
 				const ty1 = y4;
 				const tx2 = x4 + font.kMage * 0.5;
@@ -119,10 +130,14 @@ function dfDrawFont(
 	}
 }
 
-class Gothic extends Mincho implements Font {
-	public shotai = KShotai.kGothic;
-	public draw(polygons: Polygons, stroke: Stroke): void {
-		dfDrawFont(this, polygons, stroke);
+/** Gothic style font. */
+class Gothic extends Mincho implements FontInterface {
+	public override readonly shotai: KShotai = KShotai.kGothic;
+	/** @internal */
+	public override getDrawers(strokesArray: Stroke[]): StrokeDrawer[] {
+		return this.adjustStrokes(strokesArray).map((stroke) => (polygons: Polygons) => {
+			dfDrawFont(this, polygons, stroke);
+		});
 	}
 }
 
