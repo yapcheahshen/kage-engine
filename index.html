@@ -4,9 +4,46 @@
 <head>
 	<title>KAGE engine sample</title>
 	<style>
+		#app {
+			display: grid;
+			grid-template-areas:
+				"out-1 out-2 opt"
+				"in in opt";
+			grid-template-columns: min-content min-content 1fr;
+			grid-template-rows: min-content 1fr;
+			gap: 3px;
+		}
+
+		.fig-canvas {
+			grid-area: out-1;
+		}
+
+		.fig-svg {
+			grid-area: out-2;
+		}
+
+		.input-data {
+			grid-area: in;
+		}
+
+		.opt {
+			grid-area: opt;
+		}
+
+		figure {
+			display: block;
+			text-align: center;
+			margin: 0;
+		}
+
+		figcaption {
+			font-size: smaller;
+		}
+
 		#canvas,
 		#svg {
-			display: inline-block;
+			display: block;
+			background-color: #fff;
 			border: 1px #ccc solid;
 		}
 
@@ -14,14 +51,20 @@
 			display: block;
 		}
 
-		#inputcontrols > div {
-			display: inline-block;
-			vertical-align: top;
+		.input-data {
+			display: flex;
+			align-items: stretch;
 		}
 
 		#data_area {
-			width: 30em;
-			height: 32em;
+			flex: 1 0;
+			min-width: 15em;
+			min-height: 25em;
+		}
+
+		.opt-mincho>.no-min-opt,
+		.opt-gothic>div:not(.goth-opt) {
+			display: none;
 		}
 
 		input[type="number"] {
@@ -37,7 +80,16 @@
 
 			var kage = new Kage();
 
-			kage.kShotai = Number(document.getElementById("inputcontrols").elements["kagefont"].value);
+			var shotai = Number(document.getElementById("inputcontrols").elements["kagefont"].value);
+			kage.kShotai = shotai;
+			const optDiv = document.getElementsByClassName("opt")[0];
+			if (shotai === 0) {
+				optDiv.classList.remove("opt-gothic");
+				optDiv.classList.add("opt-mincho");
+			} else {
+				optDiv.classList.remove("opt-mincho");
+				optDiv.classList.add("opt-gothic");
+			}
 			var paramnames = [
 				"kMinWidthY",
 				"kMinWidthU",
@@ -130,13 +182,18 @@
 </head>
 
 <body>
-	<div>
-		<canvas id="canvas" width="200" height="200"></canvas>
-		<div id="svg"></div>
-	</div>
 	<form id="inputcontrols" action="#">
-		<div>
-			<textarea id="data_area">2:7:8:26:20:45:27:53:41
+		<div id="app">
+			<figure class="fig-canvas">
+				<canvas id="canvas" width="200" height="200"></canvas>
+				<figcaption>&lt;canvas&gt;</figcaption>
+			</figure>
+			<figure class="fig-svg">
+				<div id="svg"></div>
+				<figcaption>SVG</figcaption>
+			</figure>
+			<div class="input-data">
+				<textarea id="data_area">2:7:8:26:20:45:27:53:41
 2:7:8:11:66:32:73:39:87
 2:7:8:13:133:39:142:36:184
 2:32:7:33:150:36:138:68:67
@@ -151,48 +208,80 @@
 1:0:0:64:137:187:137
 7:32:7:126:63:126:114:126:177:48:187
 2:7:0:129:137:146:172:180:182</textarea>
-		</div>
-		<div>
-			<label><input type="radio" value="0" name="kagefont" checked>明朝</label>
-			<label><input type="radio" value="1" name="kagefont">ゴシック</label><br>
-			<label>kMinWidthY: <input type="number" min="0" step="0.1" id="kageparam_kMinWidthY" value="2"></label><br>
-			<label>kMinWidthU: <input type="number" min="0" step="0.1" id="kageparam_kMinWidthU" value="2"></label><br>
-			<label>kMinWidthT: <input type="number" min="0" step="0.1" id="kageparam_kMinWidthT" value="6"></label><br>
-			<label>kWidth: <input type="number" min="0" step="0.1" id="kageparam_kWidth" value="5"></label><br>
-			<label>kKakato: <input type="number" min="0" step="0.1" id="kageparam_kKakato" value="3"></label><br>
-			<label>kL2RDfatten: <input type="number" min="0" step="0.1" id="kageparam_kL2RDfatten" value="1.1"></label><br>
-			<label>kMage: <input type="number" min="0" step="0.1" id="kageparam_kMage" value="10"></label><br>
-			<label>kAdjustKakatoL: [<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoL_0" value="14"></label>,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoL_1" value="9">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoL_2" value="5">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoL_3" value="2">, 0]<br>
-			<label>kAdjustKakatoR: [<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoR_0" value="8"></label>,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoR_1" value="6">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoR_2" value="4">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoR_3" value="2">]<br>
-			<label>kAdjustKakatoRangeX: <input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeX" value="20"></label><br>
-			<label>kAdjustKakatoRangeY: [<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeY_0" value="1"></label>,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeY_1" value="19">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeY_2" value="24">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeY_3" value="30">]<br>
-			<label>kAdjustUrokoX: [<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoX_0" value="24"></label>,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoX_1" value="20">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoX_2" value="16">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoX_3" value="12">]<br>
-			<label>kAdjustUrokoY: [<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoY_0" value="12"></label>,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoY_1" value="11">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoY_2" value="9">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoY_3" value="8">]<br>
-			<label>kAdjustUrokoLength: [<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLength_0" value="22"></label>,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLength_1" value="36">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLength_2" value="50">]<br>
-			<label>kAdjustUrokoLine: [<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLine_0" value="22"></label>,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLine_1" value="26">,
-			<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLine_2" value="30">]<br>
-			<label>kAdjustUroko2Length: <input type="number" min="0" step="0.1" id="kageparam_kAdjustUroko2Length" value="40"></label><br>
-			<label>kAdjustTateStep: <input type="number" min="0" step="0.1" id="kageparam_kAdjustTateStep" value="4"></label><br>
-			<label>kAdjustMageStep: <input type="number" min="0" step="0.1" id="kageparam_kAdjustMageStep" value="5"></label>
-		</div>
+			</div>
+			<div class="opt opt-mincho">
+				<div class="goth-opt">
+					<label><input type="radio" value="0" name="kagefont" checked>Mincho (明朝)</label>
+					<label><input type="radio" value="1" name="kagefont">Gothic (ゴシック)</label>
+				</div>
+				<div><label>kMinWidthY (横画の線幅):
+						<input type="number" min="0" step="0.1" id="kageparam_kMinWidthY" value="2"></label>
+				</div>
+				<div><label>kMinWidthU (ウロコの大きさ):
+						<input type="number" min="0" step="0.1" id="kageparam_kMinWidthU" value="2"></label>
+				</div>
+				<div><label>kMinWidthT (縦画の線幅):
+						<input type="number" min="0" step="0.1" id="kageparam_kMinWidthT" value="6"></label>
+				</div>
+				<div class="goth-opt"><label>kWidth (線幅):
+						<input type="number" min="0" step="0.1" id="kageparam_kWidth" value="5"></label></div>
+				<div class="no-min-opt goth-opt"><label>kKakato (カカトの大きさ):
+						<input type="number" min="0" step="0.1" id="kageparam_kKakato" value="3"></label></div>
+				<div><label>kL2RDfatten (右払いの終筆の太さ):
+						<input type="number" min="0" step="0.1" id="kageparam_kL2RDfatten" value="1.1"></label>
+				</div>
+				<div class="goth-opt"><label>kMage (折れのカーブの大きさ):
+						<input type="number" min="0" step="0.1" id="kageparam_kMage" value="10"></label></div>
+				<div><label>kAdjustKakatoL (左下カカトの大きさ):
+						[<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoL_0" value="14"></label>,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoL_1" value="9">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoL_2" value="5">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoL_3" value="2">, 0]
+				</div>
+				<div><label>kAdjustKakatoR (右下カカトの大きさ):
+						[<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoR_0" value="8"></label>,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoR_1" value="6">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoR_2" value="4">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoR_3" value="2">]
+				</div>
+				<div><label>kAdjustKakatoRangeX (カカト調節探索範囲X):
+						<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeX" value="20"></label></div>
+				<div><label>kAdjustKakatoRangeY (カカト調節探索範囲Y):
+						[<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeY_0" value="1"></label>,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeY_1" value="19">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeY_2" value="24">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustKakatoRangeY_3" value="30">]
+				</div>
+				<div><label>kAdjustUrokoX (ウロコの大きさX):
+						[<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoX_0" value="24"></label>,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoX_1" value="20">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoX_2" value="16">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoX_3" value="12">]
+				</div>
+				<div><label>kAdjustUrokoY (ウロコの大きさY):
+						[<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoY_0" value="12"></label>,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoY_1" value="11">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoY_2" value="9">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoY_3" value="8">]
+				</div>
+				<div><label>kAdjustUrokoLength (ウロコ調節横画長):
+						[<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLength_0" value="22"></label>,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLength_1" value="36">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLength_2" value="50">]
+				</div>
+				<div><label>kAdjustUrokoLine (ウロコ調節探索距離):
+						[<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLine_0" value="22"></label>,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLine_1" value="26">,
+					<input type="number" min="0" step="0.1" id="kageparam_kAdjustUrokoLine_2" value="30">]
+				</div>
+				<div><label>kAdjustUroko2Length (ウロコ調節2垂直間隔):
+						<input type="number" min="0" step="0.1" id="kageparam_kAdjustUroko2Length" value="40"></label></div>
+				<div><label>kAdjustTateStep (縦画調節感度):
+						<input type="number" min="0" max="9" step="1" id="kageparam_kAdjustTateStep" value="4"></label></div>
+				<div><label>kAdjustMageStep (折れ後半調節感度):
+						<input type="number" min="0" max="9" step="1" id="kageparam_kAdjustMageStep" value="5"></label>
+				</div>
+			</div>
 	</form>
 </body>
 
