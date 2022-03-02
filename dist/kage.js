@@ -1,10 +1,13 @@
-/*! kage.js v0.3.1
+/*! kage.js v0.4.0
  *  Licensed under GPL-3.0
  *  https://github.com/kurgm/kage-engine#readme
  */
 var Kage = (function () {
     'use strict';
 
+    /**
+     * A key-value store that maps a glyph name to a string of KAGE data.
+     */
     var Buhin = /** @class */ (function () {
         function Buhin() {
             // initialize
@@ -12,30 +15,59 @@ var Kage = (function () {
             this.hash = {};
         }
         // method
+        /**
+         * Adds or updates an element with a given glyph name and KAGE data.
+         * @param name The name of the glyph.
+         * @param data The KAGE data.
+         */
         Buhin.prototype.set = function (name, data) {
             this.hash[name] = data;
         };
+        /**
+         * Search the store for a specified glyph name and returns the corresponding
+         * KAGE data.
+         * @param name The name of the glyph to be looked up.
+         * @returns The KAGE data if found, or an empty string if not found.
+         */
         Buhin.prototype.search = function (name) {
             if (this.hash[name]) {
                 return this.hash[name];
             }
             return ""; // no data
         };
+        /**
+         * Adds or updates and element with a given glyph name and KAGE data.
+         * It is an alias of {@link set} method.
+         * @param name The name of the glyph.
+         * @param data The KAGE data.
+         */
         Buhin.prototype.push = function (name, data) {
             this.set(name, data);
         };
         return Buhin;
     }());
 
+    /**
+     * Represents the rendered glyph.
+     *
+     * A glyph is represented as a series of {@link Polygon}'s.
+     * The contained {@link Polygon}'s can be accessed by the {@link array} property.
+     */
     var Polygons = /** @class */ (function () {
         function Polygons() {
             // property
             this.array = [];
         }
         // method
+        /** Clears the content. */
         Polygons.prototype.clear = function () {
             this.array = [];
         };
+        /**
+         * Appends a new {@link Polygon} to the end of the array.
+         * Nothing is performed if `polygon` is not a valid polygon.
+         * @param polygon An instance of {@link Polygon} to be appended.
+         */
         Polygons.prototype.push = function (polygon) {
             // only a simple check
             var minx = 200;
@@ -45,6 +77,7 @@ var Kage = (function () {
             if (polygon.length < 3) {
                 return;
             }
+            polygon.floor();
             for (var _i = 0, _a = polygon.array; _i < _a.length; _i++) {
                 var _b = _a[_i], x = _b.x, y = _b.y;
                 if (x < minx) {
@@ -67,12 +100,20 @@ var Kage = (function () {
                 this.array.push(polygon);
             }
         };
+        /**
+         * Generates a string in SVG format that represents the rendered glyph.
+         * @param curve Set to true to use `<path />` format or set to false to use
+         *     `<polygon />` format. Must be set to true if the glyph was rendered with
+         *     `kage.kFont.kUseCurve = true`. The `<polygon />` format is used if
+         *     unspecified.
+         * @returns The string representation of the rendered glyph in SVG format.
+         */
         Polygons.prototype.generateSVG = function (curve) {
             var buffer = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
                 + 'version="1.1" baseProfile="full" viewBox="0 0 200 200" width="200" height="200">\n';
             if (curve) {
-                this.array.forEach(function (_a) {
-                    var array = _a.array;
+                for (var _i = 0, _a = this.array; _i < _a.length; _i++) {
+                    var array = _a[_i].array;
                     var mode = "L";
                     buffer += '<path d="';
                     for (var j = 0; j < array.length; j++) {
@@ -89,32 +130,36 @@ var Kage = (function () {
                         else if (mode === "L" && j === 1) {
                             buffer += "L ";
                         }
-                        buffer += array[j].x + "," + array[j].y + " ";
+                        buffer += "".concat(array[j].x, ",").concat(array[j].y, " ");
                     }
                     buffer += 'Z" fill="black" />\n';
-                });
+                }
             }
             else {
                 buffer += '<g fill="black">\n';
                 buffer += this.array.map(function (_a) {
                     var array = _a.array;
-                    return "<polygon points=\"" + array.map(function (_a) {
+                    return "<polygon points=\"".concat(array.map(function (_a) {
                         var x = _a.x, y = _a.y;
-                        return x + "," + y + " ";
-                    }).join("") + "\" />\n";
+                        return "".concat(x, ",").concat(y, " ");
+                    }).join(""), "\" />\n");
                 }).join("");
                 buffer += "</g>\n";
             }
             buffer += "</svg>\n";
             return buffer;
         };
+        /**
+         * Generates a string in EPS format that represents the rendered glyph.
+         * @returns The string representation of the rendered glyph in EPS format.
+         */
         Polygons.prototype.generateEPS = function () {
             var buffer = "";
-            buffer += "%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 -208 1024 816\n%%Pages: 0\n%%Title: Kanji glyph\n%%Creator: GlyphWiki powered by KAGE system\n%%CreationDate: " + new Date().toString() + "\n%%EndComments\n%%EndProlog\n";
-            this.array.forEach(function (_a) {
-                var array = _a.array;
+            buffer += "%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 -208 1024 816\n%%Pages: 0\n%%Title: Kanji glyph\n%%Creator: GlyphWiki powered by KAGE system\n%%CreationDate: ".concat(new Date().toString(), "\n%%EndComments\n%%EndProlog\n");
+            for (var _i = 0, _a = this.array; _i < _a.length; _i++) {
+                var array = _a[_i].array;
                 for (var j = 0; j < array.length; j++) {
-                    buffer += array[j].x * 5 + " " + (1000 - array[j].y * 5 - 200) + " ";
+                    buffer += "".concat(array[j].x * 5, " ").concat(1000 - array[j].y * 5 - 200, " ");
                     if (j === 0) {
                         buffer += "newpath\nmoveto\n";
                     }
@@ -123,114 +168,26 @@ var Kage = (function () {
                     }
                 }
                 buffer += "closepath\nfill\n";
-            });
+            }
             buffer += "%%EOF\n";
             return buffer;
         };
         return Polygons;
     }());
+    (function () {
+        if (typeof Symbol !== "undefined" && Symbol.iterator) {
+            Polygons.prototype[Symbol.iterator] = function () {
+                return this.array[Symbol.iterator]();
+            };
+        }
+    })();
 
-    function stretch(dp, sp, p, min, max) {
-        var p1;
-        var p2;
-        var p3;
-        var p4;
-        if (p < sp + 100) {
-            p1 = min;
-            p3 = min;
-            p2 = sp + 100;
-            p4 = dp + 100;
-        }
-        else {
-            p1 = sp + 100;
-            p3 = dp + 100;
-            p2 = max;
-            p4 = max;
-        }
-        return Math.floor(((p - p1) / (p2 - p1)) * (p4 - p3) + p3);
-    }
-    var Stroke = /** @class */ (function () {
-        function Stroke(data) {
-            this.a1 = data[0], this.a2_100 = data[1], this.a3_100 = data[2], this.x1 = data[3], this.y1 = data[4], this.x2 = data[5], this.y2 = data[6], this.x3 = data[7], this.y3 = data[8], this.x4 = data[9], this.y4 = data[10];
-            this.kirikuchiAdjustment = Math.floor(this.a2_100 / 100) % 10;
-            this.tateAdjustment = Math.floor(this.a2_100 / 1000) % 10;
-            this.opt3 = Math.floor(this.a2_100 / 10000);
-            this.a2_100 %= 100;
-            this.haneAdjustment = this.urokoAdjustment = this.kakatoAdjustment = Math.floor(this.a3_100 / 100) % 10;
-            this.mageAdjustment = Math.floor(this.a3_100 / 1000);
-            this.a3_100 %= 100;
-        }
-        Stroke.prototype.getControlSegments = function () {
-            var res = [];
-            switch (this.a1) {
-                case 0:
-                case 8:
-                case 9:
-                    break;
-                case 6:
-                case 7:
-                    res.unshift([this.x3, this.y3, this.x4, this.y4]);
-                // falls through
-                case 2:
-                case 12:
-                case 3:
-                case 4:
-                    res.unshift([this.x2, this.y2, this.x3, this.y3]);
-                // falls through
-                default:
-                    res.unshift([this.x1, this.y1, this.x2, this.y2]);
-            }
-            return res;
-        };
-        Stroke.prototype.stretch = function (sx, sx2, sy, sy2, bminX, bmaxX, bminY, bmaxY) {
-            this.x1 = stretch(sx, sx2, this.x1, bminX, bmaxX);
-            this.y1 = stretch(sy, sy2, this.y1, bminY, bmaxY);
-            this.x2 = stretch(sx, sx2, this.x2, bminX, bmaxX);
-            this.y2 = stretch(sy, sy2, this.y2, bminY, bmaxY);
-            if (this.a1 !== 99) { // always true
-                this.x3 = stretch(sx, sx2, this.x3, bminX, bmaxX);
-                this.y3 = stretch(sy, sy2, this.y3, bminY, bmaxY);
-                this.x4 = stretch(sx, sx2, this.x4, bminX, bmaxX);
-                this.y4 = stretch(sy, sy2, this.y4, bminY, bmaxY);
-            }
-        };
-        Stroke.prototype.getBox = function () {
-            var minX = Infinity;
-            var minY = Infinity;
-            var maxX = -Infinity;
-            var maxY = -Infinity;
-            switch (this.a1) {
-                default:
-                    minX = Math.min(minX, this.x4);
-                    maxX = Math.max(maxX, this.x4);
-                    minY = Math.min(minY, this.y4);
-                    maxY = Math.max(maxY, this.y4);
-                // falls through
-                case 2:
-                case 3:
-                case 4:
-                    minX = Math.min(minX, this.x3);
-                    maxX = Math.max(maxX, this.x3);
-                    minY = Math.min(minY, this.y3);
-                    maxY = Math.max(maxY, this.y3);
-                // falls through
-                case 1:
-                case 99: // unnecessary?
-                    minX = Math.min(minX, this.x1, this.x2);
-                    maxX = Math.max(maxX, this.x1, this.x2);
-                    minY = Math.min(minY, this.y1, this.y2);
-                    maxY = Math.max(maxY, this.y1, this.y2);
-                // falls through
-                case 0:
-            }
-            return { minX: minX, maxX: maxX, minY: minY, maxY: maxY };
-        };
-        return Stroke;
-    }());
-
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    var hypot = Math.hypot || (function (x, y) { return Math.sqrt(x * x + y * y); });
-    /** Calculates a new vector with the same angle and a new magnitude. */
+    /** @internal */
+    var hypot = Math.hypot ? Math.hypot.bind(Math) : (function (x, y) { return Math.sqrt(x * x + y * y); });
+    /**
+     * Calculates a new vector with the same angle and a new magnitude.
+     * @internal
+     */
     function normalize(_a, magnitude) {
         var x = _a[0], y = _a[1];
         if (magnitude === void 0) { magnitude = 1; }
@@ -241,22 +198,30 @@ var Kage = (function () {
         var k = magnitude / hypot(x, y);
         return [x * k, y * k];
     }
+    /** @internal */
     function quadraticBezier(p1, p2, p3, t) {
         var s = 1 - t;
         return (s * s) * p1 + 2 * (s * t) * p2 + (t * t) * p3;
     }
-    /** Returns d/dt(quadraticBezier) */
+    /**
+     * Returns d/dt(quadraticBezier)
+     * @internal
+     */
     function quadraticBezierDeriv(p1, p2, p3, t) {
         // const s = 1 - t;
         // ds/dt = -1
         // return (-2 * s) * p1 + 2 * (s - t) * p2 + (2 * t) * p3;
         return 2 * (t * (p1 - 2 * p2 + p3) - p1 + p2);
     }
+    /** @internal */
     function cubicBezier(p1, p2, p3, p4, t) {
         var s = 1 - t;
         return (s * s * s) * p1 + 3 * (s * s * t) * p2 + 3 * (s * t * t) * p3 + (t * t * t) * p4;
     }
-    /** Returns d/dt(cubicBezier) */
+    /**
+     * Returns d/dt(cubicBezier)
+     * @internal
+     */
     function cubicBezierDeriv(p1, p2, p3, p4, t) {
         // const s = 1 - t;
         // ds/dt = -1
@@ -266,7 +231,10 @@ var Kage = (function () {
         // return (-3 * ss) * p1 + 3 * (ss - 2 * st) * p2 + 3 * (2 * st - tt) * p3 + (3 * tt) * p4;
         return 3 * (t * (t * (-p1 + 3 * p2 - 3 * p3 + p4) + 2 * (p1 - 2 * p2 + p3)) - p1 + p2);
     }
-    /** Find the minimum of a function by ternary search. */
+    /**
+     * Find the minimum of a function by ternary search.
+     * @internal
+     */
     function ternarySearchMin(func, left, right, eps) {
         if (eps === void 0) { eps = 1E-5; }
         while (left + eps < right) {
@@ -283,6 +251,7 @@ var Kage = (function () {
         }
         return left + (right - left) / 2;
     }
+    /** @internal */
     function round(v, rate) {
         if (rate === void 0) { rate = 1E8; }
         return Math.round(v * rate) / rate;
@@ -313,6 +282,7 @@ var Kage = (function () {
     // 	}
     // 	return new Point((c1 * b2 - c2 * b1) / temp, (a1 * c2 - a2 * c1) / temp);
     // }
+    /** @internal */
     function isCross(x11, y11, x12, y12, x21, y21, x22, y22) {
         var cross_1112_2122 = cross(x12 - x11, y12 - y11, x22 - x21, y22 - y21);
         if (isNaN(cross_1112_2122)) {
@@ -328,6 +298,7 @@ var Kage = (function () {
         var cross_2122_2112 = cross(x22 - x21, y22 - y21, x12 - x21, y12 - y21);
         return round(cross_1112_1121 * cross_1112_1122, 1E5) <= 0 && round(cross_2122_2111 * cross_2122_2112, 1E5) <= 0;
     }
+    /** @internal */
     function isCrossBox(x1, y1, x2, y2, bx1, by1, bx2, by2) {
         if (isCross(x1, y1, x2, y2, bx1, by1, bx2, by1)) {
             return true;
@@ -343,21 +314,144 @@ var Kage = (function () {
         }
         return false;
     }
-    function isCrossBoxWithOthers(strokesArray, i, bx1, by1, bx2, by2) {
-        return strokesArray.some(function (stroke, j) { return (i !== j
-            && stroke.getControlSegments().some(function (_a) {
-                var x1 = _a[0], y1 = _a[1], x2 = _a[2], y2 = _a[3];
-                return (isCrossBox(x1, y1, x2, y2, bx1, by1, bx2, by2));
-            })); });
+
+    function stretch(dp, sp, p, min, max) {
+        var p1;
+        var p2;
+        var p3;
+        var p4;
+        if (p < sp + 100) {
+            p1 = min;
+            p3 = min;
+            p2 = sp + 100;
+            p4 = dp + 100;
+        }
+        else {
+            p1 = sp + 100;
+            p3 = dp + 100;
+            p2 = max;
+            p4 = max;
+        }
+        return Math.floor(((p - p1) / (p2 - p1)) * (p4 - p3) + p3);
     }
-    function isCrossWithOthers(strokesArray, i, bx1, by1, bx2, by2) {
-        return strokesArray.some(function (stroke, j) { return (i !== j
-            && stroke.getControlSegments().some(function (_a) {
+    /** @internal */
+    var Stroke = /** @class */ (function () {
+        function Stroke(data) {
+            this.a1_100 = data[0], this.a2_100 = data[1], this.a3_100 = data[2], this.x1 = data[3], this.y1 = data[4], this.x2 = data[5], this.y2 = data[6], this.x3 = data[7], this.y3 = data[8], this.x4 = data[9], this.y4 = data[10];
+            this.a1_opt = Math.floor(this.a1_100 / 100);
+            this.a1_100 %= 100;
+            this.a2_opt = Math.floor(this.a2_100 / 100);
+            this.a2_100 %= 100;
+            this.a2_opt_1 = this.a2_opt % 10;
+            this.a2_opt_2 = Math.floor(this.a2_opt / 10) % 10;
+            this.a2_opt_3 = Math.floor(this.a2_opt / 100);
+            this.a3_opt = Math.floor(this.a3_100 / 100);
+            this.a3_100 %= 100;
+            this.a3_opt_1 = this.a3_opt % 10;
+            this.a3_opt_2 = Math.floor(this.a3_opt / 10);
+        }
+        Stroke.prototype.getControlSegments = function () {
+            var res = [];
+            var a1 = this.a1_opt === 0
+                ? this.a1_100
+                : 1; // ?????
+            switch (a1) {
+                case 0:
+                case 8:
+                case 9:
+                    break;
+                case 6:
+                case 7:
+                    res.unshift([this.x3, this.y3, this.x4, this.y4]);
+                // falls through
+                case 2:
+                case 12:
+                case 3:
+                case 4:
+                    res.unshift([this.x2, this.y2, this.x3, this.y3]);
+                // falls through
+                default:
+                    res.unshift([this.x1, this.y1, this.x2, this.y2]);
+            }
+            return res;
+        };
+        Stroke.prototype.isCross = function (bx1, by1, bx2, by2) {
+            return this.getControlSegments().some(function (_a) {
                 var x1 = _a[0], y1 = _a[1], x2 = _a[2], y2 = _a[3];
                 return (isCross(x1, y1, x2, y2, bx1, by1, bx2, by2));
-            })); });
-    }
+            });
+        };
+        Stroke.prototype.isCrossBox = function (bx1, by1, bx2, by2) {
+            return this.getControlSegments().some(function (_a) {
+                var x1 = _a[0], y1 = _a[1], x2 = _a[2], y2 = _a[3];
+                return (isCrossBox(x1, y1, x2, y2, bx1, by1, bx2, by2));
+            });
+        };
+        Stroke.prototype.stretch = function (sx, sx2, sy, sy2, bminX, bmaxX, bminY, bmaxY) {
+            this.x1 = stretch(sx, sx2, this.x1, bminX, bmaxX);
+            this.y1 = stretch(sy, sy2, this.y1, bminY, bmaxY);
+            this.x2 = stretch(sx, sx2, this.x2, bminX, bmaxX);
+            this.y2 = stretch(sy, sy2, this.y2, bminY, bmaxY);
+            if (!(this.a1_100 === 99 && this.a1_opt === 0)) { // always true
+                this.x3 = stretch(sx, sx2, this.x3, bminX, bmaxX);
+                this.y3 = stretch(sy, sy2, this.y3, bminY, bmaxY);
+                this.x4 = stretch(sx, sx2, this.x4, bminX, bmaxX);
+                this.y4 = stretch(sy, sy2, this.y4, bminY, bmaxY);
+            }
+        };
+        Stroke.prototype.getBox = function () {
+            var minX = Infinity;
+            var minY = Infinity;
+            var maxX = -Infinity;
+            var maxY = -Infinity;
+            var a1 = this.a1_opt === 0
+                ? this.a1_100
+                : 6; // ?????
+            switch (a1) {
+                default:
+                    minX = Math.min(minX, this.x4);
+                    maxX = Math.max(maxX, this.x4);
+                    minY = Math.min(minY, this.y4);
+                    maxY = Math.max(maxY, this.y4);
+                // falls through
+                case 2:
+                case 3:
+                case 4:
+                    minX = Math.min(minX, this.x3);
+                    maxX = Math.max(maxX, this.x3);
+                    minY = Math.min(minY, this.y3);
+                    maxY = Math.max(maxY, this.y3);
+                // falls through
+                case 1:
+                case 99: // unnecessary?
+                    minX = Math.min(minX, this.x1, this.x2);
+                    maxX = Math.max(maxX, this.x1, this.x2);
+                    minY = Math.min(minY, this.y1, this.y2);
+                    maxY = Math.max(maxY, this.y1, this.y2);
+                // falls through
+                case 0:
+            }
+            return { minX: minX, maxX: maxX, minY: minY, maxY: maxY };
+        };
+        return Stroke;
+    }());
 
+    /** Enum of the supported fonts. */
+    var KShotai;
+    (function (KShotai) {
+        /**
+         * Mincho style font.
+         * @see {@link Mincho} for its corresponding font class.
+         */
+        KShotai[KShotai["kMincho"] = 0] = "kMincho";
+        /**
+         * Gothic style font.
+         * @see {@link Gothic} for its corresponding font class.
+         */
+        KShotai[KShotai["kGothic"] = 1] = "kGothic";
+    })(KShotai || (KShotai = {}));
+
+    /** @internal */
     function divide_curve(x1, y1, sx1, sy1, x2, y2, curve) {
         var rate = 0.5;
         var cut = Math.floor(curve.length * rate);
@@ -375,6 +469,7 @@ var Kage = (function () {
         };
     }
     // ------------------------------------------------------------------
+    /** @internal */
     function find_offcurve(curve, sx, sy) {
         var _a = curve[0], nx1 = _a[0], ny1 = _a[1];
         var _b = curve[curve.length - 1], nx2 = _b[0], ny2 = _b[1];
@@ -392,6 +487,7 @@ var Kage = (function () {
         return [nx1, ny1, minx, miny, nx2, ny2];
     }
     // ------------------------------------------------------------------
+    /** @internal */
     function generateFattenCurve(x1, y1, sx1, sy1, sx2, sy2, x2, y2, kRate, widthFunc, normalize_) {
         if (normalize_ === void 0) { normalize_ = normalize; }
         var curve = { left: [], right: [] };
@@ -427,9 +523,20 @@ var Kage = (function () {
         return curve;
     }
 
+    /**
+     * Represents a single contour of a rendered glyph.
+     *
+     * A contour that a Polygon represents is a closed curve made up of straight line
+     * segments or quadratic Bézier curve segments. A Polygon is represented as a
+     * series of {@link Point}'s, each of which is an on-curve point or an off-curve
+     * point. Two consecutive on-curve points define a line segment. A sequence of
+     * two on-curve points with an off-curve point in between defines a curve segment.
+     * The last point and the first point of a Polygon define a line segment that closes
+     * the loop (if the two points differ).
+     */
     var Polygon = /** @class */ (function () {
         function Polygon(param) {
-            var _this = this;
+            this._precision = 10;
             // property
             this._array = [];
             // initialize
@@ -440,15 +547,48 @@ var Kage = (function () {
                     }
                 }
                 else {
-                    param.forEach(function (_a) {
-                        var x = _a.x, y = _a.y, off = _a.off;
-                        _this.push(x, y, off);
-                    });
+                    for (var _i = 0, param_1 = param; _i < param_1.length; _i++) {
+                        var _a = param_1[_i], x = _a.x, y = _a.y, off = _a.off;
+                        this.push(x, y, off);
+                    }
                 }
             }
         }
         Object.defineProperty(Polygon.prototype, "array", {
-            // resolution : 0.1
+            /**
+             * A read-only array consisting of the points in this contour.
+             *
+             * Modifications to this array do NOT affect the contour;
+             * call {@link set} method to modify the contour.
+             *
+             * @example
+             * ```ts
+             * for (const point of polygon.array) {
+             * 	// ...
+             * }
+             * ```
+             *
+             * Note that the computation of coordinates of all the points is performed
+             * every time this property is accessed. To get a better performance, consider
+             * caching the result in a variable when you need to access the array repeatedly.
+             * ```ts
+             * // DO:
+             * const array = polygon.array;
+             * for (let i = 0; i < array.length; i++) {
+             * 	const point = array[i];
+             * 	// ...
+             * }
+             *
+             * // DON'T:
+             * for (let i = 0; i < polygon.array.length; i++) {
+             * 	const point = polygon.array[i];
+             * 	// ...
+             * }
+             * ```
+             *
+             * @see {@link Polygon.length} is faster if you only need the length.
+             * @see {@link Polygon.get} is faster if you need just one element.
+             */
             get: function () {
                 var _this = this;
                 return this._array.map(function (_, i) { return _this.get(i); });
@@ -457,6 +597,8 @@ var Kage = (function () {
             configurable: true
         });
         Object.defineProperty(Polygon.prototype, "length", {
+            /** The number of points in this contour. */
+            // Added by @kurgm
             get: function () {
                 return this._array.length;
             },
@@ -464,117 +606,323 @@ var Kage = (function () {
             configurable: true
         });
         // method
+        /**
+         * Appends a point at the end of its contour.
+         * @param x The x-coordinate of the appended point.
+         * @param y The y-coordiante of the appended point.
+         * @param off Whether the appended point is an off-curve point. Defaults to `false`.
+         */
         Polygon.prototype.push = function (x, y, off) {
             if (off === void 0) { off = false; }
-            this._array.push({ x: x, y: y, off: off });
+            this._array.push(this.createInternalPoint(x, y, off));
         };
+        /**
+         * Appends a point at the end of its contour.
+         * @param point The appended point.
+         * @internal
+         */
+        // Added by @kurgm
+        Polygon.prototype.pushPoint = function (point) {
+            this.push(point.x, point.y, point.off);
+        };
+        /**
+         * Mutates a point in its contour.
+         * @param index The index in the contour of the point to be mutated.
+         * @param x The new x-coordinate of the point.
+         * @param y The new y-coordinate of the point.
+         * @param off Whether the new point is an off-curve point. Defaults to `false`.
+         */
         Polygon.prototype.set = function (index, x, y, off) {
             if (off === void 0) { off = false; }
-            this._array[index].x = x;
-            this._array[index].y = y;
-            this._array[index].off = off;
+            this._array[index] = this.createInternalPoint(x, y, off);
         };
+        /**
+         * Mutates a point in its contour.
+         * @param index The index in the contour of the point to be mutated.
+         * @param point A point of the new coordinate values. Omitting `off` property makes
+         *     the point an on-curve point (as if `off: false` were specified).
+         * @internal
+         */
+        // Added by @kurgm
+        Polygon.prototype.setPoint = function (index, point) {
+            this.set(index, point.x, point.y, point.off);
+        };
+        /**
+         * Retrieves a point in its contour. If the index is out of bounds,
+         * throws an error.
+         * @param index The index in the contour of the point to be retrieved.
+         * @returns A read-only point object. Modifications made to the returned
+         *     object do NOT affect the values of the point in the contour;
+         *     call {@link set} method to modify the contour.
+         * @example
+         * ```ts
+         * for (let i = 0; i < polygon.length; i++) {
+         * 	const point = polygon.get(i);
+         * 	// ...
+         * }
+         * ```
+         */
+        // Added by @kurgm
         Polygon.prototype.get = function (index) {
             var _a = this._array[index], x = _a.x, y = _a.y, off = _a.off;
+            if (this._precision === 0) {
+                return { x: x, y: y, off: off };
+            }
             return {
-                x: Math.floor(x * 10) / 10,
-                y: Math.floor(y * 10) / 10,
+                x: x / this._precision,
+                y: y / this._precision,
                 off: off,
             };
         };
+        /**
+         * Reverses the points in its contour.
+         */
         Polygon.prototype.reverse = function () {
             this._array.reverse();
         };
+        /**
+         * Appends the points in the contour of another {@link Polygon} at the end of
+         * this contour. The other Polygon is not mutated.
+         * @param poly The other {@link Polygon} to be appended.
+         */
         Polygon.prototype.concat = function (poly) {
+            if (this._precision !== poly._precision) {
+                throw new TypeError("Cannot concat polygon's with different precisions");
+            }
             this._array = this._array.concat(poly._array);
         };
+        /**
+         * Removes the first point in its contour. If there are no points in the contour,
+         * nothing is performed.
+         */
         Polygon.prototype.shift = function () {
             this._array.shift();
         };
+        /**
+         * Inserts a new point at the start of its contour.
+         * @param x The x-coordinate of the inserted point.
+         * @param y The y-coordiante of the inserted point.
+         * @param off Whether the inserted point is an off-curve point. Defaults to `false`.
+         */
         Polygon.prototype.unshift = function (x, y, off) {
             if (off === void 0) { off = false; }
-            this._array.unshift({ x: x, y: y, off: off });
-        };
-        Polygon.prototype.clone = function () {
-            var newpolygon = new Polygon();
-            this._array.forEach(function (_a) {
-                var x = _a.x, y = _a.y, off = _a.off;
-                newpolygon.push(x, y, off);
-            });
-            return newpolygon;
-        };
-        Polygon.prototype.translate = function (dx, dy) {
-            this._array.forEach(function (point) {
-                point.x += dx;
-                point.y += dy;
-            });
-            return this; // for chaining
-        };
-        Polygon.prototype.transformMatrix = function (a, b, c, d) {
-            this._array.forEach(function (point) {
-                var x = point.x, y = point.y;
-                point.x = a * x + b * y;
-                point.y = c * x + d * y;
-            });
-            return this; // for chaining
+            this._array.unshift(this.createInternalPoint(x, y, off));
         };
         /**
-         * Scales by hypot(x, y) and rotates by atan2(y, x). Corresponds to multiplying x+yi on complex plane.
+         * Creates a deep copy of this Polygon.
+         * @returns A new {@link Polygon} instance.
          */
-        Polygon.prototype.transformMatrix2 = function (x, y) {
-            return this.transformMatrix(x, -y, y, x);
+        // Added by @kurgm
+        Polygon.prototype.clone = function () {
+            return new Polygon(this.array);
         };
-        Polygon.prototype.scale = function (factor) {
-            this._array.forEach(function (point) {
-                point.x *= factor;
-                point.y *= factor;
-            });
-            return this; // for chaining
+        Polygon.prototype.createInternalPoint = function (x, y, off) {
+            if (off === void 0) { off = false; }
+            if (this._precision === 0) {
+                return { x: x, y: y, off: off };
+            }
+            return {
+                x: x * this._precision,
+                y: y * this._precision,
+                off: off,
+            };
         };
+        /**
+         * Translates the whole polygon by the given amount.
+         * @param dx The x-amount of translation.
+         * @param dy The y-amount of translation.
+         * @returns This object (for chaining).
+         * @internal
+         */
+        // Added by @kurgm
+        Polygon.prototype.translate = function (dx, dy) {
+            if (this._precision !== 0) {
+                dx *= this._precision;
+                dy *= this._precision;
+            }
+            for (var _i = 0, _a = this._array; _i < _a.length; _i++) {
+                var point = _a[_i];
+                point.x += dx;
+                point.y += dy;
+            }
+            return this;
+        };
+        /**
+         * Flips the sign of the x-coordinate of each point in the contour.
+         * @returns This object (for chaining).
+         * @internal
+         */
+        // Added by @kurgm
         Polygon.prototype.reflectX = function () {
-            this._array.forEach(function (point) {
+            for (var _i = 0, _a = this._array; _i < _a.length; _i++) {
+                var point = _a[_i];
                 point.x *= -1;
-            });
-            return this; // for chaining
+            }
+            return this;
         };
+        /**
+         * Flips the sign of the y-coordinate of each point in the contour.
+         * @returns This object (for chaining).
+         * @internal
+         */
+        // Added by @kurgm
         Polygon.prototype.reflectY = function () {
-            this._array.forEach(function (point) {
+            for (var _i = 0, _a = this._array; _i < _a.length; _i++) {
+                var point = _a[_i];
                 point.y *= -1;
-            });
-            return this; // for chaining
+            }
+            return this;
         };
+        /**
+         * Rotates the whole polygon by 90 degrees clockwise.
+         * @returns This object (for chaining).
+         * @internal
+         */
+        // Added by @kurgm
         Polygon.prototype.rotate90 = function () {
-            this._array.forEach(function (point) {
+            for (var _i = 0, _a = this._array; _i < _a.length; _i++) {
+                var point = _a[_i];
                 var x = point.x, y = point.y;
                 point.x = -y;
                 point.y = x;
-            });
+            }
             return this;
         };
+        /**
+         * Rotates the whole polygon by 180 degrees.
+         * {@link scale}(-1).
+         * @returns This object (for chaining).
+         * @internal
+         */
+        // Added by @kurgm
         Polygon.prototype.rotate180 = function () {
-            return this.scale(-1); // for chaining
+            for (var _i = 0, _a = this._array; _i < _a.length; _i++) {
+                var point = _a[_i];
+                point.x *= -1;
+                point.y *= -1;
+            }
+            return this;
         };
+        /**
+         * Rotates the whole polygon by 270 degrees clockwise.
+         * @returns This object (for chaining).
+         * @internal
+         */
+        // Added by @kurgm
         Polygon.prototype.rotate270 = function () {
-            this._array.forEach(function (point) {
+            for (var _i = 0, _a = this._array; _i < _a.length; _i++) {
+                var point = _a[_i];
                 var x = point.x, y = point.y;
                 point.x = y;
                 point.y = -x;
-            });
+            }
             return this;
         };
-        // for backward compatibility...
+        /**
+         * @returns This object (for chaining).
+         * @internal
+         */
+        // Added by @kurgm
         Polygon.prototype.floor = function () {
-            this._array.forEach(function (point) {
+            if (this._precision === 0) {
+                return this;
+            }
+            for (var _i = 0, _a = this._array; _i < _a.length; _i++) {
+                var point = _a[_i];
                 var x = point.x, y = point.y;
                 point.x = Math.floor(x);
                 point.y = Math.floor(y);
-            });
+            }
             return this;
         };
         return Polygon;
     }());
+    (function () {
+        if (typeof Symbol !== "undefined" && Symbol.iterator) {
+            Polygon.prototype[Symbol.iterator] = function () {
+                var _this = this;
+                var i = 0;
+                return {
+                    next: function () {
+                        if (i < _this._array.length) {
+                            return {
+                                done: false,
+                                value: _this.get(i++),
+                            };
+                        }
+                        return { done: true, value: undefined };
+                    },
+                };
+            };
+        }
+    })();
 
-    function cdDrawCurveU(font, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, ta2, opt1, haneAdjustment, opt3, opt4) {
+    /**
+     * Calculates global coordinates from local coordinates around a pen
+     * using its position and direction.
+     * @internal
+     */
+    var Pen = /** @class */ (function () {
+        function Pen(x, y) {
+            this.cos_theta = 1;
+            this.sin_theta = 0;
+            this.x = x;
+            this.y = y;
+        }
+        Pen.prototype.setMatrix2 = function (cos_theta, sin_theta) {
+            this.cos_theta = cos_theta;
+            this.sin_theta = sin_theta;
+            return this;
+        };
+        Pen.prototype.setLeft = function (otherX, otherY) {
+            var _a = normalize([otherX - this.x, otherY - this.y]), dx = _a[0], dy = _a[1];
+            // Given: rotate(theta)((-1, 0)) = (dx, dy)
+            // Determine: (cos theta, sin theta) = rotate(theta)((1, 0))
+            // = (-dx, -dy)
+            this.setMatrix2(-dx, -dy);
+            return this;
+        };
+        Pen.prototype.setRight = function (otherX, otherY) {
+            var _a = normalize([otherX - this.x, otherY - this.y]), dx = _a[0], dy = _a[1];
+            this.setMatrix2(dx, dy);
+            return this;
+        };
+        Pen.prototype.setUp = function (otherX, otherY) {
+            var _a = normalize([otherX - this.x, otherY - this.y]), dx = _a[0], dy = _a[1];
+            // Given: rotate(theta)((0, -1)) = (dx, dy)
+            // Determine: (cos theta, sin theta) = rotate(theta)((1, 0))
+            // = (-dy, dx)
+            this.setMatrix2(-dy, dx);
+            return this;
+        };
+        Pen.prototype.setDown = function (otherX, otherY) {
+            var _a = normalize([otherX - this.x, otherY - this.y]), dx = _a[0], dy = _a[1];
+            this.setMatrix2(dy, -dx);
+            return this;
+        };
+        Pen.prototype.move = function (localDx, localDy) {
+            var _a;
+            (_a = this.getPoint(localDx, localDy), this.x = _a.x, this.y = _a.y);
+            return this;
+        };
+        Pen.prototype.getPoint = function (localX, localY, off) {
+            return {
+                x: this.x + this.cos_theta * localX + -this.sin_theta * localY,
+                y: this.y + this.sin_theta * localX + this.cos_theta * localY,
+                off: off,
+            };
+        };
+        Pen.prototype.getPolygon = function (localPoints) {
+            var _this = this;
+            return new Polygon(localPoints.map(function (_a) {
+                var x = _a.x, y = _a.y, off = _a.off;
+                return _this.getPoint(x, y, off);
+            }));
+        };
+        return Pen;
+    }());
+
+    function cdDrawCurveU$1(font, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, ta2, opt1, haneAdjustment, opt3, opt4) {
         var a1 = ta1;
         var a2 = ta2;
         var kMinWidthT = font.kMinWidthT - opt1 / 2;
@@ -607,10 +955,12 @@ var Kage = (function () {
             y1 += dy1;
         }
         var cornerOffset = 0;
-        var contourLength = hypot(sx1 - x1, sy1 - y1) + hypot(sx2 - sx1, sy2 - sy1) + hypot(x2 - sx2, y2 - sy2);
-        if ((a1 === 22 || a1 === 27) && a2 === 7 && contourLength < 100) {
-            cornerOffset = (kMinWidthT > 6) ? (kMinWidthT - 6) * ((100 - contourLength) / 100) : 0;
-            x1 += cornerOffset;
+        if ((a1 === 22 || a1 === 27) && a2 === 7 && kMinWidthT > 6) {
+            var contourLength = hypot(sx1 - x1, sy1 - y1) + hypot(sx2 - sx1, sy2 - sy1) + hypot(x2 - sx2, y2 - sy2);
+            if (contourLength < 100) {
+                cornerOffset = (kMinWidthT - 6) * ((100 - contourLength) / 100);
+                x1 += cornerOffset;
+            }
         }
         var delta2;
         switch (a2 % 100) {
@@ -739,6 +1089,8 @@ var Kage = (function () {
             }
             // suiheisen ni setsuzoku
             if (a1 === 132 || a1 === 22 && (isQuadratic ? (y1 > y2) : (x1 > sx1))) { // ?????
+                poly.floor();
+                poly2.floor();
                 for (var index = 0, length_1 = poly2.length; index + 1 < length_1; index++) {
                     var point1 = poly2.get(index);
                     var point2 = poly2.get(index + 1);
@@ -769,22 +1121,24 @@ var Kage = (function () {
         // process for head of stroke
         switch (a1) {
             case 12: {
-                var _m = (x1 === sx1)
-                    ? [0, 1] // ?????
-                    : normalize([sx1 - x1, sy1 - y1]), dx = _m[0], dy = _m[1];
-                var poly = new Polygon([
+                var pen1 = new Pen(x1, y1);
+                if (x1 !== sx1) { // ?????
+                    pen1.setDown(sx1, sy1);
+                }
+                var poly = pen1.getPolygon([
                     { x: -kMinWidthT, y: 0 },
                     { x: +kMinWidthT, y: 0 },
                     { x: -kMinWidthT, y: -kMinWidthT },
-                ]).rotate270().transformMatrix2(dx, dy).translate(x1, y1);
+                ]);
                 polygons.push(poly);
                 break;
             }
             case 0: {
-                var _o = (x1 === sx1)
-                    ? [0, 1] // ?????
-                    : normalize([sx1 - x1, sy1 - y1]), XX = _o[0], XY = _o[1];
                 if (y1 <= y2) { // from up to bottom
+                    var pen1 = new Pen(x1, y1);
+                    if (x1 !== sx1) { // ?????
+                        pen1.setDown(sx1, sy1);
+                    }
                     var type = Math.atan2(Math.abs(y1 - sy1), Math.abs(x1 - sx1)) / Math.PI * 2 - 0.4;
                     if (type > 0) {
                         type *= 2;
@@ -793,47 +1147,52 @@ var Kage = (function () {
                         type *= 16;
                     }
                     var pm = type < 0 ? -1 : 1;
-                    var poly = new Polygon([
+                    var poly = pen1.getPolygon([
                         { x: -kMinWidthT, y: 1 },
                         { x: +kMinWidthT, y: 0 },
                         { x: -pm * kMinWidthT, y: -font.kMinWidthY * Math.abs(type) },
-                    ]).rotate270().transformMatrix2(XX, XY).translate(x1, y1);
+                    ]);
                     // if(x1 > x2){
                     //  poly.reverse();
                     // }
                     polygons.push(poly);
                     // beginning of the stroke
                     var move = type < 0 ? -type * font.kMinWidthY : 0;
-                    var poly2 = new Polygon();
-                    poly2.push(kMinWidthT, -move);
-                    if (x1 === sx1 && y1 === sy1) { // ?????
-                        // type === -6.4 && pm === -1 && move === 6.4 * font.kMinWidthY
-                        poly2.push(kMinWidthT * 1.5, font.kMinWidthY - move);
-                        poly2.push(kMinWidthT - 2, font.kMinWidthY * 2 + 1);
-                    }
-                    else {
-                        poly2.push(kMinWidthT * 1.5, font.kMinWidthY - move * 1.2);
-                        poly2.push(kMinWidthT - 2, font.kMinWidthY * 2 - move * 0.8 + 1);
-                        // if(x1 < x2){
-                        //  poly2.reverse();
-                        // }
-                    }
-                    poly2.rotate270().transformMatrix2(XX, XY).translate(x1, y1);
+                    var poly2 = pen1.getPolygon((x1 === sx1 && y1 === sy1) // ?????
+                        ? [
+                            { x: kMinWidthT, y: -move },
+                            { x: kMinWidthT * 1.5, y: font.kMinWidthY - move },
+                            { x: kMinWidthT - 2, y: font.kMinWidthY * 2 + 1 },
+                        ]
+                        : [
+                            { x: kMinWidthT, y: -move },
+                            { x: kMinWidthT * 1.5, y: font.kMinWidthY - move * 1.2 },
+                            { x: kMinWidthT - 2, y: font.kMinWidthY * 2 - move * 0.8 + 1 },
+                            // if(x1 < x2){
+                            //  poly2.reverse();
+                            // }
+                        ]);
                     polygons.push(poly2);
                 }
                 else { // bottom to up
-                    var poly = new Polygon([
+                    var pen1 = new Pen(x1, y1);
+                    if (x1 === sx1) {
+                        pen1.setMatrix2(0, 1); // ?????
+                    }
+                    else {
+                        pen1.setRight(sx1, sy1);
+                    }
+                    var poly = pen1.getPolygon([
                         { x: 0, y: +kMinWidthT },
                         { x: 0, y: -kMinWidthT },
                         { x: -font.kMinWidthY, y: -kMinWidthT },
                     ]);
-                    poly.transformMatrix2(XX, XY).translate(x1, y1);
                     // if(x1 < x2){
                     //  poly.reverse();
                     // }
                     polygons.push(poly);
                     // beginning of the stroke
-                    var poly2 = new Polygon([
+                    var poly2 = pen1.getPolygon([
                         { x: 0, y: +kMinWidthT },
                         { x: +font.kMinWidthY, y: +kMinWidthT * 1.5 },
                         { x: +font.kMinWidthY * 3, y: +kMinWidthT * 0.5 },
@@ -841,14 +1200,13 @@ var Kage = (function () {
                     // if(x1 < x2){
                     //  poly2.reverse();
                     // }
-                    poly2.transformMatrix2(XX, XY).translate(x1, y1);
                     polygons.push(poly2);
                 }
                 break;
             }
             case 22:
             case 27: { // box's up-right corner, any time same degree
-                var poly = new Polygon([
+                var poly = new Pen(x1 - cornerOffset, y1).getPolygon([
                     { x: -kMinWidthT, y: -font.kMinWidthY },
                     { x: 0, y: -font.kMinWidthY - font.kWidth },
                     { x: +kMinWidthT + font.kWidth, y: +font.kMinWidthY },
@@ -861,7 +1219,6 @@ var Kage = (function () {
                     : [
                         { x: -kMinWidthT, y: +kMinWidthT + 4 },
                     ]));
-                poly.translate(x1 - cornerOffset, y1);
                 polygons.push(poly);
                 break;
             }
@@ -872,12 +1229,14 @@ var Kage = (function () {
             case 8:
             case 15: { // the last filled circle ... it can change 15->5
                 var kMinWidthT2 = font.kMinWidthT - opt4 / 2;
-                var _p = (sx2 === x2)
-                    ? [0, 1] // ?????
-                    : (sy2 === y2)
-                        ? [1, 0] // ?????
-                        : normalize([x2 - sx2, y2 - sy2]), dx = _p[0], dy = _p[1];
-                var poly = new Polygon((font.kUseCurve)
+                var pen2 = new Pen(x2, y2);
+                if (sx2 === x2) {
+                    pen2.setMatrix2(0, 1); // ?????
+                }
+                else if (sy2 !== y2) { // ?????
+                    pen2.setLeft(sx2, sy2);
+                }
+                var poly = pen2.getPolygon((font.kUseCurve)
                     ? // by curve path
                         [
                             { x: 0, y: -kMinWidthT2 },
@@ -897,20 +1256,19 @@ var Kage = (function () {
                 if (sx2 === x2) {
                     poly.reverse();
                 }
-                poly.transformMatrix2(dx, dy).translate(x2, y2);
                 polygons.push(poly);
                 if (a2 === 15) { // jump up ... it can change 15->5
                     // anytime same degree
-                    var poly_1 = new Polygon([
+                    var pen2_r = new Pen(x2, y2);
+                    if (y1 >= y2) {
+                        pen2_r.setMatrix2(-1, 0);
+                    }
+                    var poly_1 = pen2_r.getPolygon([
                         { x: 0, y: -kMinWidthT + 1 },
                         { x: +2, y: -kMinWidthT - font.kWidth * 5 },
                         { x: 0, y: -kMinWidthT - font.kWidth * 5 },
                         { x: -kMinWidthT, y: -kMinWidthT + 1 },
                     ]);
-                    if (y1 >= y2) {
-                        poly_1.rotate180();
-                    }
-                    poly_1.translate(x2, y2);
                     polygons.push(poly_1);
                 }
                 break;
@@ -929,43 +1287,46 @@ var Kage = (function () {
                     type *= 3;
                 }
                 var pm = type < 0 ? -1 : 1;
-                var _q = (sy2 === y2)
-                    ? [1, 0] // ?????
-                    : (sx2 === x2)
-                        ? [0, y2 > sy2 ? -1 : 1] // for backward compatibility...
-                        : normalize([x2 - sx2, y2 - sy2]), dx = _q[0], dy = _q[1];
-                var poly = new Polygon([
+                var pen2 = new Pen(x2, y2);
+                if (sy2 === y2) {
+                    pen2.setMatrix2(1, 0); // ?????
+                }
+                else if (sx2 === x2) {
+                    pen2.setMatrix2(0, y2 > sy2 ? -1 : 1); // for backward compatibility...
+                }
+                else {
+                    pen2.setLeft(sx2, sy2);
+                }
+                var poly = pen2.getPolygon([
                     { x: 0, y: +kMinWidthT * font.kL2RDfatten },
                     { x: 0, y: -kMinWidthT * font.kL2RDfatten },
                     { x: Math.abs(type) * kMinWidthT * font.kL2RDfatten, y: pm * kMinWidthT * font.kL2RDfatten },
                 ]);
-                poly.transformMatrix2(dx, dy).translate(x2, y2);
                 polygons.push(poly);
                 break;
             }
             case 14: { // jump to left, allways go left
                 var jumpFactor = kMinWidthT > 6 ? 6.0 / kMinWidthT : 1.0;
                 var haneLength = font.kWidth * 4 * Math.min(1 - haneAdjustment / 10, Math.pow((kMinWidthT / font.kMinWidthT), 3)) * jumpFactor;
-                var poly = new Polygon([
+                var poly = new Pen(x2, y2).getPolygon([
                     { x: 0, y: 0 },
                     { x: 0, y: -kMinWidthT },
                     { x: -haneLength, y: -kMinWidthT },
                     { x: -haneLength, y: -kMinWidthT * 0.5 },
                 ]);
                 // poly.reverse();
-                poly.translate(x2, y2);
                 polygons.push(poly);
                 break;
             }
         }
     }
-    function cdDrawBezier(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, haneAdjustment, opt3, opt4) {
-        cdDrawCurveU(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, haneAdjustment, opt3, opt4);
+    function cdDrawBezier$1(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, haneAdjustment, opt3, opt4) {
+        cdDrawCurveU$1(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2, opt1, haneAdjustment, opt3, opt4);
     }
-    function cdDrawCurve(font, polygons, x1, y1, x2, y2, x3, y3, a1, a2, opt1, haneAdjustment, opt3, opt4) {
-        cdDrawCurveU(font, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2, opt1, haneAdjustment, opt3, opt4);
+    function cdDrawCurve$1(font, polygons, x1, y1, x2, y2, x3, y3, a1, a2, opt1, haneAdjustment, opt3, opt4) {
+        cdDrawCurveU$1(font, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2, opt1, haneAdjustment, opt3, opt4);
     }
-    function cdDrawLine(font, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, urokoAdjustment, kakatoAdjustment, mageAdjustment) {
+    function cdDrawLine$1(font, polygons, tx1, ty1, tx2, ty2, ta1, ta2, opt1, urokoAdjustment, kakatoAdjustment) {
         var x1 = tx1;
         var y1 = ty1;
         var x2 = tx2;
@@ -980,91 +1341,96 @@ var Kage = (function () {
             var _a = (x1 === x2)
                 ? [0, 1] // ?????
                 : normalize([x2 - x1, y2 - y1]), cosrad = _a[0], sinrad = _a[1];
-            if (!((a2 === 13 || a2 === 23) && mageAdjustment !== 0)) { // for backward compatibility...
-                var poly = new Polygon(4);
-                switch (a1) {
-                    case 0:
-                        poly.set(0, x1 + sinrad * kMinWidthT + cosrad * font.kMinWidthY / 2, y1 - cosrad * kMinWidthT + sinrad * font.kMinWidthY / 2);
-                        poly.set(3, x1 - sinrad * kMinWidthT - cosrad * font.kMinWidthY / 2, y1 + cosrad * kMinWidthT - sinrad * font.kMinWidthY / 2);
-                        break;
-                    case 1:
-                    case 6: // ... no need
-                        poly.set(0, x1 + sinrad * kMinWidthT, y1 - cosrad * kMinWidthT);
-                        poly.set(3, x1 - sinrad * kMinWidthT, y1 + cosrad * kMinWidthT);
-                        break;
-                    case 12:
-                        poly.set(0, x1 + sinrad * kMinWidthT - cosrad * font.kMinWidthY, y1 - cosrad * kMinWidthT - sinrad * font.kMinWidthY);
-                        poly.set(3, x1 - sinrad * kMinWidthT - cosrad * (kMinWidthT + font.kMinWidthY), y1 + cosrad * kMinWidthT - sinrad * (kMinWidthT + font.kMinWidthY));
-                        break;
-                    case 22:
-                        if (x1 === x2) {
-                            poly.set(0, x1 + kMinWidthT, y1);
-                            poly.set(3, x1 - kMinWidthT, y1);
-                        }
-                        else {
-                            var rad = Math.atan((y2 - y1) / (x2 - x1));
-                            var v = x1 > x2 ? -1 : 1;
-                            // TODO: why " + 1" ???
-                            poly.set(0, x1 + (kMinWidthT * v + 1) / Math.sin(rad), y1 + 1);
-                            poly.set(3, x1 - (kMinWidthT * v) / Math.sin(rad), y1);
-                        }
-                        break;
-                    case 32:
-                        if (x1 === x2) {
-                            poly.set(0, x1 + kMinWidthT, y1 - font.kMinWidthY);
-                            poly.set(3, x1 - kMinWidthT, y1 - font.kMinWidthY);
-                        }
-                        else {
-                            poly.set(0, x1 + kMinWidthT / sinrad, y1);
-                            poly.set(3, x1 - kMinWidthT / sinrad, y1);
-                        }
-                        break;
-                }
-                switch (a2) {
-                    case 0:
-                        if (a1 === 6) { // KAGI's tail ... no need
-                            poly.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-                            poly.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
-                        }
-                        else {
-                            poly.set(1, x2 + sinrad * kMinWidthT - cosrad * kMinWidthT / 2, y2 - cosrad * kMinWidthT - sinrad * kMinWidthT / 2);
-                            poly.set(2, x2 - sinrad * kMinWidthT + cosrad * kMinWidthT / 2, y2 + cosrad * kMinWidthT + sinrad * kMinWidthT / 2);
-                        }
-                        break;
-                    case 5:
-                        if (x1 === x2) {
-                            break;
-                        }
-                    // falls through
-                    case 1: // is needed?
-                        poly.set(1, x2 + sinrad * kMinWidthT, y2 - cosrad * kMinWidthT);
-                        poly.set(2, x2 - sinrad * kMinWidthT, y2 + cosrad * kMinWidthT);
-                        break;
-                    case 13:
-                        poly.set(1, x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoL[kakatoAdjustment], y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoL[kakatoAdjustment]);
-                        poly.set(2, x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoL[kakatoAdjustment] + kMinWidthT), y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoL[kakatoAdjustment] + kMinWidthT));
-                        break;
-                    case 23:
-                        poly.set(1, x2 + sinrad * kMinWidthT + cosrad * font.kAdjustKakatoR[kakatoAdjustment], y2 - cosrad * kMinWidthT + sinrad * font.kAdjustKakatoR[kakatoAdjustment]);
-                        poly.set(2, x2 - sinrad * kMinWidthT + cosrad * (font.kAdjustKakatoR[kakatoAdjustment] + kMinWidthT), y2 + cosrad * kMinWidthT + sinrad * (font.kAdjustKakatoR[kakatoAdjustment] + kMinWidthT));
-                        break;
-                    case 24: // for T/H design
-                    case 32:
-                        if (x1 === x2) {
-                            poly.set(1, x2 + kMinWidthT, y2 + font.kMinWidthY);
-                            poly.set(2, x2 - kMinWidthT, y2 + font.kMinWidthY);
-                        }
-                        else {
-                            poly.set(1, x2 + kMinWidthT / sinrad, y2);
-                            poly.set(2, x2 - kMinWidthT / sinrad, y2);
-                        }
-                        break;
-                }
-                polygons.push(poly);
+            var pen1 = new Pen(x1, y1);
+            var pen2 = new Pen(x2, y2);
+            // if (x1 !== x2) { // ?????
+            // 	pen1.setDown(x2, y2);
+            // 	pen2.setUp(x1, y1);
+            // }
+            pen1.setMatrix2(sinrad, -cosrad);
+            pen2.setMatrix2(sinrad, -cosrad);
+            var poly0 = new Polygon(4);
+            switch (a1) {
+                case 0:
+                    poly0.setPoint(0, pen1.getPoint(kMinWidthT, font.kMinWidthY / 2));
+                    poly0.setPoint(3, pen1.getPoint(-kMinWidthT, -font.kMinWidthY / 2));
+                    break;
+                case 1:
+                case 6: // ... no need
+                    poly0.setPoint(0, pen1.getPoint(kMinWidthT, 0));
+                    poly0.setPoint(3, pen1.getPoint(-kMinWidthT, 0));
+                    break;
+                case 12:
+                    poly0.setPoint(0, pen1.getPoint(kMinWidthT, -font.kMinWidthY));
+                    poly0.setPoint(3, pen1.getPoint(-kMinWidthT, -font.kMinWidthY - kMinWidthT));
+                    break;
+                case 22:
+                    if (x1 === x2) {
+                        poly0.set(0, x1 + kMinWidthT, y1);
+                        poly0.set(3, x1 - kMinWidthT, y1);
+                    }
+                    else {
+                        var v = x1 > x2 ? -1 : 1;
+                        // TODO: why " + v", " + 1" ???
+                        poly0.set(0, x1 + (kMinWidthT + v) / sinrad, y1 + 1);
+                        poly0.set(3, x1 - kMinWidthT / sinrad, y1);
+                    }
+                    break;
+                case 32:
+                    if (x1 === x2) {
+                        poly0.set(0, x1 + kMinWidthT, y1 - font.kMinWidthY);
+                        poly0.set(3, x1 - kMinWidthT, y1 - font.kMinWidthY);
+                    }
+                    else {
+                        poly0.set(0, x1 + kMinWidthT / sinrad, y1);
+                        poly0.set(3, x1 - kMinWidthT / sinrad, y1);
+                    }
+                    break;
             }
             switch (a2) {
+                case 0:
+                    if (a1 === 6) { // KAGI's tail ... no need
+                        poly0.setPoint(1, pen2.getPoint(kMinWidthT, 0));
+                        poly0.setPoint(2, pen2.getPoint(-kMinWidthT, 0));
+                    }
+                    else {
+                        poly0.setPoint(1, pen2.getPoint(kMinWidthT, -kMinWidthT / 2));
+                        poly0.setPoint(2, pen2.getPoint(-kMinWidthT, kMinWidthT / 2));
+                    }
+                    break;
+                case 5:
+                    if (x1 === x2) {
+                        break;
+                    }
+                // falls through
+                case 1: // is needed?
+                    poly0.setPoint(1, pen2.getPoint(kMinWidthT, 0));
+                    poly0.setPoint(2, pen2.getPoint(-kMinWidthT, 0));
+                    break;
+                case 13:
+                    poly0.setPoint(1, pen2.getPoint(kMinWidthT, font.kAdjustKakatoL[kakatoAdjustment]));
+                    poly0.setPoint(2, pen2.getPoint(-kMinWidthT, font.kAdjustKakatoL[kakatoAdjustment] + kMinWidthT));
+                    break;
+                case 23:
+                    poly0.setPoint(1, pen2.getPoint(kMinWidthT, font.kAdjustKakatoR[kakatoAdjustment]));
+                    poly0.setPoint(2, pen2.getPoint(-kMinWidthT, font.kAdjustKakatoR[kakatoAdjustment] + kMinWidthT));
+                    break;
+                case 24: // for T/H design
+                case 32:
+                    if (x1 === x2) {
+                        poly0.set(1, x2 + kMinWidthT, y2 + font.kMinWidthY);
+                        poly0.set(2, x2 - kMinWidthT, y2 + font.kMinWidthY);
+                    }
+                    else {
+                        poly0.set(1, x2 + kMinWidthT / sinrad, y2);
+                        poly0.set(2, x2 - kMinWidthT / sinrad, y2);
+                    }
+                    break;
+            }
+            polygons.push(poly0);
+            switch (a2) {
                 case 24: { // for T design
-                    var poly = new Polygon([
+                    var poly = new Pen(x2, y2).getPolygon([
                         { x: 0, y: +font.kMinWidthY },
                         (x1 === x2) // ?????
                             ? { x: +kMinWidthT, y: -font.kMinWidthY * 3 }
@@ -1072,34 +1438,31 @@ var Kage = (function () {
                         { x: +kMinWidthT * 2, y: -font.kMinWidthY },
                         { x: +kMinWidthT * 2, y: +font.kMinWidthY },
                     ]);
-                    poly.translate(x2, y2);
                     polygons.push(poly);
                     break;
                 }
                 case 13:
-                    if (kakatoAdjustment === 4 && mageAdjustment === 0) { // for new GTH box's left bottom corner
+                    if (kakatoAdjustment === 4) { // for new GTH box's left bottom corner
                         if (x1 === x2) {
-                            var poly = new Polygon([
+                            var poly = new Pen(x2, y2).getPolygon([
                                 { x: -kMinWidthT, y: -font.kMinWidthY * 3 },
                                 { x: -kMinWidthT * 2, y: 0 },
                                 { x: -font.kMinWidthY, y: +font.kMinWidthY * 5 },
                                 { x: +kMinWidthT, y: +font.kMinWidthY },
                             ]);
-                            poly.translate(x2, y2);
                             polygons.push(poly);
                         }
                         else { // MUKI KANKEINASHI
                             var m = (x1 > x2 && y1 !== y2)
                                 ? Math.floor((x1 - x2) / (y2 - y1) * 3)
                                 : 0;
-                            var poly = new Polygon([
+                            var poly = new Pen(x2 + m, y2).getPolygon([
                                 { x: 0, y: -font.kMinWidthY * 5 },
                                 { x: -kMinWidthT * 2, y: 0 },
                                 { x: -font.kMinWidthY, y: +font.kMinWidthY * 5 },
                                 { x: +kMinWidthT, y: +font.kMinWidthY },
                                 { x: 0, y: 0 },
                             ]);
-                            poly.translate(x2 + m, y2);
                             polygons.push(poly);
                         }
                     }
@@ -1110,49 +1473,37 @@ var Kage = (function () {
                 case 27: {
                     // box's right top corner
                     // SHIKAKU MIGIUE UROKO NANAME DEMO MASSUGU MUKI
-                    var poly = new Polygon();
-                    poly.push(-kMinWidthT, -font.kMinWidthY);
-                    poly.push(0, -font.kMinWidthY - font.kWidth);
-                    poly.push(+kMinWidthT + font.kWidth, +font.kMinWidthY);
-                    if (x1 === x2) {
-                        poly.push(+kMinWidthT, +kMinWidthT);
-                        poly.push(-kMinWidthT, 0);
-                    }
-                    else {
-                        poly.push(+kMinWidthT, +kMinWidthT - 1);
-                        if (a1 === 27) {
-                            poly.push(0, +kMinWidthT + 2);
-                            poly.push(0, 0);
-                        }
-                        else {
-                            poly.push(-kMinWidthT, +kMinWidthT + 4);
-                        }
-                    }
-                    poly.translate(x1, y1);
+                    var poly = new Pen(x1, y1).getPolygon([
+                        { x: -kMinWidthT, y: -font.kMinWidthY },
+                        { x: 0, y: -font.kMinWidthY - font.kWidth },
+                        { x: +kMinWidthT + font.kWidth, y: +font.kMinWidthY },
+                    ].concat((x1 === x2)
+                        ? [
+                            { x: +kMinWidthT, y: +kMinWidthT },
+                            { x: -kMinWidthT, y: 0 },
+                        ]
+                        : (a1 === 27)
+                            ? [
+                                { x: +kMinWidthT, y: +kMinWidthT - 1 },
+                                { x: 0, y: +kMinWidthT + 2 },
+                                { x: 0, y: 0 },
+                            ]
+                            : [
+                                { x: +kMinWidthT, y: +kMinWidthT - 1 },
+                                { x: -kMinWidthT, y: +kMinWidthT + 4 },
+                            ]));
                     polygons.push(poly);
                     break;
                 }
                 case 0: { // beginning of the stroke
-                    var poly = new Polygon([
-                        {
-                            x: +kMinWidthT * sinrad + font.kMinWidthY * 0.5 * cosrad,
-                            y: +kMinWidthT * -cosrad + font.kMinWidthY * 0.5 * sinrad,
-                        },
-                        {
-                            x: +(kMinWidthT + kMinWidthT * 0.5) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * cosrad,
-                            y: +(kMinWidthT + kMinWidthT * 0.5) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY) * sinrad,
-                        },
-                        (x1 === x2) // ?????
-                            ? {
-                                x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * cosrad,
-                                y: +(kMinWidthT - 2) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1) * sinrad,
-                            }
-                            : {
-                                x: +(kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * cosrad,
-                                y: +(kMinWidthT + 1) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * sinrad,
-                            },
+                    var poly = pen1.getPolygon([
+                        { x: kMinWidthT, y: font.kMinWidthY * 0.5 },
+                        { x: kMinWidthT + kMinWidthT * 0.5, y: font.kMinWidthY * 0.5 + font.kMinWidthY },
+                        { x: kMinWidthT - 2, y: font.kMinWidthY * 0.5 + font.kMinWidthY * 2 + 1 },
                     ]);
-                    poly.translate(x1, y1);
+                    if (x1 !== x2) { // ?????
+                        poly.set(2, x1 + (kMinWidthT - 2) * sinrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * cosrad, y1 + (kMinWidthT + 1) * -cosrad + (font.kMinWidthY * 0.5 + font.kMinWidthY * 2) * sinrad); // ?????
+                    }
                     polygons.push(poly);
                     break;
                 }
@@ -1161,42 +1512,39 @@ var Kage = (function () {
                 // KAGI NO YOKO BOU NO SAIGO NO MARU ... no need only used at 1st=yoko
                 var poly = new Polygon();
                 if (font.kUseCurve) {
-                    poly.push(-sinrad * -kMinWidthT, +cosrad * -kMinWidthT);
-                    poly.push(-cosrad * kMinWidthT * 0.9 + -sinrad * -kMinWidthT * 0.9, // typo?
-                    +sinrad * kMinWidthT * 0.9 + cosrad * -kMinWidthT * 0.9, true);
-                    poly.push(+cosrad * kMinWidthT, +sinrad * kMinWidthT);
-                    poly.push(+cosrad * kMinWidthT * 0.9 + -sinrad * kMinWidthT * 0.9, +sinrad * kMinWidthT * 0.9 + cosrad * kMinWidthT * 0.9, true);
-                    poly.push(-sinrad * kMinWidthT, +cosrad * kMinWidthT);
+                    poly.pushPoint(pen2.getPoint(kMinWidthT, 0));
+                    poly.push(x2 - cosrad * kMinWidthT * 0.9 + -sinrad * -kMinWidthT * 0.9, // typo? (- cosrad should be + cosrad)
+                    y2 + sinrad * kMinWidthT * 0.9 + cosrad * -kMinWidthT * 0.9, true);
+                    poly.pushPoint(pen2.getPoint(0, kMinWidthT));
+                    poly.pushPoint(pen2.getPoint(-kMinWidthT * 0.9, kMinWidthT * 0.9, true));
+                    poly.pushPoint(pen2.getPoint(-kMinWidthT, 0));
                 }
                 else {
                     var r = (x1 === x2 && (a1 === 6 && a2 === 0 || a2 === 1))
                         ? 0.6
                         : 0.8; // ?????
-                    poly.push(0, -kMinWidthT);
-                    poly.push(+kMinWidthT * r, -kMinWidthT * 0.6);
-                    poly.push(+kMinWidthT, 0);
-                    poly.push(+kMinWidthT * r, +kMinWidthT * 0.6);
-                    poly.push(0, +kMinWidthT);
-                    poly.transformMatrix2(cosrad, sinrad);
+                    poly.pushPoint(pen2.getPoint(kMinWidthT, 0));
+                    poly.pushPoint(pen2.getPoint(kMinWidthT * 0.6, kMinWidthT * r));
+                    poly.pushPoint(pen2.getPoint(0, kMinWidthT));
+                    poly.pushPoint(pen2.getPoint(-kMinWidthT * 0.6, kMinWidthT * r));
+                    poly.pushPoint(pen2.getPoint(-kMinWidthT, 0));
                 }
                 if (x1 === x2 && (a1 === 6 && a2 === 0 || a2 === 1)) {
                     // for backward compatibility
                     poly.reverse();
                 }
-                poly.translate(x2, y2);
                 // poly.reverse(); // for fill-rule
                 polygons.push(poly);
                 if (x1 !== x2 && a1 === 6 && a2 === 5) {
                     // KAGI NO YOKO BOU NO HANE
                     var haneLength = font.kWidth * 5;
                     var rv = x1 < x2 ? 1 : -1;
-                    var poly_2 = new Polygon([
-                        { x: 0, y: +rv * (-kMinWidthT + 1) },
-                        { x: +2, y: +rv * (-kMinWidthT - haneLength) },
-                        { x: 0, y: +rv * (-kMinWidthT - haneLength) },
-                        { x: -kMinWidthT, y: -kMinWidthT + 1 },
+                    var poly_2 = pen2.getPolygon([
+                        { x: rv * (kMinWidthT - 1), y: 0 },
+                        { x: rv * (kMinWidthT + haneLength), y: 2 },
+                        { x: rv * (kMinWidthT + haneLength), y: 0 },
+                        { x: kMinWidthT - 1, y: -kMinWidthT }, // rv ?????
                     ]);
-                    poly_2.transformMatrix2(cosrad, sinrad).translate(x2, y2);
                     polygons.push(poly_2);
                 }
             }
@@ -1205,11 +1553,13 @@ var Kage = (function () {
             // if it is YOKO stroke, use x-axis
             // if it is KAGI's YOKO stroke, get bold
             // x1 !== x2 && y1 === y2 && a1 === 6
+            var pen1_r = new Pen(x1, y1);
+            var pen2_r = new Pen(x2, y2);
             var poly0 = new Polygon([
-                { x: x1, y: y1 - kMinWidthT },
-                { x: x2, y: y2 - kMinWidthT },
-                { x: x2, y: y2 + kMinWidthT },
-                { x: x1, y: y1 + kMinWidthT },
+                pen1_r.getPoint(0, -kMinWidthT),
+                pen2_r.getPoint(0, -kMinWidthT),
+                pen2_r.getPoint(0, +kMinWidthT),
+                pen1_r.getPoint(0, +kMinWidthT),
             ]);
             polygons.push(poly0);
             switch (a2) {
@@ -1217,9 +1567,12 @@ var Kage = (function () {
                 case 0:
                 case 5: { // no need a2=1
                     // KAGI NO YOKO BOU NO SAIGO NO MARU
-                    var _b = (x1 < x2) ? [1, 0] : [-1, 0], cosrad = _b[0], sinrad = _b[1];
+                    var pen2 = new Pen(x2, y2);
+                    if (x1 > x2) {
+                        pen2.setMatrix2(-1, 0);
+                    }
                     var r = 0.6;
-                    var poly = new Polygon((font.kUseCurve)
+                    var poly = pen2.getPolygon((font.kUseCurve)
                         ? [
                             { x: 0, y: -kMinWidthT },
                             { x: +kMinWidthT * 0.9, y: -kMinWidthT * 0.9, off: true },
@@ -1237,24 +1590,20 @@ var Kage = (function () {
                     if (x1 >= x2) {
                         poly.reverse();
                     }
-                    poly.transformMatrix2(cosrad, sinrad).translate(x2, y2);
                     polygons.push(poly);
                     if (a2 === 5) {
                         var haneLength = font.kWidth * (4 * (1 - opt1 / font.kAdjustMageStep) + 1);
                         // KAGI NO YOKO BOU NO HANE
-                        var poly_3 = new Polygon([
-                            // { x: 0, y: -kMinWidthT + 1 },
-                            { x: 0, y: -kMinWidthT },
-                            { x: +2, y: -kMinWidthT - haneLength },
-                            { x: 0, y: -kMinWidthT - haneLength },
-                            // { x: -kMinWidthT, y: -kMinWidthT + 1 },
-                            { x: -kMinWidthT, y: -kMinWidthT },
+                        var rv = x1 < x2 ? 1 : -1;
+                        var poly_3 = pen2.getPolygon([
+                            // { x: 0, y: rv * (-kMinWidthT + 1) },
+                            { x: 0, y: rv * -kMinWidthT },
+                            { x: 2, y: rv * (-kMinWidthT - haneLength) },
+                            { x: 0, y: rv * (-kMinWidthT - haneLength) },
+                            // { x: -kMinWidthT, y: rv * (-kMinWidthT + 1) },
+                            { x: -kMinWidthT, y: rv * -kMinWidthT },
                         ]);
                         // poly2.reverse(); // for fill-rule
-                        if (x1 >= x2) {
-                            poly_3.reflectX();
-                        }
-                        poly_3.translate(x2, y2);
                         polygons.push(poly_3);
                     }
                     break;
@@ -1264,31 +1613,37 @@ var Kage = (function () {
         else {
             // for others, use x-axis
             // ASAI KAUDO
-            var _c = (y1 === y2)
+            var _b = (y1 === y2)
                 ? [1, 0] // ?????
-                : normalize([x2 - x1, y2 - y1]), cosrad = _c[0], sinrad = _c[1];
+                : normalize([x2 - x1, y2 - y1]), cosrad = _b[0], sinrad = _b[1];
             // always same
+            var pen1 = new Pen(x1, y1);
+            var pen2 = new Pen(x2, y2);
+            // if (y1 !== y2) { // ?????
+            // 	pen1.setRight(x2, y2);
+            // 	pen2.setLeft(x1, y1);
+            // }
+            pen1.setMatrix2(cosrad, sinrad);
+            pen2.setMatrix2(cosrad, sinrad);
             var poly = new Polygon([
-                { x: x1 + sinrad * font.kMinWidthY, y: y1 - cosrad * font.kMinWidthY },
-                { x: x2 + sinrad * font.kMinWidthY, y: y2 - cosrad * font.kMinWidthY },
-                { x: x2 - sinrad * font.kMinWidthY, y: y2 + cosrad * font.kMinWidthY },
-                { x: x1 - sinrad * font.kMinWidthY, y: y1 + cosrad * font.kMinWidthY },
+                pen1.getPoint(0, -font.kMinWidthY),
+                pen2.getPoint(0, -font.kMinWidthY),
+                pen2.getPoint(0, font.kMinWidthY),
+                pen1.getPoint(0, font.kMinWidthY),
             ]);
             polygons.push(poly);
             switch (a2) {
                 // UROKO
-                case 0:
-                    if (mageAdjustment === 0) {
-                        var urokoScale = (font.kMinWidthU / font.kMinWidthY - 1.0) / 4.0 + 1.0;
-                        var poly2 = new Polygon([
-                            { x: +sinrad * font.kMinWidthY, y: -cosrad * font.kMinWidthY },
-                            { x: -cosrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale, y: -sinrad * font.kAdjustUrokoX[urokoAdjustment] * urokoScale },
-                            { x: -(cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] * urokoScale / 2, y: -(sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] * urokoScale },
-                        ]);
-                        poly2.translate(x2, y2);
-                        polygons.push(poly2);
-                    }
+                case 0: {
+                    var urokoScale = (font.kMinWidthU / font.kMinWidthY - 1.0) / 4.0 + 1.0;
+                    var poly2 = pen2.getPolygon([
+                        { x: 0, y: -font.kMinWidthY },
+                        { x: -font.kAdjustUrokoX[urokoAdjustment] * urokoScale, y: 0 },
+                    ]);
+                    poly2.push(x2 - (cosrad - sinrad) * font.kAdjustUrokoX[urokoAdjustment] * urokoScale / 2, y2 - (sinrad + cosrad) * font.kAdjustUrokoY[urokoAdjustment] * urokoScale);
+                    polygons.push(poly2);
                     break;
+                }
             }
         }
     }
@@ -1299,104 +1654,105 @@ var Kage = (function () {
             return x1 <= x && x <= x2 && y1 <= y && y <= y2;
         })); });
     }
-    function dfDrawFont(font, polygons, _a) {
-        var a1 = _a.a1, x1 = _a.x1, y1 = _a.y1, x2 = _a.x2, y2 = _a.y2, x3 = _a.x3, y3 = _a.y3, x4 = _a.x4, y4 = _a.y4, a2_100 = _a.a2_100, kirikuchiAdjustment = _a.kirikuchiAdjustment, tateAdjustment = _a.tateAdjustment, opt3 = _a.opt3, a3_100 = _a.a3_100, haneAdjustment = _a.haneAdjustment, urokoAdjustment = _a.urokoAdjustment, kakatoAdjustment = _a.kakatoAdjustment, mageAdjustment = _a.mageAdjustment;
-        switch (a1 % 100) { // ... no need to divide
+    function dfDrawFont$1(font, polygons, _a) {
+        var _b = _a.stroke, a1_100 = _b.a1_100, a2_100 = _b.a2_100, a2_opt = _b.a2_opt, a2_opt_1 = _b.a2_opt_1, a2_opt_2 = _b.a2_opt_2, a2_opt_3 = _b.a2_opt_3, a3_100 = _b.a3_100, a3_opt = _b.a3_opt, a3_opt_1 = _b.a3_opt_1, a3_opt_2 = _b.a3_opt_2, x1 = _b.x1, y1 = _b.y1, x2 = _b.x2, y2 = _b.y2, x3 = _b.x3, y3 = _b.y3, x4 = _b.x4, y4 = _b.y4, kirikuchiAdjustment = _a.kirikuchiAdjustment, tateAdjustment = _a.tateAdjustment, haneAdjustment = _a.haneAdjustment, urokoAdjustment = _a.urokoAdjustment, kakatoAdjustment = _a.kakatoAdjustment, mageAdjustment = _a.mageAdjustment;
+        switch (a1_100) { // ... no need to divide
             case 0:
-                if (a2_100 === 98 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+                if (a2_100 === 98 && a2_opt === 0) {
                     var dx = x1 + x2, dy = 0;
-                    for (var _i = 0, _b = selectPolygonsRect(polygons, x1, y1, x2, y2); _i < _b.length; _i++) {
-                        var polygon = _b[_i];
-                        polygon.scale(10).floor().reflectX().translate(dx * 10, dy * 10).scale(0.1);
+                    for (var _i = 0, _c = selectPolygonsRect(polygons, x1, y1, x2, y2); _i < _c.length; _i++) {
+                        var polygon = _c[_i];
+                        polygon.reflectX().translate(dx, dy).floor();
                     }
                 }
-                else if (a2_100 === 97 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
+                else if (a2_100 === 97 && a2_opt === 0) {
                     var dx = 0, dy = y1 + y2;
-                    for (var _c = 0, _d = selectPolygonsRect(polygons, x1, y1, x2, y2); _c < _d.length; _c++) {
-                        var polygon = _d[_c];
-                        polygon.scale(10).floor().reflectY().translate(dx * 10, dy * 10).scale(0.1);
+                    for (var _d = 0, _e = selectPolygonsRect(polygons, x1, y1, x2, y2); _d < _e.length; _d++) {
+                        var polygon = _e[_d];
+                        polygon.reflectY().translate(dx, dy).floor();
                     }
                 }
-                else if (a2_100 === 99 && kirikuchiAdjustment === 0 && tateAdjustment === 0 && opt3 === 0) {
-                    if (a3_100 === 1 && haneAdjustment === 0 && mageAdjustment === 0) {
+                else if (a2_100 === 99 && a2_opt === 0) {
+                    if (a3_100 === 1 && a3_opt === 0) {
                         var dx = x1 + y2, dy = y1 - x1;
-                        for (var _e = 0, _f = selectPolygonsRect(polygons, x1, y1, x2, y2); _e < _f.length; _e++) {
-                            var polygon = _f[_e];
+                        for (var _f = 0, _g = selectPolygonsRect(polygons, x1, y1, x2, y2); _f < _g.length; _f++) {
+                            var polygon = _g[_f];
                             // polygon.translate(-x1, -y2).rotate90().translate(x1, y1);
-                            polygon.scale(10).floor().rotate90().translate(dx * 10, dy * 10).scale(0.1);
+                            polygon.rotate90().translate(dx, dy).floor();
                         }
                     }
-                    else if (a3_100 === 2 && haneAdjustment === 0 && mageAdjustment === 0) {
+                    else if (a3_100 === 2 && a3_opt === 0) {
                         var dx = x1 + x2, dy = y1 + y2;
-                        for (var _g = 0, _h = selectPolygonsRect(polygons, x1, y1, x2, y2); _g < _h.length; _g++) {
-                            var polygon = _h[_g];
-                            polygon.scale(10).floor().rotate180().translate(dx * 10, dy * 10).scale(0.1);
+                        for (var _h = 0, _j = selectPolygonsRect(polygons, x1, y1, x2, y2); _h < _j.length; _h++) {
+                            var polygon = _j[_h];
+                            polygon.rotate180().translate(dx, dy).floor();
                         }
                     }
-                    else if (a3_100 === 3 && haneAdjustment === 0 && mageAdjustment === 0) {
+                    else if (a3_100 === 3 && a3_opt === 0) {
                         var dx = x1 - y1, dy = y2 + x1;
-                        for (var _j = 0, _k = selectPolygonsRect(polygons, x1, y1, x2, y2); _j < _k.length; _j++) {
-                            var polygon = _k[_j];
+                        for (var _k = 0, _l = selectPolygonsRect(polygons, x1, y1, x2, y2); _k < _l.length; _k++) {
+                            var polygon = _l[_k];
                             // polygon.translate(-x1, -y1).rotate270().translate(x1, y2);
-                            polygon.scale(10).floor().rotate270().translate(dx * 10, dy * 10).scale(0.1);
+                            polygon.rotate270().translate(dx, dy).floor();
                         }
                     }
                 }
                 break;
             case 1: {
                 if (a3_100 === 4) {
-                    var _l = (x1 === x2 && y1 === y2)
+                    var _m = (x1 === x2 && y1 === y2)
                         ? [0, font.kMage] // ?????
-                        : normalize([x1 - x2, y1 - y2], font.kMage), dx1 = _l[0], dy1 = _l[1];
+                        : normalize([x1 - x2, y1 - y2], font.kMage), dx1 = _m[0], dy1 = _m[1];
                     var tx1 = x2 + dx1;
                     var ty1 = y2 + dy1;
-                    cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
-                    cdDrawCurve(font, polygons, tx1, ty1, x2, y2, x2 - font.kMage * (((font.kAdjustTateStep + 4) - tateAdjustment - opt3 * 10) / (font.kAdjustTateStep + 4)), y2, 1, 14, tateAdjustment, haneAdjustment, opt3, mageAdjustment);
+                    cdDrawLine$1(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0);
+                    cdDrawCurve$1(font, polygons, tx1, ty1, x2, y2, x2 - font.kMage * (((font.kAdjustTateStep + 4) - tateAdjustment) / (font.kAdjustTateStep + 4)), y2, 1, 14, tateAdjustment % 10, haneAdjustment, Math.floor(tateAdjustment / 10), a3_opt_2);
                 }
                 else {
-                    cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + kirikuchiAdjustment * 100, a3_100, tateAdjustment + opt3 * 10, urokoAdjustment, kakatoAdjustment, mageAdjustment);
+                    cdDrawLine$1(font, polygons, x1, y1, x2, y2, a2_100 + a2_opt_1 * 100, a3_100, tateAdjustment, urokoAdjustment, kakatoAdjustment);
                 }
                 break;
             }
             case 2: {
                 // case 12: // ... no need
                 if (a3_100 === 4) {
-                    var _m = (x2 === x3)
+                    var _o = (x2 === x3)
                         ? [0, -font.kMage] // ?????
                         : (y2 === y3)
                             ? [-font.kMage, 0] // ?????
-                            : normalize([x2 - x3, y2 - y3], font.kMage), dx1 = _m[0], dy1 = _m[1];
+                            : normalize([x2 - x3, y2 - y3], font.kMage), dx1 = _o[0], dy1 = _o[1];
                     var tx1 = x3 + dx1;
                     var ty1 = y3 + dy1;
-                    cdDrawCurve(font, polygons, x1, y1, x2, y2, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 0, tateAdjustment, 0, opt3, 0);
-                    cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage, y3, 2, 14, tateAdjustment, haneAdjustment, 0, mageAdjustment);
+                    cdDrawCurve$1(font, polygons, x1, y1, x2, y2, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 0, a2_opt_2, 0, a2_opt_3, 0);
+                    cdDrawCurve$1(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage, y3, 2, 14, a2_opt_2, haneAdjustment, 0, a3_opt_2);
                 }
                 else {
-                    cdDrawCurve(font, polygons, x1, y1, x2, y2, x3, y3, a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) ? 15 : a3_100, tateAdjustment, haneAdjustment, opt3, mageAdjustment);
+                    cdDrawCurve$1(font, polygons, x1, y1, x2, y2, x3, y3, a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && a3_opt === 0) ? 15 : a3_100, a2_opt_2, a3_opt_1, a2_opt_3, a3_opt_2);
                 }
                 break;
             }
             case 3: {
-                var _o = (x1 === x2 && y1 === y2)
+                var _p = (x1 === x2 && y1 === y2)
                     ? [0, font.kMage] // ?????
-                    : normalize([x1 - x2, y1 - y2], font.kMage), dx1 = _o[0], dy1 = _o[1];
+                    : normalize([x1 - x2, y1 - y2], font.kMage), dx1 = _p[0], dy1 = _p[1];
                 var tx1 = x2 + dx1;
                 var ty1 = y2 + dy1;
-                var _p = (x2 === x3 && y2 === y3)
+                var _q = (x2 === x3 && y2 === y3)
                     ? [0, -font.kMage] // ?????
-                    : normalize([x3 - x2, y3 - y2], font.kMage), dx2 = _p[0], dy2 = _p[1];
+                    : normalize([x3 - x2, y3 - y2], font.kMage), dx2 = _q[0], dy2 = _q[1];
                 var tx2 = x2 + dx2;
                 var ty2 = y2 + dy2;
-                cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
-                cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment + opt3 * 10, mageAdjustment);
-                if (!(a3_100 === 5 && haneAdjustment === 0 && !((x2 < x3 && x3 - tx2 > 0) || (x2 > x3 && tx2 - x3 > 0)))) { // for closer position
-                    cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, mageAdjustment, urokoAdjustment, kakatoAdjustment, (a3_100 === 5 && haneAdjustment === 0) ? 0 : mageAdjustment); // bolder by force
+                cdDrawLine$1(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0);
+                cdDrawCurve$1(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, tateAdjustment, mageAdjustment);
+                if (!(a3_100 === 5 && a3_opt_1 === 0 && !((x2 < x3 && x3 - tx2 > 0) || (x2 > x3 && tx2 - x3 > 0)))) { // for closer position
+                    var opt2 = (a3_100 === 5 && a3_opt_1 === 0) ? 0 : a3_opt_1 + mageAdjustment * 10;
+                    cdDrawLine$1(font, polygons, tx2, ty2, x3, y3, 6, a3_100, mageAdjustment, opt2, opt2); // bolder by force
                 }
                 break;
             }
             case 12: {
-                cdDrawCurve(font, polygons, x1, y1, x2, y2, x3, y3, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-                cdDrawLine(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, urokoAdjustment, kakatoAdjustment, mageAdjustment);
+                cdDrawCurve$1(font, polygons, x1, y1, x2, y2, x3, y3, a2_100 + a2_opt_1 * 100, 1, a2_opt_2, 0, a2_opt_3, 0);
+                cdDrawLine$1(font, polygons, x3, y3, x4, y4, 6, a3_100, 0, a3_opt, a3_opt);
                 break;
             }
             case 4: {
@@ -1404,56 +1760,60 @@ var Kage = (function () {
                 if (rate > 6) {
                     rate = 6;
                 }
-                var _q = (x1 === x2 && y1 === y2)
+                var _r = (x1 === x2 && y1 === y2)
                     ? [0, font.kMage * rate] // ?????
-                    : normalize([x1 - x2, y1 - y2], font.kMage * rate), dx1 = _q[0], dy1 = _q[1];
+                    : normalize([x1 - x2, y1 - y2], font.kMage * rate), dx1 = _r[0], dy1 = _r[1];
                 var tx1 = x2 + dx1;
                 var ty1 = y2 + dy1;
-                var _r = (x2 === x3 && y2 === y3)
+                var _s = (x2 === x3 && y2 === y3)
                     ? [0, -font.kMage * rate] // ?????
-                    : normalize([x3 - x2, y3 - y2], font.kMage * rate), dx2 = _r[0], dy2 = _r[1];
+                    : normalize([x3 - x2, y3 - y2], font.kMage * rate), dx2 = _s[0], dy2 = _s[1];
                 var tx2 = x2 + dx2;
                 var ty2 = y2 + dy2;
-                cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
-                cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
-                if (!(a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0 && x3 - tx2 <= 0)) { // for closer position
-                    cdDrawLine(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, urokoAdjustment, kakatoAdjustment, mageAdjustment); // bolder by force
+                cdDrawLine$1(font, polygons, x1, y1, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, a2_opt_2 + a2_opt_3 * 10, 0, 0);
+                cdDrawCurve$1(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1, 0, 0, 0, 0);
+                if (!(a3_100 === 5 && a3_opt === 0 && x3 - tx2 <= 0)) { // for closer position
+                    cdDrawLine$1(font, polygons, tx2, ty2, x3, y3, 6, a3_100, 0, a3_opt, a3_opt); // bolder by force
                 }
                 break;
             }
             case 6: {
                 if (a3_100 === 4) {
-                    var _s = (x3 === x4)
+                    var _t = (x3 === x4)
                         ? [0, -font.kMage] // ?????
                         : (y3 === y4)
                             ? [-font.kMage, 0] // ?????
-                            : normalize([x3 - x4, y3 - y4], font.kMage), dx1 = _s[0], dy1 = _s[1];
+                            : normalize([x3 - x4, y3 - y4], font.kMage), dx1 = _t[0], dy1 = _t[1];
                     var tx1 = x4 + dx1;
                     var ty1 = y4 + dy1;
-                    cdDrawBezier(font, polygons, x1, y1, x2, y2, x3, y3, tx1, ty1, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment, 0, opt3, 0);
-                    cdDrawCurve(font, polygons, tx1, ty1, x4, y4, x4 - font.kMage, y4, 1, 14, 0, haneAdjustment, 0, mageAdjustment);
+                    cdDrawBezier$1(font, polygons, x1, y1, x2, y2, x3, y3, tx1, ty1, a2_100 + a2_opt_1 * 100, 1, a2_opt_2, 0, a2_opt_3, 0);
+                    cdDrawCurve$1(font, polygons, tx1, ty1, x4, y4, x4 - font.kMage, y4, 1, 14, 0, haneAdjustment, 0, a3_opt_2);
                 }
                 else {
-                    cdDrawBezier(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a2_100 + kirikuchiAdjustment * 100, (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) ? 15 : a3_100, tateAdjustment, haneAdjustment, opt3, mageAdjustment);
+                    cdDrawBezier$1(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a2_100 + a2_opt_1 * 100, (a3_100 === 5 && a3_opt === 0) ? 15 : a3_100, a2_opt_2, a3_opt_1, a2_opt_3, a3_opt_2);
                 }
                 break;
             }
             case 7: {
-                cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100 + kirikuchiAdjustment * 100, 1, tateAdjustment + opt3 * 10, 0, 0, 0);
-                cdDrawCurve(font, polygons, x2, y2, x3, y3, x4, y4, 1, a3_100, tateAdjustment, haneAdjustment, opt3, mageAdjustment);
+                cdDrawLine$1(font, polygons, x1, y1, x2, y2, a2_100 + a2_opt_1 * 100, 1, tateAdjustment, 0, 0);
+                cdDrawCurve$1(font, polygons, x2, y2, x3, y3, x4, y4, 1, a3_100, tateAdjustment % 10, a3_opt_1, Math.floor(tateAdjustment / 10), a3_opt_2);
                 break;
             }
         }
     }
+    /** Mincho style font. */
     var Mincho = /** @class */ (function () {
         function Mincho() {
             this.shotai = KShotai.kMincho;
+            /**
+             * Precision for polygon approximation of curving strokes.
+             * It must be a positive divisor of 1000. The smaller `kRate` will give
+             * smoother curves approximated with the larger number of points (roughly
+             * 2 × 1000 / `kRate` per one curve stroke).
+             */
             this.kRate = 100; // must divide 1000
             this.setSize();
         }
-        Mincho.prototype.draw = function (polygons, stroke) {
-            dfDrawFont(this, polygons, stroke);
-        };
         Mincho.prototype.setSize = function (size) {
             if (size === 1) {
                 this.kMinWidthY = 1.2;
@@ -1499,192 +1859,320 @@ var Kage = (function () {
                 this.kAdjustMageStep = 5;
             }
         };
-        Mincho.prototype.adjustStrokes = function (strokesArray) {
-            this.adjustHane(strokesArray);
-            this.adjustMage(strokesArray);
-            this.adjustTate(strokesArray);
-            this.adjustKakato(strokesArray);
-            this.adjustUroko(strokesArray);
-            this.adjustUroko2(strokesArray);
-            this.adjustKirikuchi(strokesArray);
-            return strokesArray;
+        /** @internal */
+        Mincho.prototype.getDrawers = function (strokesArray) {
+            var _this = this;
+            return this.adjustStrokes(strokesArray).map(function (adjStroke) { return function (polygons) {
+                dfDrawFont$1(_this, polygons, adjStroke);
+            }; });
         };
-        Mincho.prototype.adjustHane = function (strokesArray) {
-            strokesArray.forEach(function (stroke, i) {
-                if ((stroke.a1 === 1 || stroke.a1 === 2 || stroke.a1 === 6)
-                    && stroke.a3_100 === 4 && stroke.haneAdjustment === 0 && stroke.mageAdjustment === 0) {
-                    var lpx_1; // lastPointX
-                    var lpy_1; // lastPointY
-                    if (stroke.a1 === 1) {
-                        lpx_1 = stroke.x2;
-                        lpy_1 = stroke.y2;
+        /** @internal */
+        Mincho.prototype.adjustStrokes = function (strokesArray) {
+            var adjustedStrokes = strokesArray.map(function (stroke) {
+                var a2_opt_1 = stroke.a2_opt_1, a2_opt_2 = stroke.a2_opt_2, a2_opt_3 = stroke.a2_opt_3, a3_opt = stroke.a3_opt, a3_opt_1 = stroke.a3_opt_1, a3_opt_2 = stroke.a3_opt_2;
+                return {
+                    stroke: stroke,
+                    // a2:
+                    // - 100s place: adjustKirikuchi (when 2:X32);
+                    // - 1000s place: adjustTate (when {1,3,7})
+                    kirikuchiAdjustment: a2_opt_1,
+                    tateAdjustment: a2_opt_2 + a2_opt_3 * 10,
+                    // a3:
+                    // - 100s place: adjustHane (when {1,2,6}::X04), adjustUroko/adjustUroko2 (when 1::X00),
+                    //               adjustKakato (when 1::X{13,23});
+                    // - 1000s place: adjustMage (when 3)
+                    haneAdjustment: a3_opt_1,
+                    urokoAdjustment: a3_opt,
+                    kakatoAdjustment: a3_opt,
+                    mageAdjustment: a3_opt_2,
+                };
+            });
+            this.adjustHane(adjustedStrokes);
+            this.adjustMage(adjustedStrokes);
+            this.adjustTate(adjustedStrokes);
+            this.adjustKakato(adjustedStrokes);
+            this.adjustUroko(adjustedStrokes);
+            this.adjustUroko2(adjustedStrokes);
+            this.adjustKirikuchi(adjustedStrokes);
+            return adjustedStrokes;
+        };
+        Mincho.prototype.adjustHane = function (adjStrokes) {
+            var vertSegments = [];
+            for (var _i = 0, adjStrokes_1 = adjStrokes; _i < adjStrokes_1.length; _i++) {
+                var stroke = adjStrokes_1[_i].stroke;
+                if (stroke.a1_100 === 1 && stroke.a1_opt === 0 && stroke.x1 === stroke.x2) {
+                    vertSegments.push({
+                        stroke: stroke,
+                        x: stroke.x1,
+                        y1: stroke.y1,
+                        y2: stroke.y2,
+                    });
+                }
+            }
+            for (var _a = 0, adjStrokes_2 = adjStrokes; _a < adjStrokes_2.length; _a++) {
+                var adjStroke = adjStrokes_2[_a];
+                var stroke = adjStroke.stroke;
+                if ((stroke.a1_100 === 1 || stroke.a1_100 === 2 || stroke.a1_100 === 6) && stroke.a1_opt === 0
+                    && stroke.a3_100 === 4 && stroke.a3_opt === 0) {
+                    var lpx = void 0; // lastPointX
+                    var lpy = void 0; // lastPointY
+                    if (stroke.a1_100 === 1) {
+                        lpx = stroke.x2;
+                        lpy = stroke.y2;
                     }
-                    else if (stroke.a1 === 2) {
-                        lpx_1 = stroke.x3;
-                        lpy_1 = stroke.y3;
+                    else if (stroke.a1_100 === 2) {
+                        lpx = stroke.x3;
+                        lpy = stroke.y3;
                     }
                     else {
-                        lpx_1 = stroke.x4;
-                        lpy_1 = stroke.y4;
+                        lpx = stroke.x4;
+                        lpy = stroke.y4;
                     }
-                    var mn_1 = Infinity; // mostNear
-                    if (lpx_1 + 18 < 100) {
-                        mn_1 = lpx_1 + 18;
+                    var mn = Infinity; // mostNear
+                    if (lpx + 18 < 100) {
+                        mn = lpx + 18;
                     }
-                    strokesArray.forEach(function (stroke2, j) {
-                        if (i !== j
-                            && stroke2.a1 === 1
-                            && stroke2.x1 === stroke2.x2 && stroke2.x1 < lpx_1
-                            && stroke2.y1 <= lpy_1 && stroke2.y2 >= lpy_1) {
-                            if (lpx_1 - stroke2.x1 < 100) {
-                                mn_1 = Math.min(mn_1, lpx_1 - stroke2.x1);
-                            }
+                    for (var _b = 0, vertSegments_1 = vertSegments; _b < vertSegments_1.length; _b++) {
+                        var _c = vertSegments_1[_b], stroke2 = _c.stroke, x = _c.x, y1 = _c.y1, y2 = _c.y2;
+                        if (stroke !== stroke2
+                            && lpx - x < 100 && x < lpx
+                            && y1 <= lpy && y2 >= lpy) {
+                            mn = Math.min(mn, lpx - x);
                         }
-                    });
-                    if (mn_1 !== Infinity) {
-                        stroke.haneAdjustment += 7 - Math.floor(mn_1 / 15);
+                    }
+                    if (mn !== Infinity) {
+                        adjStroke.haneAdjustment += 7 - Math.floor(mn / 15);
                     }
                 }
-            });
-            return strokesArray;
+            }
+            return adjStrokes;
         };
-        Mincho.prototype.adjustMage = function (strokesArray) {
-            var _this = this;
-            strokesArray.forEach(function (stroke, i) {
-                if (stroke.a1 === 3 && stroke.y2 === stroke.y3) {
-                    strokesArray.forEach(function (stroke2, j) {
-                        if (i !== j && ((stroke2.a1 === 1
-                            && stroke2.y1 === stroke2.y2
-                            && !(stroke.x2 + 1 > stroke2.x2 || stroke.x3 - 1 < stroke2.x1)
-                            && round(Math.abs(stroke.y2 - stroke2.y1)) < _this.kMinWidthT * _this.kAdjustMageStep) || (stroke2.a1 === 3
-                            && stroke2.y2 === stroke2.y3
-                            && !(stroke.x2 + 1 > stroke2.x3 || stroke.x3 - 1 < stroke2.x2)
-                            && round(Math.abs(stroke.y2 - stroke2.y2)) < _this.kMinWidthT * _this.kAdjustMageStep))) {
-                            stroke.mageAdjustment += _this.kAdjustMageStep - Math.floor(Math.abs(stroke.y2 - stroke2.y2) / _this.kMinWidthT);
-                            if (stroke.mageAdjustment > _this.kAdjustMageStep) {
-                                stroke.mageAdjustment = _this.kAdjustMageStep;
-                            }
-                        }
+        Mincho.prototype.adjustMage = function (adjStrokes) {
+            var horiSegments = [];
+            for (var _i = 0, adjStrokes_3 = adjStrokes; _i < adjStrokes_3.length; _i++) {
+                var adjStroke = adjStrokes_3[_i];
+                var stroke = adjStroke.stroke;
+                if (stroke.a1_100 === 1 && stroke.a1_opt === 0 && stroke.y1 === stroke.y2) {
+                    horiSegments.push({
+                        stroke: stroke,
+                        adjStroke: adjStroke,
+                        isTarget: false,
+                        y: stroke.y2,
+                        x1: stroke.x1,
+                        x2: stroke.x2,
                     });
                 }
-            });
-            return strokesArray;
-        };
-        Mincho.prototype.adjustTate = function (strokesArray) {
-            var _this = this;
-            strokesArray.forEach(function (stroke, i) {
-                if ((stroke.a1 === 1 || stroke.a1 === 3 || stroke.a1 === 7)
-                    && stroke.x1 === stroke.x2) {
-                    strokesArray.forEach(function (stroke2, j) {
-                        if (i !== j
-                            && (stroke2.a1 === 1 || stroke2.a1 === 3 || stroke2.a1 === 7)
-                            && stroke2.x1 === stroke2.x2
-                            && !(stroke.y1 + 1 > stroke2.y2 || stroke.y2 - 1 < stroke2.y1)
-                            && round(Math.abs(stroke.x1 - stroke2.x1)) < _this.kMinWidthT * _this.kAdjustTateStep) {
-                            stroke.tateAdjustment += _this.kAdjustTateStep - Math.floor(Math.abs(stroke.x1 - stroke2.x1) / _this.kMinWidthT);
-                            if (stroke.tateAdjustment > _this.kAdjustTateStep) {
-                                stroke.tateAdjustment = _this.kAdjustTateStep;
-                            }
-                        }
+                else if (stroke.a1_100 === 3 && stroke.a1_opt === 0 && stroke.y2 === stroke.y3) {
+                    horiSegments.push({
+                        stroke: stroke,
+                        adjStroke: adjStroke,
+                        isTarget: true,
+                        y: stroke.y2,
+                        x1: stroke.x2,
+                        x2: stroke.x3,
                     });
                 }
-            });
-            return strokesArray;
+            }
+            for (var _a = 0, horiSegments_1 = horiSegments; _a < horiSegments_1.length; _a++) {
+                var _b = horiSegments_1[_a], adjStroke = _b.adjStroke, stroke = _b.stroke, isTarget = _b.isTarget, y = _b.y, x1 = _b.x1, x2 = _b.x2;
+                if (isTarget) {
+                    for (var _c = 0, horiSegments_2 = horiSegments; _c < horiSegments_2.length; _c++) {
+                        var _d = horiSegments_2[_c], stroke2 = _d.stroke, other_y = _d.y, other_x1 = _d.x1, other_x2 = _d.x2;
+                        if (stroke !== stroke2
+                            && !(x1 + 1 > other_x2 || x2 - 1 < other_x1)
+                            && round(Math.abs(y - other_y)) < this.kMinWidthT * this.kAdjustMageStep) {
+                            adjStroke.mageAdjustment += this.kAdjustMageStep - Math.floor(Math.abs(y - other_y) / this.kMinWidthT);
+                            if (adjStroke.mageAdjustment > this.kAdjustMageStep) {
+                                adjStroke.mageAdjustment = this.kAdjustMageStep;
+                            }
+                        }
+                    }
+                }
+            }
+            return adjStrokes;
         };
-        Mincho.prototype.adjustKakato = function (strokesArray) {
+        Mincho.prototype.adjustTate = function (adjStrokes) {
+            var vertSegments = [];
+            for (var _i = 0, adjStrokes_4 = adjStrokes; _i < adjStrokes_4.length; _i++) {
+                var adjStroke = adjStrokes_4[_i];
+                var stroke = adjStroke.stroke;
+                if ((stroke.a1_100 === 1 || stroke.a1_100 === 3 || stroke.a1_100 === 7) && stroke.a1_opt === 0 && stroke.x1 === stroke.x2) {
+                    vertSegments.push({
+                        stroke: stroke,
+                        adjStroke: adjStroke,
+                        x: stroke.x1,
+                        y1: stroke.y1,
+                        y2: stroke.y2,
+                    });
+                }
+            }
+            for (var _a = 0, vertSegments_2 = vertSegments; _a < vertSegments_2.length; _a++) {
+                var _b = vertSegments_2[_a], adjStroke = _b.adjStroke, stroke = _b.stroke, x = _b.x, y1 = _b.y1, y2 = _b.y2;
+                for (var _c = 0, vertSegments_3 = vertSegments; _c < vertSegments_3.length; _c++) {
+                    var _d = vertSegments_3[_c], stroke2 = _d.stroke, other_x = _d.x, other_y1 = _d.y1, other_y2 = _d.y2;
+                    if (stroke !== stroke2
+                        && !(y1 + 1 > other_y2 || y2 - 1 < other_y1)
+                        && round(Math.abs(x - other_x)) < this.kMinWidthT * this.kAdjustTateStep) {
+                        adjStroke.tateAdjustment += this.kAdjustTateStep - Math.floor(Math.abs(x - other_x) / this.kMinWidthT);
+                        if (adjStroke.tateAdjustment > this.kAdjustTateStep
+                            || adjStroke.tateAdjustment === this.kAdjustTateStep && (stroke.a2_opt_1 !== 0 || stroke.a2_100 !== 0)) {
+                            adjStroke.tateAdjustment = this.kAdjustTateStep;
+                        }
+                    }
+                }
+            }
+            return adjStrokes;
+        };
+        Mincho.prototype.adjustKakato = function (adjStrokes) {
             var _this = this;
-            strokesArray.forEach(function (stroke, i) {
-                if (stroke.a1 === 1
-                    && (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.kakatoAdjustment === 0 && stroke.mageAdjustment === 0) {
-                    for (var k = 0; k < _this.kAdjustKakatoStep; k++) {
-                        if (isCrossBoxWithOthers(strokesArray, i, stroke.x2 - _this.kAdjustKakatoRangeX / 2, stroke.y2 + _this.kAdjustKakatoRangeY[k], stroke.x2 + _this.kAdjustKakatoRangeX / 2, stroke.y2 + _this.kAdjustKakatoRangeY[k + 1])
-                            || round(stroke.y2 + _this.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
-                            || round(stroke.y2 - stroke.y1) < _this.kAdjustKakatoRangeY[k + 1] // for thin box
+            var _loop_1 = function (adjStroke) {
+                var stroke = adjStroke.stroke;
+                if (stroke.a1_100 === 1 && stroke.a1_opt === 0
+                    && (stroke.a3_100 === 13 || stroke.a3_100 === 23) && stroke.a3_opt === 0) {
+                    var _loop_2 = function (k) {
+                        if (adjStrokes.some(function (_a) {
+                            var stroke2 = _a.stroke;
+                            return stroke !== stroke2 &&
+                                stroke2.isCrossBox(stroke.x2 - _this.kAdjustKakatoRangeX / 2, stroke.y2 + _this.kAdjustKakatoRangeY[k], stroke.x2 + _this.kAdjustKakatoRangeX / 2, stroke.y2 + _this.kAdjustKakatoRangeY[k + 1]);
+                        })
+                            || round(stroke.y2 + this_1.kAdjustKakatoRangeY[k + 1]) > 200 // adjust for baseline
+                            || round(stroke.y2 - stroke.y1) < this_1.kAdjustKakatoRangeY[k + 1] // for thin box
                         ) {
-                            stroke.kakatoAdjustment = 3 - k;
-                            break;
+                            adjStroke.kakatoAdjustment = 3 - k;
+                            return "break";
                         }
+                    };
+                    for (var k = 0; k < this_1.kAdjustKakatoStep; k++) {
+                        var state_1 = _loop_2(k);
+                        if (state_1 === "break")
+                            break;
                     }
                 }
-            });
-            return strokesArray;
+            };
+            var this_1 = this;
+            for (var _i = 0, adjStrokes_5 = adjStrokes; _i < adjStrokes_5.length; _i++) {
+                var adjStroke = adjStrokes_5[_i];
+                _loop_1(adjStroke);
+            }
+            return adjStrokes;
         };
-        Mincho.prototype.adjustUroko = function (strokesArray) {
-            var _this = this;
-            strokesArray.forEach(function (stroke, i) {
-                if (stroke.a1 === 1
-                    && stroke.a3_100 === 0 && stroke.urokoAdjustment === 0 && stroke.mageAdjustment === 0) { // no operation for TATE
-                    for (var k = 0; k < _this.kAdjustUrokoLengthStep; k++) {
-                        var tx = void 0;
-                        var ty = void 0;
-                        var tlen = void 0;
-                        if (stroke.y1 === stroke.y2) { // YOKO
-                            tx = stroke.x2 - _this.kAdjustUrokoLine[k];
-                            ty = stroke.y2 - 0.5;
-                            tlen = stroke.x2 - stroke.x1; // should be Math.abs(...)?
+        Mincho.prototype.adjustUroko = function (adjStrokes) {
+            var _loop_3 = function (adjStroke) {
+                var stroke = adjStroke.stroke;
+                if (stroke.a1_100 === 1 && stroke.a1_opt === 0
+                    && stroke.a3_100 === 0 && stroke.a3_opt === 0) { // no operation for TATE
+                    var _loop_4 = function (k) {
+                        var _a = (stroke.y1 === stroke.y2) // YOKO
+                            ? [1, 0] // ?????
+                            : (stroke.x2 - stroke.x1 < 0)
+                                ? normalize([stroke.x1 - stroke.x2, stroke.y1 - stroke.y2]) // for backward compatibility...
+                                : normalize([stroke.x2 - stroke.x1, stroke.y2 - stroke.y1]), cosrad = _a[0], sinrad = _a[1];
+                        var tx = stroke.x2 - this_2.kAdjustUrokoLine[k] * cosrad - 0.5 * sinrad; // typo? (sinrad should be -sinrad ?)
+                        var ty = stroke.y2 - this_2.kAdjustUrokoLine[k] * sinrad - 0.5 * cosrad;
+                        var tlen = (stroke.y1 === stroke.y2) // YOKO
+                            ? stroke.x2 - stroke.x1 // should be Math.abs(...)?
+                            : hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
+                        if (round(tlen) < this_2.kAdjustUrokoLength[k]
+                            || adjStrokes.some(function (_a) {
+                                var stroke2 = _a.stroke;
+                                return stroke !== stroke2 && stroke2.isCross(tx, ty, stroke.x2, stroke.y2);
+                            })) {
+                            adjStroke.urokoAdjustment = this_2.kAdjustUrokoLengthStep - k;
+                            return "break";
                         }
-                        else {
-                            var _a = (stroke.x1 === stroke.x2)
-                                ? [0, (stroke.y2 - stroke.y1) / (stroke.x2 - stroke.x1) > 0 ? 1 : -1] // maybe unnecessary?
-                                : (stroke.x2 - stroke.x1 < 0)
-                                    ? normalize([stroke.x1 - stroke.x2, stroke.y1 - stroke.y2]) // for backward compatibility...
-                                    : normalize([stroke.x2 - stroke.x1, stroke.y2 - stroke.y1]), cosrad = _a[0], sinrad = _a[1];
-                            tx = stroke.x2 - _this.kAdjustUrokoLine[k] * cosrad - 0.5 * sinrad;
-                            ty = stroke.y2 - _this.kAdjustUrokoLine[k] * sinrad - 0.5 * cosrad;
-                            tlen = hypot(stroke.y2 - stroke.y1, stroke.x2 - stroke.x1);
-                        }
-                        if (round(tlen) < _this.kAdjustUrokoLength[k]
-                            || isCrossWithOthers(strokesArray, i, tx, ty, stroke.x2, stroke.y2)) {
-                            stroke.urokoAdjustment = _this.kAdjustUrokoLengthStep - k;
+                    };
+                    for (var k = 0; k < this_2.kAdjustUrokoLengthStep; k++) {
+                        var state_2 = _loop_4(k);
+                        if (state_2 === "break")
                             break;
-                        }
                     }
                 }
-            });
-            return strokesArray;
+            };
+            var this_2 = this;
+            for (var _i = 0, adjStrokes_6 = adjStrokes; _i < adjStrokes_6.length; _i++) {
+                var adjStroke = adjStrokes_6[_i];
+                _loop_3(adjStroke);
+            }
+            return adjStrokes;
         };
-        Mincho.prototype.adjustUroko2 = function (strokesArray) {
-            var _this = this;
-            strokesArray.forEach(function (stroke, i) {
-                if (stroke.a1 === 1 && stroke.a3_100 === 0 && stroke.urokoAdjustment === 0 && stroke.mageAdjustment === 0
+        Mincho.prototype.adjustUroko2 = function (adjStrokes) {
+            var horiSegments = [];
+            for (var _i = 0, adjStrokes_7 = adjStrokes; _i < adjStrokes_7.length; _i++) {
+                var adjStroke = adjStrokes_7[_i];
+                var stroke = adjStroke.stroke;
+                if (stroke.a1_100 === 1 && stroke.a1_opt === 0
                     && stroke.y1 === stroke.y2) {
-                    var pressure_1 = 0;
-                    strokesArray.forEach(function (stroke2, j) {
-                        if (i !== j && ((stroke2.a1 === 1
-                            && stroke2.y1 === stroke2.y2
-                            && !(stroke.x1 + 1 > stroke2.x2 || stroke.x2 - 1 < stroke2.x1)
-                            && round(Math.abs(stroke.y1 - stroke2.y1)) < _this.kAdjustUroko2Length) || (stroke2.a1 === 3
-                            && stroke2.y2 === stroke2.y3
-                            && !(stroke.x1 + 1 > stroke2.x3 || stroke.x2 - 1 < stroke2.x2)
-                            && round(Math.abs(stroke.y1 - stroke2.y2)) < _this.kAdjustUroko2Length))) {
-                            pressure_1 += Math.pow((_this.kAdjustUroko2Length - Math.abs(stroke.y1 - stroke2.y2)), 1.1);
-                        }
+                    horiSegments.push({
+                        stroke: stroke,
+                        adjStroke: adjStroke,
+                        isTarget: stroke.a3_100 === 0 && stroke.a3_opt === 0 && adjStroke.urokoAdjustment === 0,
+                        y: stroke.y1,
+                        x1: stroke.x1,
+                        x2: stroke.x2,
                     });
+                }
+                else if (stroke.a1_100 === 3 && stroke.a1_opt === 0
+                    && stroke.y2 === stroke.y3) {
+                    horiSegments.push({
+                        stroke: stroke,
+                        adjStroke: adjStroke,
+                        isTarget: false,
+                        y: stroke.y2,
+                        x1: stroke.x2,
+                        x2: stroke.x3,
+                    });
+                }
+            }
+            for (var _a = 0, horiSegments_3 = horiSegments; _a < horiSegments_3.length; _a++) {
+                var _b = horiSegments_3[_a], adjStroke = _b.adjStroke, stroke = _b.stroke, isTarget = _b.isTarget, y = _b.y, x1 = _b.x1, x2 = _b.x2;
+                if (isTarget) {
+                    var pressure = 0;
+                    for (var _c = 0, horiSegments_4 = horiSegments; _c < horiSegments_4.length; _c++) {
+                        var _d = horiSegments_4[_c], stroke2 = _d.stroke, other_y = _d.y, other_x1 = _d.x1, other_x2 = _d.x2;
+                        if (stroke !== stroke2
+                            && !(x1 + 1 > other_x2 || x2 - 1 < other_x1)
+                            && round(Math.abs(y - other_y)) < this.kAdjustUroko2Length) {
+                            pressure += Math.pow((this.kAdjustUroko2Length - Math.abs(y - other_y)), 1.1);
+                        }
+                    }
                     // const result = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step) * 100;
                     // if (stroke.a3 < result) {
-                    stroke.urokoAdjustment = Math.min(Math.floor(pressure_1 / _this.kAdjustUroko2Length), _this.kAdjustUroko2Step);
+                    adjStroke.urokoAdjustment = Math.min(Math.floor(pressure / this.kAdjustUroko2Length), this.kAdjustUroko2Step);
                     // }
                 }
-            });
-            return strokesArray;
+            }
+            return adjStrokes;
         };
-        Mincho.prototype.adjustKirikuchi = function (strokesArray) {
-            strokesArray.forEach(function (stroke) {
-                if (stroke.a1 === 2
-                    && stroke.a2_100 === 32 && stroke.kirikuchiAdjustment === 0 && stroke.tateAdjustment === 0 && stroke.opt3 === 0
-                    && stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2) {
-                    for (var _i = 0, strokesArray_1 = strokesArray; _i < strokesArray_1.length; _i++) { // no need to skip when i == j
-                        var stroke2 = strokesArray_1[_i];
-                        if (stroke2.a1 === 1
-                            && stroke2.x1 < stroke.x1 && stroke2.x2 > stroke.x1 && stroke2.y1 === stroke.y1
-                            && stroke2.y1 === stroke2.y2) {
-                            stroke.kirikuchiAdjustment = 1;
-                            break;
-                        }
-                    }
+        Mincho.prototype.adjustKirikuchi = function (adjStrokes) {
+            var horiSegments = [];
+            for (var _i = 0, adjStrokes_8 = adjStrokes; _i < adjStrokes_8.length; _i++) {
+                var stroke = adjStrokes_8[_i].stroke;
+                if (stroke.a1_100 === 1 && stroke.a1_opt === 0 && stroke.y1 === stroke.y2) {
+                    horiSegments.push({
+                        y: stroke.y1,
+                        x1: stroke.x1,
+                        x2: stroke.x2,
+                    });
                 }
-            });
-            return strokesArray;
+            }
+            var _loop_5 = function (adjStroke) {
+                var stroke = adjStroke.stroke;
+                if (stroke.a1_100 === 2 && stroke.a1_opt === 0
+                    && stroke.a2_100 === 32 && stroke.a2_opt === 0
+                    && stroke.x1 > stroke.x2 && stroke.y1 < stroke.y2
+                    && horiSegments.some(function (_a) {
+                        var y = _a.y, x1 = _a.x1, x2 = _a.x2;
+                        return ( // no need to skip when i == j
+                        x1 < stroke.x1 && x2 > stroke.x1 && y === stroke.y1);
+                    })) {
+                    adjStroke.kirikuchiAdjustment = 1;
+                }
+            };
+            for (var _a = 0, adjStrokes_9 = adjStrokes; _a < adjStrokes_9.length; _a++) {
+                var adjStroke = adjStrokes_9[_a];
+                _loop_5(adjStroke);
+            }
+            return adjStrokes;
         };
         return Mincho;
     }());
@@ -1708,19 +2196,21 @@ var Kage = (function () {
     var extendStatics = function(d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
 
     function __extends(d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
 
-    function cdDrawCurveU$1(font, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, ta1, ta2) {
-        var a1 = ta1;
-        var a2 = ta2;
+    function cdDrawCurveU(font, polygons, x1, y1, sx1, sy1, sx2, sy2, x2, y2, _ta1, _ta2) {
+        var a1;
+        var a2;
         var delta1 = 0;
         switch (a1 % 10) {
             case 2:
@@ -1774,13 +2264,13 @@ var Kage = (function () {
         poly.concat(poly2);
         polygons.push(poly);
     }
-    function cdDrawBezier$1(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2) {
-        cdDrawCurveU$1(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2);
+    function cdDrawBezier(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a1, a2) {
+        cdDrawCurveU(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4);
     }
-    function cdDrawCurve$1(font, polygons, x1, y1, x2, y2, x3, y3, a1, a2) {
-        cdDrawCurveU$1(font, polygons, x1, y1, x2, y2, x2, y2, x3, y3, a1, a2);
+    function cdDrawCurve(font, polygons, x1, y1, x2, y2, x3, y3, a1, a2) {
+        cdDrawCurveU(font, polygons, x1, y1, x2, y2, x2, y2, x3, y3);
     }
-    function cdDrawLine$1(font, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
+    function cdDrawLine(font, polygons, tx1, ty1, tx2, ty2, ta1, ta2) {
         var x1;
         var y1;
         var x2;
@@ -1803,41 +2293,34 @@ var Kage = (function () {
             a1 = ta1;
             a2 = ta2;
         }
-        var _a = (x1 === x2 && y1 === y2)
-            ? [0, 1] // ?????
-            : normalize([x2 - x1, y2 - y1]), dx = _a[0], dy = _a[1];
-        var delta1 = 0;
+        var pen1 = new Pen(x1, y1);
+        var pen2 = new Pen(x2, y2);
+        if (x1 !== x2 || y1 !== y2) { // ?????
+            pen1.setDown(x2, y2);
+            pen2.setUp(x1, y1);
+        }
         switch (a1 % 10) {
             case 2:
-                delta1 = font.kWidth;
+                pen1.move(0, -font.kWidth);
                 break;
             case 3:
-                delta1 = font.kWidth * font.kKakato;
+                pen1.move(0, -font.kWidth * font.kKakato);
                 break;
         }
-        if (delta1 !== 0) {
-            x1 -= dx * delta1;
-            y1 -= dy * delta1;
-        }
-        var delta2 = 0;
         switch (a2 % 10) {
             case 2:
-                delta2 = font.kWidth;
+                pen2.move(0, font.kWidth);
                 break;
             case 3:
-                delta2 = font.kWidth * font.kKakato;
+                pen2.move(0, font.kWidth * font.kKakato);
                 break;
-        }
-        if (delta2 !== 0) {
-            x2 += dx * delta2;
-            y2 += dy * delta2;
         }
         // SUICHOKU NO ICHI ZURASHI HA Math.sin TO Math.cos NO IREKAE + x-axis MAINASU KA
         var poly = new Polygon([
-            { x: x1 + dy * font.kWidth, y: y1 - dx * font.kWidth },
-            { x: x2 + dy * font.kWidth, y: y2 - dx * font.kWidth },
-            { x: x2 - dy * font.kWidth, y: y2 + dx * font.kWidth },
-            { x: x1 - dy * font.kWidth, y: y1 + dx * font.kWidth },
+            pen1.getPoint(font.kWidth, 0),
+            pen2.getPoint(font.kWidth, 0),
+            pen2.getPoint(-font.kWidth, 0),
+            pen1.getPoint(-font.kWidth, 0),
         ]);
         if (tx1 === tx2) {
             poly.reverse(); // ?????
@@ -1845,80 +2328,80 @@ var Kage = (function () {
         polygons.push(poly);
     }
 
-    function dfDrawFont$1(font, polygons, _a) {
-        var a1 = _a.a1, x1 = _a.x1, y1 = _a.y1, x2 = _a.x2, y2 = _a.y2, x3 = _a.x3, y3 = _a.y3, x4 = _a.x4, y4 = _a.y4, a2_100 = _a.a2_100, a3_100 = _a.a3_100, haneAdjustment = _a.haneAdjustment, mageAdjustment = _a.mageAdjustment;
-        switch (a1 % 100) {
+    function dfDrawFont(font, polygons, _a) {
+        var _b = _a.stroke, a1_100 = _b.a1_100, a2_100 = _b.a2_100, a3_100 = _b.a3_100, a3_opt = _b.a3_opt, a3_opt_1 = _b.a3_opt_1, a3_opt_2 = _b.a3_opt_2, x1 = _b.x1, y1 = _b.y1, x2 = _b.x2, y2 = _b.y2, x3 = _b.x3, y3 = _b.y3, x4 = _b.x4, y4 = _b.y4, haneAdjustment = _a.haneAdjustment, mageAdjustment = _a.mageAdjustment;
+        switch (a1_100) {
             case 0:
                 break;
             case 1: {
-                if (a3_100 === 4 && haneAdjustment === 0 && mageAdjustment === 0) {
-                    var _b = (x1 === x2 && y1 === y2)
+                if (a3_100 === 4 && haneAdjustment === 0 && a3_opt_2 === 0) {
+                    var _c = (x1 === x2 && y1 === y2)
                         ? [0, font.kMage] // ?????
-                        : normalize([x1 - x2, y1 - y2], font.kMage), dx1 = _b[0], dy1 = _b[1];
+                        : normalize([x1 - x2, y1 - y2], font.kMage), dx1 = _c[0], dy1 = _c[1];
                     var tx1 = x2 + dx1;
                     var ty1 = y2 + dy1;
-                    cdDrawLine$1(font, polygons, x1, y1, tx1, ty1, a2_100, 1);
-                    cdDrawCurve$1(font, polygons, tx1, ty1, x2, y2, x2 - font.kMage * 2, y2 - font.kMage * 0.5, 1, 0);
+                    cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100, 1);
+                    cdDrawCurve(font, polygons, tx1, ty1, x2, y2, x2 - font.kMage * 2, y2 - font.kMage * 0.5);
                 }
                 else {
-                    cdDrawLine$1(font, polygons, x1, y1, x2, y2, a2_100, a3_100);
+                    cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100, a3_100);
                 }
                 break;
             }
             case 2:
             case 12: {
-                if (a3_100 === 4 && haneAdjustment === 0 && mageAdjustment === 0) {
-                    var _c = (x2 === x3)
+                if (a3_100 === 4 && haneAdjustment === 0 && a3_opt_2 === 0) {
+                    var _d = (x2 === x3)
                         ? [0, -font.kMage] // ?????
                         : (y2 === y3)
                             ? [-font.kMage, 0] // ?????
-                            : normalize([x2 - x3, y2 - y3], font.kMage), dx1 = _c[0], dy1 = _c[1];
+                            : normalize([x2 - x3, y2 - y3], font.kMage), dx1 = _d[0], dy1 = _d[1];
                     var tx1 = x3 + dx1;
                     var ty1 = y3 + dy1;
-                    cdDrawCurve$1(font, polygons, x1, y1, x2, y2, tx1, ty1, a2_100, 1);
-                    cdDrawCurve$1(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage * 2, y3 - font.kMage * 0.5, 1, 0);
+                    cdDrawCurve(font, polygons, x1, y1, x2, y2, tx1, ty1);
+                    cdDrawCurve(font, polygons, tx1, ty1, x3, y3, x3 - font.kMage * 2, y3 - font.kMage * 0.5);
                 }
-                else if (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) {
+                else if (a3_100 === 5 && a3_opt === 0) {
                     var tx1 = x3 + font.kMage;
                     var ty1 = y3;
                     var tx2 = tx1 + font.kMage * 0.5;
                     var ty2 = y3 - font.kMage * 2;
-                    cdDrawCurve$1(font, polygons, x1, y1, x2, y2, x3, y3, a2_100, 1);
-                    cdDrawCurve$1(font, polygons, x3, y3, tx1, ty1, tx2, ty2, 1, 0);
+                    cdDrawCurve(font, polygons, x1, y1, x2, y2, x3, y3);
+                    cdDrawCurve(font, polygons, x3, y3, tx1, ty1, tx2, ty2);
                 }
                 else {
-                    cdDrawCurve$1(font, polygons, x1, y1, x2, y2, x3, y3, a2_100, a3_100);
+                    cdDrawCurve(font, polygons, x1, y1, x2, y2, x3, y3);
                 }
                 break;
             }
             case 3: {
-                var _d = (x1 === x2 && y1 === y2)
+                var _e = (x1 === x2 && y1 === y2)
                     ? [0, font.kMage] // ?????
-                    : normalize([x1 - x2, y1 - y2], font.kMage), dx1 = _d[0], dy1 = _d[1];
+                    : normalize([x1 - x2, y1 - y2], font.kMage), dx1 = _e[0], dy1 = _e[1];
                 var tx1 = x2 + dx1;
                 var ty1 = y2 + dy1;
-                var _e = (x2 === x3 && y2 === y3)
+                var _f = (x2 === x3 && y2 === y3)
                     ? [0, -font.kMage] // ?????
-                    : normalize([x3 - x2, y3 - y2], font.kMage), dx2 = _e[0], dy2 = _e[1];
+                    : normalize([x3 - x2, y3 - y2], font.kMage), dx2 = _f[0], dy2 = _f[1];
                 var tx2 = x2 + dx2;
                 var ty2 = y2 + dy2;
-                cdDrawLine$1(font, polygons, x1, y1, tx1, ty1, a2_100, 1);
-                cdDrawCurve$1(font, polygons, tx1, ty1, x2, y2, tx2, ty2, 1, 1);
-                if (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) {
+                cdDrawLine(font, polygons, x1, y1, tx1, ty1, a2_100, 1);
+                cdDrawCurve(font, polygons, tx1, ty1, x2, y2, tx2, ty2);
+                if (a3_100 === 5 && a3_opt_1 === 0 && mageAdjustment === 0) {
                     var tx3 = x3 - font.kMage;
                     var ty3 = y3;
                     var tx4 = x3 + font.kMage * 0.5;
                     var ty4 = y3 - font.kMage * 2;
-                    cdDrawLine$1(font, polygons, tx2, ty2, tx3, ty3, 1, 1);
-                    cdDrawCurve$1(font, polygons, tx3, ty3, x3, y3, tx4, ty4, 1, 0);
+                    cdDrawLine(font, polygons, tx2, ty2, tx3, ty3, 1, 1);
+                    cdDrawCurve(font, polygons, tx3, ty3, x3, y3, tx4, ty4);
                 }
                 else {
-                    cdDrawLine$1(font, polygons, tx2, ty2, x3, y3, 1, a3_100);
+                    cdDrawLine(font, polygons, tx2, ty2, x3, y3, 1, a3_100);
                 }
                 break;
             }
             case 6: {
-                if (a3_100 === 5 && haneAdjustment === 0 && mageAdjustment === 0) {
+                if (a3_100 === 5 && a3_opt === 0) {
                     var tx1 = x4 - font.kMage;
                     var ty1 = y4;
                     var tx2 = x4 + font.kMage * 0.5;
@@ -1927,25 +2410,26 @@ var Kage = (function () {
                     cdDrawCurve(x1, y1, x2, y2, (x2 + x3) / 2, (y2 + y3) / 2, a2, 1);
                     cdDrawCurve((x2 + x3) / 2, (y2 + y3) / 2, x3, y3, tx1, ty1, 1, 1);
                      */
-                    cdDrawBezier$1(font, polygons, x1, y1, x2, y2, x3, y3, tx1, ty1, a2_100, 1);
-                    cdDrawCurve$1(font, polygons, tx1, ty1, x4, y4, tx2, ty2, 1, 0);
+                    cdDrawBezier(font, polygons, x1, y1, x2, y2, x3, y3, tx1, ty1);
+                    cdDrawCurve(font, polygons, tx1, ty1, x4, y4, tx2, ty2);
                 }
                 else {
                     /*
                     cdDrawCurve(x1, y1, x2, y2, (x2 + x3) / 2, (y2 + y3) / 2, a2, 1);
                     cdDrawCurve((x2 + x3) / 2, (y2 + y3) / 2, x3, y3, x4, y4, 1, a3);
                      */
-                    cdDrawBezier$1(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4, a2_100, a3_100);
+                    cdDrawBezier(font, polygons, x1, y1, x2, y2, x3, y3, x4, y4);
                 }
                 break;
             }
             case 7: {
-                cdDrawLine$1(font, polygons, x1, y1, x2, y2, a2_100, 1);
-                cdDrawCurve$1(font, polygons, x2, y2, x3, y3, x4, y4, 1, a3_100);
+                cdDrawLine(font, polygons, x1, y1, x2, y2, a2_100, 1);
+                cdDrawCurve(font, polygons, x2, y2, x3, y3, x4, y4);
                 break;
             }
         }
     }
+    /** Gothic style font. */
     var Gothic = /** @class */ (function (_super) {
         __extends(Gothic, _super);
         function Gothic() {
@@ -1953,8 +2437,12 @@ var Kage = (function () {
             _this.shotai = KShotai.kGothic;
             return _this;
         }
-        Gothic.prototype.draw = function (polygons, stroke) {
-            dfDrawFont$1(this, polygons, stroke);
+        /** @internal */
+        Gothic.prototype.getDrawers = function (strokesArray) {
+            var _this = this;
+            return this.adjustStrokes(strokesArray).map(function (stroke) { return function (polygons) {
+                dfDrawFont(_this, polygons, stroke);
+            }; });
         };
         return Gothic;
     }(Mincho));
@@ -1968,23 +2456,62 @@ var Kage = (function () {
         }
     }
 
-    var KShotai;
-    (function (KShotai) {
-        KShotai[KShotai["kMincho"] = 0] = "kMincho";
-        KShotai[KShotai["kGothic"] = 1] = "kGothic";
-    })(KShotai || (KShotai = {}));
+    /**
+     * The entry point for KAGE engine (Kanji-glyph Automatic Generating Engine).
+     * It generates glyph outlines from a kanji's stroke data described in a dedicated
+     * intermediate format called KAGE data.
+     *
+     * KAGE data may contain references to other glyphs (components), which are
+     * resolved using a storage at its {@link kBuhin} property. The data for the
+     * referenced glyphs must be registered to the storage prior to generating the outline.
+     *
+     * The font (mincho or gothic) can be changed with its {@link kShotai} property.
+     * The font parameters (stroke width, etc.) can be configured with properties of
+     * {@link kFont}.
+     *
+     * @see {@link Kage.makeGlyph}, {@link Kage.makeGlyph2}, {@link Kage.makeGlyph3} and
+     *     {@link Kage.makeGlyphSeparated} for usage examples.
+     */
     var Kage = /** @class */ (function () {
         function Kage(size) {
-            // TODO: should be static
+            /**
+             * An alias of {@link KShotai.kMincho}.
+             * @see {@link Kage.kShotai} for usage.
+             */
             this.kMincho = KShotai.kMincho;
+            /**
+             * An alias of {@link KShotai.kGothic}.
+             * @see {@link Kage.kShotai} for usage.
+             */
             this.kGothic = KShotai.kGothic;
+            /**
+             * Provides the way to configure parameters of the currently selected font.
+             * Its parameters are reset to the default values when {@link Kage.kShotai} is set.
+             * @example
+             * ```ts
+             * const kage = new Kage();
+             * kage.kFont.kRate = 50;
+             * kage.kFont.kWidth = 3;
+             * ```
+             */
             this.kFont = select(KShotai.kMincho);
+            // Probably this can be removed. Keeping here just in case someone is using it...
+            /** @internal */
             this.stretch = stretch;
             this.kFont.setSize(size);
             this.kBuhin = new Buhin();
         }
         Object.defineProperty(Kage.prototype, "kShotai", {
             // properties
+            /**
+             * Gets or sets the font as {@link KShotai}. Setting this property resets all the
+             * font parameters in {@link Kage.kFont}. Defaults to {@link KShotai.kMincho}.
+             * @example
+             * ```ts
+             * const kage = new Kage();
+             * kage.kShotai = kage.kGothic;
+             * ```
+             */
             get: function () {
                 return this.kFont.shotai;
             },
@@ -1995,6 +2522,10 @@ var Kage = (function () {
             configurable: true
         });
         Object.defineProperty(Kage.prototype, "kUseCurve", {
+            /**
+             * Whether to generate contours with off-curve points.
+             * An alias of {@link Kage.kFont}.kUseCurve.
+             */
             get: function () {
                 return this.kFont.kUseCurve;
             },
@@ -2005,54 +2536,119 @@ var Kage = (function () {
             configurable: true
         });
         // method
+        /**
+         * Renders the glyph of the given name. Existing data in `polygons` (if any) are
+         * NOT cleared; new glyph is "overprinted".
+         * @example
+         * ```ts
+         * const kage = new Kage();
+         * kage.kBuhin.push("uXXXX", "1:0:2:32:31:176:31$2:22:7:176:31:170:43:156:63");
+         * const polygons = new Polygons();
+         * kage.makeGlyph(polygons, "uXXXX");
+         * const svg = polygons.generateSVG(); // now `svg` has the string of the rendered glyph
+         * ```
+         * @param polygons A {@link Polygons} instance on which the glyph is rendered.
+         * @param buhin The name of the glyph to be rendered.
+         */
         Kage.prototype.makeGlyph = function (polygons, buhin) {
             var glyphData = this.kBuhin.search(buhin);
             this.makeGlyph2(polygons, glyphData);
         };
+        /**
+         * Renders the glyph of the given KAGE data. Existing data in `polygons` (if any) are
+         * NOT cleared; new glyph is "overprinted".
+         * @example
+         * ```ts
+         * const kage = new Kage();
+         * const polygons = new Polygons();
+         * kage.makeGlyph2(polygons, "1:0:2:32:31:176:31$2:22:7:176:31:170:43:156:63");
+         * const svg = polygons.generateSVG(); // now `svg` has the string of the rendered glyph
+         * ```
+         * @param polygons A {@link Polygons} instance on which the glyph is rendered.
+         * @param data The KAGE data to be rendered (in which lines are delimited by `"$"`).
+         */
         Kage.prototype.makeGlyph2 = function (polygons, data) {
-            var _this = this;
             if (data !== "") {
                 var strokesArray = this.getEachStrokes(data);
-                this.kFont.adjustStrokes(strokesArray);
-                strokesArray.forEach(function (stroke) {
-                    _this.kFont.draw(polygons, stroke);
-                });
+                var drawers = this.kFont.getDrawers(strokesArray);
+                for (var _i = 0, drawers_1 = drawers; _i < drawers_1.length; _i++) {
+                    var draw = drawers_1[_i];
+                    draw(polygons);
+                }
             }
         };
+        /**
+         * Renders each stroke of the given KAGE data on separate instances of
+         * {@link Polygons}.
+         * @example
+         * ```ts
+         * const kage = new Kage();
+         * const array = kage.makeGlyph3("1:0:2:32:31:176:31$2:22:7:176:31:170:43:156:63");
+         * console.log(array.length); // => 2
+         * console.log(array[0] instanceof Polygons); // => true
+         * ```
+         * @param data The KAGE data to be rendered (in which lines are delimited by `"$"`).
+         * @returns An array of {@link Polygons} instances holding the rendered data
+         *     of each stroke in the glyph.
+         */
         Kage.prototype.makeGlyph3 = function (data) {
-            var _this = this;
             var result = [];
             if (data !== "") {
                 var strokesArray = this.getEachStrokes(data);
-                this.kFont.adjustStrokes(strokesArray);
-                strokesArray.forEach(function (stroke) {
+                var drawers = this.kFont.getDrawers(strokesArray);
+                for (var _i = 0, drawers_2 = drawers; _i < drawers_2.length; _i++) {
+                    var draw = drawers_2[_i];
                     var polygons = new Polygons();
-                    _this.kFont.draw(polygons, stroke);
+                    draw(polygons);
                     result.push(polygons);
-                });
+                }
             }
             return result;
         };
+        /**
+         * Renders each KAGE data fragment in the given array on separate instances of
+         * {@link Polygons}, with stroke parameters adjusted as if all the fragments joined
+         * together compose a single glyph.
+         * @example
+         * ```ts
+         * const kage = new Kage();
+         * const array = kage.makeGlyphSeparated([
+         * 	"2:7:8:31:16:32:53:16:65",
+         * 	"1:2:2:32:31:176:31$2:22:7:176:31:170:43:156:63",
+         * ]);
+         * console.log(array.length); // => 2
+         * console.log(array[0] instanceof Polygons); // => true
+         * ```
+         * @param data An array of KAGE data fragments (in which lines are delimited by `"$"`)
+         *     to be rendered.
+         * @returns An array of {@link Polygons} instances holding the rendered data
+         *     of each KAGE data fragment.
+         */
+        // Added by @kurgm
         Kage.prototype.makeGlyphSeparated = function (data) {
             var _this = this;
             var strokesArrays = data.map(function (subdata) { return _this.getEachStrokes(subdata); });
-            this.kFont.adjustStrokes(strokesArrays.reduce(function (left, right) { return left.concat(right); }, []));
+            var drawers = this.kFont.getDrawers(strokesArrays.reduce(function (left, right) { return left.concat(right); }, []));
             var polygons = new Polygons();
-            return strokesArrays.map(function (strokesArray) {
+            var strokeIndex = 0;
+            return strokesArrays.map(function (_a) {
+                var strokeCount = _a.length;
                 var startIndex = polygons.array.length;
-                strokesArray.forEach(function (stroke) {
-                    _this.kFont.draw(polygons, stroke);
-                });
+                for (var _i = 0, _b = drawers.slice(strokeIndex, strokeIndex + strokeCount); _i < _b.length; _i++) {
+                    var draw = _b[_i];
+                    draw(polygons);
+                }
+                strokeIndex += strokeCount;
                 var result = new Polygons();
                 result.array = polygons.array.slice(startIndex);
                 return result;
             });
         };
         Kage.prototype.getEachStrokes = function (glyphData) {
-            var _this = this;
             var strokesArray = [];
             var strokes = glyphData.split("$");
-            strokes.forEach(function (stroke) {
+            for (var _i = 0, strokes_1 = strokes; _i < strokes_1.length; _i++) {
+                var stroke = strokes_1[_i];
                 var columns = stroke.split(":");
                 if (Math.floor(+columns[0]) !== 99) {
                     strokesArray.push(new Stroke([
@@ -2070,12 +2666,12 @@ var Kage = (function () {
                     ]));
                 }
                 else {
-                    var buhin = _this.kBuhin.search(columns[7]);
+                    var buhin = this.kBuhin.search(columns[7]);
                     if (buhin !== "") {
-                        strokesArray = strokesArray.concat(_this.getEachStrokesOfBuhin(buhin, Math.floor(+columns[3]), Math.floor(+columns[4]), Math.floor(+columns[5]), Math.floor(+columns[6]), Math.floor(+columns[1]), Math.floor(+columns[2]), Math.floor(+columns[9]), Math.floor(+columns[10])));
+                        strokesArray = strokesArray.concat(this.getEachStrokesOfBuhin(buhin, Math.floor(+columns[3]), Math.floor(+columns[4]), Math.floor(+columns[5]), Math.floor(+columns[6]), Math.floor(+columns[1]), Math.floor(+columns[2]), Math.floor(+columns[9]), Math.floor(+columns[10])));
                     }
                 }
-            });
+            }
             return strokesArray;
         };
         Kage.prototype.getEachStrokesOfBuhin = function (buhin, x1, y1, x2, y2, sx, sy, sx2, sy2) {
@@ -2090,7 +2686,8 @@ var Kage = (function () {
                     sy2 = 0;
                 }
             }
-            strokes.forEach(function (stroke) {
+            for (var _i = 0, strokes_2 = strokes; _i < strokes_2.length; _i++) {
+                var stroke = strokes_2[_i];
                 if (sx !== 0 || sy !== 0) {
                     stroke.stretch(sx, sx2, sy, sy2, box.minX, box.maxX, box.minY, box.maxY);
                 }
@@ -2102,7 +2699,7 @@ var Kage = (function () {
                 stroke.y3 = y1 + stroke.y3 * (y2 - y1) / 200;
                 stroke.x4 = x1 + stroke.x4 * (x2 - x1) / 200;
                 stroke.y4 = y1 + stroke.y4 * (y2 - y1) / 200;
-            });
+            }
             return strokes;
         };
         Kage.prototype.getBox = function (strokes) {
@@ -2110,20 +2707,23 @@ var Kage = (function () {
             var minY = 200;
             var maxX = 0;
             var maxY = 0;
-            strokes.forEach(function (stroke) {
+            for (var _i = 0, strokes_3 = strokes; _i < strokes_3.length; _i++) {
+                var stroke = strokes_3[_i];
                 var _a = stroke.getBox(), sminX = _a.minX, smaxX = _a.maxX, sminY = _a.minY, smaxY = _a.maxY;
                 minX = Math.min(minX, sminX);
                 maxX = Math.max(maxX, smaxX);
                 minY = Math.min(minY, sminY);
                 maxY = Math.max(maxY, smaxY);
-            });
+            }
             return { minX: minX, maxX: maxX, minY: minY, maxY: maxY };
         };
+        /** An alias of Buhin constructor. */
         Kage.Buhin = Buhin;
+        /** An alias of Polygons constructor. */
         Kage.Polygons = Polygons;
         return Kage;
     }());
 
     return Kage;
 
-}());
+})();
