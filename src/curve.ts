@@ -1,4 +1,4 @@
-import { normalize, quadraticBezier, quadraticBezierDeriv, cubicBezier, cubicBezierDeriv, ternarySearchMin } from "./util";
+import { normalize, quadraticBezier, quadraticBezierDeriv, cubicBezier, cubicBezierDeriv, ternarySearchMin } from "./util.ts";
 
 /** @internal */
 export function divide_curve(

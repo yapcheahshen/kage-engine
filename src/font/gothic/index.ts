@@ -1,11 +1,11 @@
-import { Polygons } from "../../polygons";
-import { Stroke } from "../../stroke";
-import { normalize } from "../../util";
-import { FontInterface, StrokeDrawer } from "..";
-import { KShotai } from "../shotai";
+import { Polygons } from "../../polygons.ts";
+import { Stroke } from "../../stroke.ts";
+import { normalize } from "../../util.ts";
+import { FontInterface, StrokeDrawer } from "../index.ts";
+import { KShotai } from "../shotai.ts";
 
-import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
-import Mincho from "../mincho";
+import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd.ts";
+import Mincho from "../mincho/index.ts";
 
 interface GothicAdjustedStroke {
 	readonly stroke: Stroke;

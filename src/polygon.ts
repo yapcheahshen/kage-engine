@@ -8,7 +8,7 @@ export interface Point {
 	 * Whether the point is an off-curve point, i.e. a control point in a quadratic
 	 * Bézier curve.
 	 */
-	off: boolean;
+	off?: boolean;
 }
 
 /**

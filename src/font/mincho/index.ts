@@ -1,11 +1,11 @@
-import { Polygon } from "../../polygon";
-import { Polygons } from "../../polygons";
-import { Stroke } from "../../stroke";
-import { hypot, normalize, round } from "../../util";
-import { FontInterface, StrokeDrawer } from "..";
-import { KShotai } from "../shotai";
+import { Polygon } from "../../polygon.ts";
+import { Polygons } from "../../polygons.ts";
+import { Stroke } from "../../stroke.ts";
+import { hypot, normalize, round } from "../../util.ts";
+import { FontInterface, StrokeDrawer } from "../index.ts";
+import { KShotai } from "../shotai.ts";
 
-import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd";
+import { cdDrawBezier, cdDrawCurve, cdDrawLine } from "./cd.ts";
 
 interface MinchoAdjustedStroke {
 	readonly stroke: Stroke;
@@ -223,68 +223,68 @@ class Mincho implements FontInterface {
 	 */
 	public kRate: number = 100; // must divide 1000
 	/** Half of the width of mincho-style horizontal (thinner) strokes. */
-	public kMinWidthY: number;
+	public kMinWidthY: number = 2;
 	/** Determines the size of ウロコ at the 開放 end of mincho-style horizontal strokes. */
-	public kMinWidthU: number;
+	public kMinWidthU: number = 2;
 	/** Half of the width of mincho-style vertical (thicker) strokes. */
-	public kMinWidthT: number;
+	public kMinWidthT: number = 6;
 	/**
 	 * Half of the width of gothic-style strokes.
 	 * Also used to determine the size of mincho's ornamental elements.
 	 */
-	public kWidth: number;
+	public kWidth: number = 5;
 	/** Size of カカト in gothic. */
-	public kKakato: number;
+	public kKakato: number = 3;
 	/** Width at the end of 右払い relative to `2 * kMinWidthT`. */
-	public kL2RDfatten: number;
+	public kL2RDfatten: number = 1.1;
 	/** Size of curve at the end of 左ハネ, and at the middle of 折れ and 乙線 strokes. */
-	public kMage: number;
+	public kMage: number = 10;
 	/**
 	 * Whether to use off-curve points to approximate curving strokes
 	 * with quadratic Bézier curve (experimental).
 	 */
-	public kUseCurve: boolean;
+	public kUseCurve: boolean = false;
 
 	/** Length of 左下カド's カカト in mincho for each shortening level (0 to 3) and 413 (左下zh用新). */
 	// for KAKATO adjustment 000,100,200,300,400
-	public kAdjustKakatoL: number[];
+	public kAdjustKakatoL: number[] = [14, 9, 5, 2, 0];
 	/** Length of 右下カド's カカト in mincho for each shortening level (0 to 3). */
 	// for KAKATO adjustment 000,100,200,300
-	public kAdjustKakatoR: number[];
+	public kAdjustKakatoR: number[] = [8, 6, 4, 2];
 	/** Width of the collision box below カカト for shortening adjustment. */
 	// check area width
-	public kAdjustKakatoRangeX: number;
+	public kAdjustKakatoRangeX: number = 20;
 	/** Height of the collision box below カカト for each shortening adjustment level (0 to 3). */
 	// 3 steps of checking
-	public kAdjustKakatoRangeY: number[];
+	public kAdjustKakatoRangeY: number[] = [1, 19, 24, 30];
 	/** Number of カカト shortening levels. Must be set to 3. */
 	// number of steps
-	public kAdjustKakatoStep: number;
+	public kAdjustKakatoStep: number = 3;
 
 	/** Size of ウロコ at the 開放 end of mincho-style horizontal strokes for each shrinking level (0 to max({@link kAdjustUrokoLengthStep}, {@link kAdjustUroko2Step})). */
 	// for UROKO adjustment 000,100,200,300
-	public kAdjustUrokoX: number[];
+	public kAdjustUrokoX: number[] =  [24, 20, 16, 12];
 	/** Size of ウロコ at the 開放 end of mincho-style horizontal strokes for each shrinking level (0 to max({@link kAdjustUrokoLengthStep}, {@link kAdjustUroko2Step})). */
 	// for UROKO adjustment 000,100,200,300
-	public kAdjustUrokoY: number[];
+	public kAdjustUrokoY: number[] = [12, 11, 9, 8];
 	/** Threshold length of horizontal strokes for shrinking its ウロコ for each adjustment level ({@link kAdjustUrokoLengthStep} to 1). */
 	// length for checking
-	public kAdjustUrokoLength: number[];
+	public kAdjustUrokoLength: number[] = [22, 36, 50];
 	/** Number of ウロコ shrinking levels by adjustment using collision detection. */
 	// number of steps
-	public kAdjustUrokoLengthStep: number;
+	public kAdjustUrokoLengthStep: number = 3 ;
 	/** Size of the collision box to the left of ウロコ at the 開放 end of mincho-style horizontal strokes for each shrinking adjustment level ({@link kAdjustUrokoLengthStep} to 1). */
 	// check for crossing. corresponds to length
-	public kAdjustUrokoLine: number[];
+	public kAdjustUrokoLine: number[] = [22, 26, 30];
 
 	/** Number of ウロコ shrinking levels by adjustment using density of horizontal strokes. */
-	public kAdjustUroko2Step: number;
+	public kAdjustUroko2Step: number = 3;
 	/** Parameter for shrinking adjustment of ウロコ using density of horizontal strokes. */
-	public kAdjustUroko2Length: number;
+	public kAdjustUroko2Length: number = 40;
 	/** Parameter for thinning adjustment of mincho-style vertical strokes. */
-	public kAdjustTateStep: number;
+	public kAdjustTateStep: number = 4 ;
 	/** Parameter for thinning adjustment of latter half of mincho-style 折れ strokes. */
-	public kAdjustMageStep: number;
+	public kAdjustMageStep: number = 5;
 
 	public constructor() {
 		this.setSize();

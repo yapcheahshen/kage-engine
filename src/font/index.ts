@@ -1,10 +1,10 @@
-import { Polygons } from "../polygons";
-import { Stroke } from "../stroke";
-import Mincho from "./mincho";
-import Gothic from "./gothic";
-import { KShotai } from "./shotai";
+import { Polygons } from "../polygons.ts";
+import { Stroke } from "../stroke.ts";
+import Mincho from "./mincho/index.ts";
+import Gothic from "./gothic/index.ts";
+import { KShotai } from "./shotai.ts";
 
-export { KShotai } from "./shotai";
+export { KShotai } from "./shotai.ts";
 
 /** @internal */
 export type StrokeDrawer = (polygons: Polygons) => void;
@@ -17,8 +17,8 @@ export interface FontInterface {
 	getDrawers(strokes: Stroke[]): StrokeDrawer[];
 }
 
-export { default as Mincho } from "./mincho";
-export { default as Gothic } from "./gothic";
+export { default as Mincho } from "./mincho/index.ts";
+export { default as Gothic } from "./gothic/index.ts";
 
 export type Font = Mincho | Gothic;
 

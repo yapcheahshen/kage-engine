@@ -1,5 +1,5 @@
-import { Point, PointOptOff, Polygon } from "./polygon";
-import { normalize } from "./util";
+import { Point, PointOptOff, Polygon } from "./polygon.ts";
+import { normalize } from "./util.ts";
 
 /**
  * Calculates global coordinates from local coordinates around a pen

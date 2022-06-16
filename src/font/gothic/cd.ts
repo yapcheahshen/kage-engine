@@ -1,9 +1,9 @@
-import { generateFattenCurve } from "../../curve";
-import { Polygon } from "../../polygon";
-import { Polygons } from "../../polygons";
-import { normalize, round } from "../../util";
-import { Pen } from "../../pen";
-import Gothic from ".";
+import { generateFattenCurve } from "../../curve.ts";
+import { Polygon } from "../../polygon.ts";
+import { Polygons } from "../../polygons.ts";
+import { normalize, round } from "../../util.ts";
+import { Pen } from "../../pen.ts";
+import Gothic from "./index.ts";
 
 function cdDrawCurveU(
 	font: Gothic, polygons: Polygons,
@@ -11,8 +11,8 @@ function cdDrawCurveU(
 	sx2: number, sy2: number, x2: number, y2: number,
 	_ta1: number, _ta2: number) {
 
-	let a1: number;
-	let a2: number;
+	let a1: number = _ta1;
+	let a2: number = _ta2;
 
 	let delta1 = 0;
 	switch (a1 % 10) {
