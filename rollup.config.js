@@ -21,6 +21,20 @@ export default {
 			banner,
 		},
 		{
+			file: "dist/kage.mjs",
+			format: "module",
+			name: "Kage",
+			exports: "default",
+			banner,
+		},
+		{
+			file: "dist/kage.cjs",
+			format: "cjs",
+			name: "Kage",
+			exports: "default",
+			banner,
+		},
+		{
 			file: "dist/kage.min.js",
 			format: "iife",
 			name: "Kage",
